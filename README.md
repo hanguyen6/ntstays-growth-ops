@@ -4,9 +4,11 @@ A production marketing and revenue-operations system for a three-home furnished-
 **Claude Code**, **n8n** and the **Claude API**. It captures and attributes leads, triages them with AI under human
 approval, and gives the marketing manager one place to see which channel actually converts.
 
+- **Live site:** [ntstays.com](https://ntstays.com). Click **Ask us** to talk to the production AI assistant; ask it for a
+  price and the guardrail in code replaces it with "we'll send a personal quote".
 - **Case study** (what it does, what broke, what I learned): [hanguyen6.github.io/ntstays-growth-ops](https://hanguyen6.github.io/ntstays-growth-ops/)
-- **Dashboard demo** (made-up numbers, runs in the browser): [hanguyen6.github.io/ntstays-growth-ops/demo](https://hanguyen6.github.io/ntstays-growth-ops/demo/)
-- **Live site:** [ntstays.com](https://ntstays.com)
+- **The real dashboard:** behind a sign-in; ask me for a view-only login (your email and a one-time code, read-only,
+  removed after review).
 
 > **The most boring marketing workflow you could automate end-to-end this week?**
 > The monthly channel report. Pull each platform's numbers, reconcile them, chart them, write the summary, send it.
@@ -24,7 +26,7 @@ approval, and gives the marketing manager one place to see which channel actuall
 | [`n8n/workflow/`](n8n/workflow/) | The generated workflow JSON, imported into n8n on deploy |
 | [`n8n/scripts/`](n8n/scripts/) | Tests that run each workflow's own code with stand-ins for n8n (`test_*.js`), plus end-to-end tests against a real n8n and mock APIs (`e2e_test.py`, `e2e_report.py`, `mock/`) |
 | [`worker/`](worker/) | Cloudflare Worker: verifies the Cloudflare Access login (JWT signature, audience, expiry), splits access by role, proxies the team pages to n8n. Fails closed. |
-| [`site/`](site/) | The public website, plus the sign-in team pages in [`site/team/`](site/team/) (marketing dashboard, Log numbers) |
+| [`site/`](site/) | The public website, plus the sign-in team pages in [`site/team/`](site/team/) (marketing dashboard, Log numbers). [Preview the dashboard code with sample data](https://hanguyen6.github.io/ntstays-growth-ops/demo/) |
 | [`stats/`](stats/) | Turns Airbnb, Vrbo and Booking.com exports into the stats behind the site and the dashboard. Runs on [`stats/sample/`](stats/sample/) (made-up data). |
 | [`marketing/`](marketing/) | Brochure sources and a campaign link and QR builder |
 | [`SETUP.md`](SETUP.md) | How the whole system is set up and operated |

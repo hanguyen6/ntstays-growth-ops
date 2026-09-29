@@ -67,6 +67,11 @@
   .map { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px; overflow-x: auto; }
   .map pre.mermaid { margin: 0; background: transparent; text-align: center; }
 
+  .proof { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; margin-top: 6px; }
+  .shots { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; margin-top: 18px; }
+  .shots figure { margin: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+  .shots img { display: block; width: 100%; height: auto; }
+  .shots figcaption { padding: 10px 12px; font-size: .88rem; color: var(--ink-2); }
   .scroll { overflow-x: auto; }
   table { width: 100%; border-collapse: collapse; font-size: .95rem; }
   th, td { text-align: left; vertical-align: top; padding: 10px 12px; border-bottom: 1px solid var(--line); }
@@ -115,8 +120,8 @@
     </div>
     <div class="links">
       <a class="btn primary" href="https://ntstays.com" target="_blank" rel="noopener">Live site: ntstays.com</a>
+      <a class="btn" href="#running">See it running</a>
       <a class="btn" id="repo-link" href="https://github.com/hanguyen6/ntstays-growth-ops" target="_blank" rel="noopener">Code on GitHub</a>
-      <a class="btn" href="demo/">Dashboard demo</a>
     </div>
 
     <div class="answer" id="boring">
@@ -138,6 +143,28 @@
         answered by hand, sources were unknown, and each platform reported performance differently: some as monthly
         rates, some as rolling 30- or 90-day counts, some as totals since the listing started. Nobody could say which
         channel was worth the most, or what each one cost.</p>
+    </div>
+  </section>
+
+  <section id="running">
+    <div class="col">
+      <h2>See it running</h2>
+      <p>This is a production system for a real business, not a demo. Three ways to check:</p>
+      <div class="proof">
+        <div class="principle"><h3>Talk to the live assistant</h3><p>Open <a href="https://ntstays.com" target="_blank" rel="noopener">ntstays.com</a>
+          and click <b>Ask us</b>. Try <i>"How much is a month in Cranston?"</i> (it won't quote a price: the guardrail
+          in code swaps any price for "we'll send a personal quote") or <i>"Which home is closest to South Shore Hospital?"</i>
+          (it answers from the approved facts).</p></div>
+        <div class="principle"><h3>Send a real request</h3><p>The request forms on
+          <a href="https://ntstays.com/travel-nurses" target="_blank" rel="noopener">the travel-nurse page</a> are live: a
+          submission is scored by Claude, lands in the CRM, and the owner gets the draft reply to approve. You'll get that
+          reply only if the owner presses Send.</p></div>
+        <div class="principle"><h3>See the real dashboard</h3><p>The marketing dashboard with real numbers is behind a
+          sign-in. <b>Ask me for a view-only login:</b> you'd sign in with your own email and a one-time code, see the live
+          dashboard (counts, rates and percentages; no guest details), and have no access to anything that changes data.
+          Access is removed after your review.</p></div>
+      </div>
+      <div class="shots" id="shots" hidden></div>
     </div>
   </section>
 
@@ -279,7 +306,8 @@ flowchart TB
   <footer class="col">
     Stack: n8n 2.x on a small VPS, Claude API (Haiku 4.5, structured outputs), HubSpot, Brevo, Stripe, Cloudflare
     (Workers, Access, Turnstile), GitHub Actions, Python and JavaScript. Built with Claude Code, September 2026.
-    Business figures here are the owner's own; no guest details are included.
+    Business figures here are the owner's own; no guest details are included. The repository includes a
+    <a href="demo/">preview of the dashboard code with sample data</a>; the real dashboard is shown on request.
   </footer>
 </main>
 
