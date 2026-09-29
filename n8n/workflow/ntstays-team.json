@@ -1,0 +1,507 @@
+{
+  "name": "NTStays: team data (Log numbers page)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ntstays-team",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "name": "Log entry",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        200
+      ],
+      "id": "1f59aa45-6736-5f42-95f7-2fb710989b36",
+      "webhookId": "c4872584-0639-5a72-8594-0e01857be798"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Only the website's sign-in guard may call this: it adds the shared key and the signed-in person's email.\nconst req = $input.first().json, h = req.headers || {};\nconst key = $env.TEAM_API_KEY || '';\nconst ok = key.length >= 16 && h['x-ntstays-key'] === key;\nconst user = (h['x-ntstays-user'] || '').toString().trim().toLowerCase().slice(0, 200);\nreturn [{ json: { ok: ok && Boolean(user), user, body: req.body || {} } }];"
+      },
+      "name": "Check team key (log)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        220,
+        200
+      ],
+      "id": "ce6202a1-1271-546e-8f4f-bada25163145"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "8141d97b-c124-5919-81c4-d521c336bcb0",
+              "leftValue": "={{ $json.ok }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "name": "Signed in (log)?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        440,
+        200
+      ],
+      "id": "93a27fa5-eeed-5cdc-a8ed-f7509d5a7be4"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Check an entry from the \"Log numbers\" page. Bookings here are the ones the exports don't have: leases from\n// Furnished Finder, the website, referrals, repeat guests and insurance or housing companies.\nconst { user, body: b } = $input.first().json;\nconst s = v => (v ?? '').toString().trim();\nconst CHANNELS = ['furnished_finder', 'website', 'referral', 'repeat_guest', 'insurance_company', 'other'];\nconst HOMES = ['home-1', 'home-2', 'home-3'];\nconst TYPES = ['travel_nurse', 'insurance', 'professional', 'family', 'other'];\nconst date = v => /^\\d{4}-\\d{2}-\\d{2}$/.test(s(v)) && !Number.isNaN(Date.parse(s(v))) ? s(v) : '';\nconst count = v => { const t = s(v).replace(/,/g, ''); return t === '' ? null : (/^\\d{1,8}$/.test(t) ? Number(t) : NaN); };\nconst rate = v => { const t = s(v).replace('%', '').trim();  // a percentage like 18.79\n  return t === '' ? null : (/^\\d{1,3}(\\.\\d{1,2})?$/.test(t) && Number(t) <= 100 ? Number(t) : NaN); };\nconst errors = [];\nconst kind = s(b.kind);\nlet data = {};\nif (kind === 'booking') {\n  data = { channel: s(b.channel), property_id: s(b.property_id), move_in: date(b.move_in), move_out: date(b.move_out),\n    lead_type: s(b.lead_type) || 'other', signed_on: date(b.signed_on), contact_email: '', contact_phone: '',\n    monthly_rent: count(b.monthly_rent), note: s(b.note).slice(0, 300) };\n  if (!CHANNELS.includes(data.channel)) errors.push('where the booking came from');\n  if (!HOMES.includes(data.property_id)) errors.push('the home');\n  if (!data.move_in || !data.move_out || data.move_out <= data.move_in) errors.push('move-in and move-out dates (move-out after move-in)');\n  if (s(b.signed_on) && !data.signed_on) errors.push('the signed-on date (or leave it empty)');\n  if (!TYPES.includes(data.lead_type)) errors.push('the guest type');\n  // \"Guest's email or phone\": one box, either kind (the bulk box's contact column too). Never sent to the dashboard.\n  const contact = s(b.contact_email || b.contact_phone).slice(0, 200);\n  if (contact.includes('@')) {\n    if (/^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$/.test(contact)) data.contact_email = contact.toLowerCase();\n    else errors.push('a valid email or phone number, or leave it empty');\n  } else if (contact) {\n    const digits = contact.replace(/\\D/g, '');\n    if (/^\\+?[\\d\\s().-]+$/.test(contact) && digits.length >= 7 && digits.length <= 15) data.contact_phone = contact;\n    else errors.push('a valid email or phone number, or leave it empty');\n  }\n  if (Number.isNaN(data.monthly_rent)) errors.push('the monthly rent as a whole number');\n} else if (kind === 'ff_stats') {\n  // Furnished Finder's Listing Performance panel: activity is the last 90 days; the rest are totals since joining.\n  const NUMS = ['impressions', 'listing_views', 'favorites', 'shares', 'booking_inquiries', 'direct_messages',\n    'phone_reveals', 'matched_leads', 'unmatched_leads'];\n  data = { property_id: s(b.property_id), as_of: date(b.as_of) };  // one Furnished Finder listing per home\n  for (const k of NUMS) data[k] = count(b[k]);\n  if (!HOMES.includes(data.property_id)) errors.push('which listing (home)');\n  if (!data.as_of) errors.push('the date');\n  if (NUMS.some(k => Number.isNaN(data[k]))) errors.push('whole numbers only');\n  if (NUMS.every(k => data[k] === null)) errors.push('at least one number');\n} else if (kind === 'airbnb_stats') {\n  // Airbnb Performance -> Conversion -> Booking conversion, all listings, for one month.\n  const RATES = ['overall_conversion', 'first_page_rate', 'search_to_listing', 'listing_to_booking', 'similar_overall'];\n  data = { month: /^\\d{4}-(0[1-9]|1[0-2])$/.test(s(b.month)) ? s(b.month) : '', property_id: s(b.property_id) || 'all' };\n  for (const k of RATES) data[k] = rate(b[k]);\n  if (!data.month) errors.push('the month');\n  if (!['all', ...HOMES].includes(data.property_id)) errors.push('which listings');\n  if (RATES.some(k => Number.isNaN(data[k]))) errors.push('percentages like 18.79');\n  if (RATES.every(k => data[k] === null)) errors.push('at least one rate');\n} else if (kind === 'vrbo_stats') {\n  // Vrbo -> Ranking metrics for one property: search impressions, property views and bookings over the last 30 days.\n  const NUMS = ['impressions', 'views', 'bookings'];\n  data = { property_id: s(b.property_id), as_of: date(b.as_of) };\n  for (const k of NUMS) data[k] = count(b[k]);\n  if (!HOMES.includes(data.property_id)) errors.push('which property (home)');\n  if (!data.as_of) errors.push('the date');\n  if (NUMS.some(k => Number.isNaN(data[k]))) errors.push('whole numbers only');\n  if (NUMS.every(k => data[k] === null)) errors.push('at least one number');\n} else if (kind === 'void') {\n  data = { id: Number.parseInt(b.id, 10) || 0, reason: s(b.reason).slice(0, 200) };\n  if (!data.id) errors.push('which entry to remove');\n} else {\n  errors.push('what to log');\n}\nreturn [{ json: { valid: errors.length === 0, errors,\n  row: { kind, data: JSON.stringify(data), entered_by: user, entered_at: new Date().toISOString() } } }];"
+      },
+      "name": "Check entry",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        660,
+        120
+      ],
+      "id": "a9983dde-361f-5c37-a24c-aba0dd78ab38"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "8ebcafde-ba9b-5b6b-ac27-66aed3d7c8b9",
+              "leftValue": "={{ $json.valid }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "name": "Entry valid?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        880,
+        120
+      ],
+      "id": "5dd358e8-bd30-5bac-80f1-6514d6162b48"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: $json.row }];"
+      },
+      "name": "Row to save",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1100,
+        40
+      ],
+      "id": "0dcdfa55-195c-523f-80aa-a0fa84f8ca3e"
+    },
+    {
+      "parameters": {
+        "resource": "row",
+        "operation": "insert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "ntstays_team_log"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": []
+        },
+        "options": {}
+      },
+      "name": "Save entry",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1320,
+        40
+      ],
+      "id": "f7e6bc00-36d6-59be-8644-c071f11a1b2e"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ ok: true, id: $json.id }) }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "name": "Saved (200)",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1540,
+        40
+      ],
+      "id": "7089ec04-6c79-54e2-9a5c-f078d5ea5b4d"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ ok: false, errors: $json.errors }) }}",
+        "options": {
+          "responseCode": 400
+        }
+      },
+      "name": "Fix the entry (400)",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1100,
+        220
+      ],
+      "id": "13e81402-a6c5-5d47-8ebc-d8ac09b4cb8b"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ ok: false, errors: ['sign in again'] }) }}",
+        "options": {
+          "responseCode": 403
+        }
+      },
+      "name": "Not signed in (403)",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        660,
+        320
+      ],
+      "id": "54f5c4e0-cea7-5f05-8476-39fcb233e2f5"
+    },
+    {
+      "parameters": {
+        "httpMethod": "GET",
+        "path": "ntstays-team",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "name": "Read entries",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        560
+      ],
+      "id": "5f7fe08a-72c6-5c7d-9830-bbb8b1f431d5",
+      "webhookId": "a26aac12-c772-5eb6-93ce-25cd6427b8fb"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Only the website's sign-in guard may call this: it adds the shared key and the signed-in person's email.\nconst req = $input.first().json, h = req.headers || {};\nconst key = $env.TEAM_API_KEY || '';\nconst ok = key.length >= 16 && h['x-ntstays-key'] === key;\nconst user = (h['x-ntstays-user'] || '').toString().trim().toLowerCase().slice(0, 200);\nreturn [{ json: { ok: ok && Boolean(user), user, body: req.body || {} } }];"
+      },
+      "name": "Check team key (read)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        220,
+        560
+      ],
+      "id": "2f61e87a-36a2-5f47-b56d-c057e2eba221"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "8a6620f6-e4d8-5e3a-bff3-2e422065ce02",
+              "leftValue": "={{ $json.ok }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "name": "Signed in (read)?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        440,
+        560
+      ],
+      "id": "f856a36d-8dd3-5fbb-901f-763384c08efc"
+    },
+    {
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "ntstays_team_log"
+        },
+        "returnAll": true,
+        "filters": {}
+      },
+      "name": "Load entries",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        660,
+        480
+      ],
+      "id": "b709aba5-2f9d-560c-9adf-6899e7e932d5",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// Everything the dashboard and the \"Log numbers\" page need. Removed entries stay in the table but don't count.\n// No contact emails leave here; monthly rent goes to the dashboard, which shows it only as percentages.\nconst rows = $input.all().map(i => i.json).filter(r => r && r.kind);\nconst parse = t => { try { return JSON.parse(t || '{}'); } catch (e) { return {}; } };\nconst voided = new Set(rows.filter(r => r.kind === 'void').map(r => Number(parse(r.data).id)));\nconst live = rows.filter(r => r.kind !== 'void' && !voided.has(Number(r.id)));\nconst bookings = live.filter(r => r.kind === 'booking').map(r => {\n  const d = parse(r.data);\n  // signed: when the lease was agreed (signed-on date, else move-in), so past leases logged today count when they happened\n  return { id: r.id, channel: d.channel, property_id: d.property_id, move_in: d.move_in, move_out: d.move_out,\n    lead_type: d.lead_type, signed: d.signed_on || d.move_in, monthly_rent: d.monthly_rent ?? null, entered_at: r.entered_at };\n});\nconst furnished_finder = live.filter(r => r.kind === 'ff_stats').map(r => ({ id: r.id, ...parse(r.data) }))\n  .sort((a, b) => (a.as_of || '').localeCompare(b.as_of || ''));\n// Airbnb: one result per month and listings choice (all, or one home). Entries for the same month add up in order:\n// a later entry replaces only the rates it has, so topping up one number (say, similar listings) keeps the rest.\nconst byMonth = {};\nfor (const r of live.filter(r => r.kind === 'airbnb_stats').sort((a, b) => Number(a.id) - Number(b.id))) {\n  const d = parse(r.data);\n  if (!d.month) continue;\n  const key = d.month + '|' + (d.property_id || 'all');\n  const merged = byMonth[key] = byMonth[key] || { month: d.month, property_id: d.property_id || 'all' };\n  for (const [k, v] of Object.entries(d)) if (v !== null && v !== undefined && v !== '') merged[k] = v;\n  merged.id = r.id;\n  merged.property_id = d.property_id || 'all';\n}\nconst airbnb = Object.values(byMonth).sort((a, b) => a.month.localeCompare(b.month));\n// Vrbo: last-30-day counts, one result per home and month (the month of the date copied); same adding-up rule.\nconst vrboBy = {};\nfor (const r of live.filter(r => r.kind === 'vrbo_stats').sort((a, b) => Number(a.id) - Number(b.id))) {\n  const d = parse(r.data);\n  if (!d.as_of || !d.property_id) continue;\n  const key = d.property_id + '|' + d.as_of.slice(0, 7);\n  const merged = vrboBy[key] = vrboBy[key] || { property_id: d.property_id, month: d.as_of.slice(0, 7) };\n  for (const [k, v] of Object.entries(d)) if (v !== null && v !== undefined && v !== '') merged[k] = v;\n  merged.id = r.id;\n}\nconst vrbo = Object.values(vrboBy).sort((a, b) => a.month.localeCompare(b.month) || a.property_id.localeCompare(b.property_id));\n// Monthly report: model calls and outcomes (the dashboard's report runs panel).\nconst logOf = kind => rows.filter(r => r.kind === kind).sort((a, b) => Number(b.id) - Number(a.id)).slice(0, 24)\n  .map(r => ({ id: r.id, at: r.entered_at, ...parse(r.data) }));\nconst ai_calls = logOf('ai_call'), reports = logOf('report');\nconst recent = rows.filter(r => !['void', 'ai_call', 'report'].includes(r.kind)).sort((a, b) => Number(b.id) - Number(a.id)).slice(0, 30).map(r => {\n  const d = parse(r.data);\n  return { id: r.id, kind: r.kind, removed: voided.has(Number(r.id)), entered_by: r.entered_by, entered_at: r.entered_at,\n    booking: r.kind === 'booking' ? { channel: d.channel, property_id: d.property_id, move_in: d.move_in, move_out: d.move_out } : undefined,\n    as_of: ['ff_stats', 'vrbo_stats'].includes(r.kind) ? d.as_of : undefined, month: r.kind === 'airbnb_stats' ? d.month : undefined,\n    property_id: r.kind !== 'booking' ? d.property_id : undefined };\n});\nreturn [{ json: { you: $('Check team key (read)').first().json.user, bookings, furnished_finder, airbnb, vrbo, ai_calls, reports, recent } }];"
+      },
+      "name": "Summarize entries",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        880,
+        480
+      ],
+      "id": "83df6b76-fb1f-5b7a-8ee9-e449f7b35b25"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "name": "Send entries (200)",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1100,
+        480
+      ],
+      "id": "c01c3f09-bb36-5321-b37b-e3658b3afa74"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ ok: false, errors: ['sign in again'] }) }}",
+        "options": {
+          "responseCode": 403
+        }
+      },
+      "name": "Not signed in (read 403)",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        660,
+        680
+      ],
+      "id": "cb092f08-a475-5176-b999-9638423fabb8"
+    }
+  ],
+  "connections": {
+    "Log entry": {
+      "main": [
+        [
+          {
+            "node": "Check team key (log)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check team key (log)": {
+      "main": [
+        [
+          {
+            "node": "Signed in (log)?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Signed in (log)?": {
+      "main": [
+        [
+          {
+            "node": "Check entry",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Not signed in (403)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check entry": {
+      "main": [
+        [
+          {
+            "node": "Entry valid?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Entry valid?": {
+      "main": [
+        [
+          {
+            "node": "Row to save",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Fix the entry (400)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Row to save": {
+      "main": [
+        [
+          {
+            "node": "Save entry",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save entry": {
+      "main": [
+        [
+          {
+            "node": "Saved (200)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read entries": {
+      "main": [
+        [
+          {
+            "node": "Check team key (read)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check team key (read)": {
+      "main": [
+        [
+          {
+            "node": "Signed in (read)?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Signed in (read)?": {
+      "main": [
+        [
+          {
+            "node": "Load entries",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Not signed in (read 403)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load entries": {
+      "main": [
+        [
+          {
+            "node": "Summarize entries",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarize entries": {
+      "main": [
+        [
+          {
+            "node": "Send entries (200)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "id": "ntstaysTeam01",
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "America/New_York",
+    "errorWorkflow": "ntstaysErrorAlert01",
+    "saveDataSuccessExecution": "none"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "tags": []
+}

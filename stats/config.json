@@ -1,0 +1,30 @@
+{
+  "_help": "Property ids must match PROPERTIES in site/index.html. 'match' lists text found in the listing name or ID in your exports, or in the export's file name. hosting_since is the first bookable day, used for occupancy. A home rented room by room counts as occupied on any night at least one room is booked.",
+  "currency": "USD",
+  "properties": [
+    { "id": "home-1", "name": "Framingham", "hosting_since": "2021-10-15",
+      "match": ["Framingham", "HOME THEATER", "2516941", "2554604"] },
+    { "id": "home-2", "name": "Cranston (Providence area)", "hosting_since": "2022-08-12",
+      "match": ["Providence", "Cranston", "2871139", "2932516"] },
+    { "id": "home-3", "name": "Abington (Brockton area)", "hosting_since": "2024-09-20",
+      "match": ["Abington", "Brockton", "Private Entrance", "Private Unit", "Entire 2Bedrooms", "4810743"] }
+  ],
+  "marketing_costs": {
+    "furnished-finder": 597,
+    "_help": "What a campaign (or a source) cost in USD, for cost per booking on the marketing dashboard. Keys: a campaign name from the link builder, a source like facebook, or furnished-finder (the yearly fee for all three listings, for cost per lease)."
+  },
+  "public": {
+    "_help": "What may appear on ntstays.com. Revenue never does.",
+    "stays_hosted": true,
+    "guest_origins": true,
+    "ratings": true,
+    "featured_reviews": true,
+    "max_reviews": 8,
+    "_hide_help": "Names to hide in published reviews; they become [our host].",
+    "hide_names": [],
+    "occupancy": false,
+    "_feature_help": "Reservation codes of reviews to show on the website (see 'All reviews' in the dashboard). Only 4-star-and-up reviews are shown.",
+    "feature_codes": ["HM2H3ATCN8", "HMN3APE5WB", "HMTPD3ZBJQ", "HMF2RQWTJ9", "HMQDFT35MQ", "HMP8DKQQAD",
+                      "HA-GK9MNK", "HA-C1RV8T"]
+  }
+}

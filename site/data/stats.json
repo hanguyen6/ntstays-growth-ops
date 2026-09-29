@@ -1,0 +1,567 @@
+{
+  "generated": "2026-09-28",
+  "stays_hosted": 255,
+  "guest_countries": 7,
+  "guest_us_states": 21,
+  "top_origins": [
+    "Massachusetts",
+    "Pennsylvania",
+    "New York",
+    "Florida",
+    "Connecticut",
+    "California",
+    "North Carolina",
+    "Texas"
+  ],
+  "origin_states": [
+    "Alabama",
+    "Arizona",
+    "California",
+    "Connecticut",
+    "Florida",
+    "Georgia",
+    "Maryland",
+    "Massachusetts",
+    "Michigan",
+    "New Jersey",
+    "New York",
+    "North Carolina",
+    "Ohio",
+    "Oregon",
+    "Pennsylvania",
+    "Rhode Island",
+    "Texas",
+    "Vermont",
+    "Virginia",
+    "Washington",
+    "Wisconsin"
+  ],
+  "origin_countries": [
+    "Canada",
+    "Germany",
+    "India",
+    "Russia",
+    "The Bahamas",
+    "United Kingdom"
+  ],
+  "origin_places": [
+    {
+      "name": "Allendale, NJ",
+      "lat": 41.0,
+      "lon": -74.1,
+      "to": []
+    },
+    {
+      "name": "Attleboro, MA",
+      "lat": 41.9,
+      "lon": -71.3,
+      "to": [
+        "home-2"
+      ]
+    },
+    {
+      "name": "Barkhamsted, CT",
+      "lat": 41.9,
+      "lon": -72.9,
+      "to": []
+    },
+    {
+      "name": "Boston, MA",
+      "lat": 42.4,
+      "lon": -71.1,
+      "to": [
+        "home-1",
+        "home-2",
+        "home-3"
+      ]
+    },
+    {
+      "name": "Carrollton, TX",
+      "lat": 33.0,
+      "lon": -96.9,
+      "to": [
+        "home-2"
+      ]
+    },
+    {
+      "name": "Chapel Hill, NC",
+      "lat": 35.9,
+      "lon": -79.1,
+      "to": [
+        "home-2"
+      ]
+    },
+    {
+      "name": "Charlotte, NC",
+      "lat": 35.2,
+      "lon": -80.8,
+      "to": [
+        "home-2"
+      ]
+    },
+    {
+      "name": "Chevy Chase, MD",
+      "lat": 39.0,
+      "lon": -77.1,
+      "to": [
+        "home-2"
+      ]
+    },
+    {
+      "name": "Danville, PA",
+      "lat": 41.0,
+      "lon": -76.6,
+      "to": [
+        "home-2"
+      ]
+    },
+    {
+      "name": "Eugene, OR",
+      "lat": 44.1,
+      "lon": -123.1,
+      "to": [
+        "home-1"
+      ]
+    },
+    {
+      "name": "Ferndale, MI",
+      "lat": 42.5,
+      "lon": -83.1,
+      "to": [
+        "home-1"
+      ]
+    },
+    {
+      "name": "Florida, OH",
+      "lat": 41.3,
+      "lon": -84.2,
+      "to": [
+        "home-1"
+      ]
+    },
+    {
+      "name": "Gibsonia, PA",
+      "lat": 40.6,
+      "lon": -80.0,
+      "to": [
+        "home-1"
+      ]
+    },
+    {
+      "name": "Gurgaon, India",
+      "lat": 28.5,
+      "lon": 77.0,
+      "to": [
+        "home-1"
+      ]
+    },
+    {
+      "name": "Hanover, MA",
+      "lat": 42.1,
+      "lon": -70.8,
+      "to": [
+        "home-1"
+      ]
+    },
+    {
+      "name": "Hatfield, PA",
+      "lat": 40.3,
+      "lon": -75.3,
+      "to": [
+        "home-1",
+        "home-2"
+      ]
+    },
+    {
+      "name": "Herndon, VA",
+      "lat": 39.0,
+      "lon": -77.4,
+      "to": []
+    },
+    {
+      "name": "Kent, WA",
+      "lat": 47.4,
+      "lon": -122.2,
+      "to": [
+        "home-2"
+      ]
+    },
+    {
+      "name": "Lake Stevens, WA",
+      "lat": 48.0,
+      "lon": -122.1,
+      "to": [
+        "home-2"
+      ]
+    },
+    {
+      "name": "Levittown, PA",
+      "lat": 40.2,
+      "lon": -74.8,
+      "to": [
+        "home-2"
+      ]
+    },
+    {
+      "name": "Los Angeles, CA",
+      "lat": 34.1,
+      "lon": -118.2,
+      "to": [
+        "home-1"
+      ]
+    },
+    {
+      "name": "Margate, FL",
+      "lat": 26.2,
+      "lon": -80.2,
+      "to": [
+        "home-1"
+      ]
+    },
+    {
+      "name": "Mechanicville, NY",
+      "lat": 42.9,
+      "lon": -73.7,
+      "to": []
+    },
+    {
+      "name": "Miami, FL",
+      "lat": 25.8,
+      "lon": -80.2,
+      "to": [
+        "home-2"
+      ]
+    },
+    {
+      "name": "Milwaukee, WI",
+      "lat": 43.0,
+      "lon": -87.9,
+      "to": [
+        "home-1"
+      ]
+    },
+    {
+      "name": "Monroe, CT",
+      "lat": 41.3,
+      "lon": -73.2,
+      "to": [
+        "home-1"
+      ]
+    },
+    {
+      "name": "Moscow, Russia",
+      "lat": 55.6,
+      "lon": 37.6,
+      "to": [
+        "home-1"
+      ]
+    },
+    {
+      "name": "Nassau, The Bahamas",
+      "lat": 25.1,
+      "lon": -77.3,
+      "to": [
+        "home-1"
+      ]
+    },
+    {
+      "name": "Natick, MA",
+      "lat": 42.3,
+      "lon": -71.3,
+      "to": [
+        "home-1"
+      ]
+    },
+    {
+      "name": "New Shoreham, RI",
+      "lat": 41.2,
+      "lon": -71.6,
+      "to": [
+        "home-2"
+      ]
+    },
+    {
+      "name": "New York, NY",
+      "lat": 40.7,
+      "lon": -74.0,
+      "to": [
+        "home-1",
+        "home-2"
+      ]
+    },
+    {
+      "name": "Orlando, FL",
+      "lat": 28.5,
+      "lon": -81.4,
+      "to": [
+        "home-1"
+      ]
+    },
+    {
+      "name": "Oxford, United Kingdom",
+      "lat": 51.8,
+      "lon": -1.3,
+      "to": [
+        "home-1"
+      ]
+    },
+    {
+      "name": "Philadelphia, PA",
+      "lat": 40.0,
+      "lon": -75.2,
+      "to": [
+        "home-1"
+      ]
+    },
+    {
+      "name": "Plano, TX",
+      "lat": 33.0,
+      "lon": -96.7,
+      "to": [
+        "home-2"
+      ]
+    },
+    {
+      "name": "Pleasant Grove, AL",
+      "lat": 33.5,
+      "lon": -87.0,
+      "to": [
+        "home-2"
+      ]
+    },
+    {
+      "name": "Plymouth, MA",
+      "lat": 41.9,
+      "lon": -70.8,
+      "to": [
+        "home-1"
+      ]
+    },
+    {
+      "name": "Portland, OR",
+      "lat": 45.5,
+      "lon": -122.7,
+      "to": [
+        "home-1"
+      ]
+    },
+    {
+      "name": "Providence, RI",
+      "lat": 41.8,
+      "lon": -71.4,
+      "to": [
+        "home-2"
+      ]
+    },
+    {
+      "name": "Rochester, MI",
+      "lat": 42.7,
+      "lon": -83.1,
+      "to": [
+        "home-2"
+      ]
+    },
+    {
+      "name": "Salem, MA",
+      "lat": 42.5,
+      "lon": -70.9,
+      "to": [
+        "home-3"
+      ]
+    },
+    {
+      "name": "San Diego, CA",
+      "lat": 32.7,
+      "lon": -117.2,
+      "to": [
+        "home-1"
+      ]
+    },
+    {
+      "name": "Santa Clara, CA",
+      "lat": 37.2,
+      "lon": -121.7,
+      "to": [
+        "home-1"
+      ]
+    },
+    {
+      "name": "Saratoga Springs, NY",
+      "lat": 43.1,
+      "lon": -73.8,
+      "to": [
+        "home-1"
+      ]
+    },
+    {
+      "name": "Schwielowsee, Germany",
+      "lat": 52.3,
+      "lon": 13.0,
+      "to": [
+        "home-1"
+      ]
+    },
+    {
+      "name": "South Hadley, MA",
+      "lat": 42.3,
+      "lon": -72.6,
+      "to": [
+        "home-2"
+      ]
+    },
+    {
+      "name": "Stamford, CT",
+      "lat": 41.1,
+      "lon": -73.5,
+      "to": [
+        "home-2"
+      ]
+    },
+    {
+      "name": "Tampa, FL",
+      "lat": 27.9,
+      "lon": -82.5,
+      "to": [
+        "home-2"
+      ]
+    },
+    {
+      "name": "Tucker, GA",
+      "lat": 33.9,
+      "lon": -84.2,
+      "to": [
+        "home-2"
+      ]
+    },
+    {
+      "name": "Tucson, AZ",
+      "lat": 32.2,
+      "lon": -111.0,
+      "to": [
+        "home-1"
+      ]
+    },
+    {
+      "name": "Vancouver, Canada",
+      "lat": 49.3,
+      "lon": -123.1,
+      "to": [
+        "home-1"
+      ]
+    },
+    {
+      "name": "Williamsburg, MA",
+      "lat": 42.4,
+      "lon": -72.7,
+      "to": [
+        "home-1"
+      ]
+    },
+    {
+      "name": "Woodbury, NJ",
+      "lat": 39.8,
+      "lon": -75.2,
+      "to": [
+        "home-2"
+      ]
+    },
+    {
+      "name": "Worcester, MA",
+      "lat": 42.3,
+      "lon": -71.8,
+      "to": []
+    }
+  ],
+  "rating": {
+    "avg": 4.77,
+    "count": 114
+  },
+  "properties": {
+    "home-1": {
+      "rating": 4.82,
+      "reviews": 51
+    },
+    "home-2": {
+      "rating": 4.67,
+      "reviews": 41
+    },
+    "home-3": {
+      "rating": 4.5,
+      "reviews": 8
+    }
+  },
+  "reviews": [
+    {
+      "property": "home-2",
+      "platform": "Airbnb",
+      "rating": 5,
+      "name": "Emily",
+      "origin": "",
+      "text": "We had a wonderful stay here! The home was beautiful and the host was extremely communicative. When we had a small issue with parking, she immediately worked with us to resolve it. Would absolutely stay here again.",
+      "when": "October 2025"
+    },
+    {
+      "property": "home-3",
+      "platform": "Airbnb",
+      "rating": 5,
+      "name": "Tamendy",
+      "origin": "",
+      "text": "Great host, very friendly and helpful. If you\u2019re looking for something relaxing, serene and peaceful this is a perfect place. Location is safe and quiet. Felt like home away from home. Thank you!",
+      "when": "May 2025"
+    },
+    {
+      "property": "home-3",
+      "platform": "Airbnb",
+      "rating": 5,
+      "name": "Lindsay",
+      "origin": "",
+      "text": "[Our host]'s listing was cozy and charming. We felt right at home. Everything was clean and often brand new. I would definitely recommend this listing. [Our host] was very responsive and clear with instructions.",
+      "when": "December 2024"
+    },
+    {
+      "property": "home-2",
+      "platform": "Vrbo",
+      "rating": 5.0,
+      "name": "Bre H.",
+      "origin": "",
+      "text": "Property is very well kept. It's renovated, clean, decor is very creative and unique. We loved it here! My band drove up from Florida to play at the Washington County Fair and this place was perfect for us. Everyone had their own private space.",
+      "when": "August 2024"
+    },
+    {
+      "property": "home-2",
+      "platform": "Airbnb",
+      "rating": 5,
+      "name": "Joshua",
+      "origin": "Chevy Chase, MD",
+      "text": "Lovely and clean home very convenient to downtown Providence and TF Green airport. Space is lovely, has plenty of amenities and Host was extremely responsive when we needed items replenished.",
+      "when": "June 2024"
+    },
+    {
+      "property": "home-2",
+      "platform": "Vrbo",
+      "rating": 5.0,
+      "name": "Robert B.",
+      "origin": "",
+      "text": "Nicely updated home with plenty of space to spread out. Great kitchen and flow of home in a safe, walkable neighborhood. More than enough big screen TVs and good air conditioning throughout house Perfect for our group of four, including 2 adult children. Nice personal decorating touches by owners.",
+      "when": "June 2023"
+    },
+    {
+      "property": "home-1",
+      "platform": "Airbnb",
+      "rating": 5,
+      "name": "Lisa",
+      "origin": "Vermont, United States",
+      "text": "This is a comfortable, clean and as-described bedroom. It was perfect for my needs with easy self check-in, good communication and great location.",
+      "when": "October 2022"
+    },
+    {
+      "property": "home-1",
+      "platform": "Airbnb",
+      "rating": 5,
+      "name": "Jacquelyn",
+      "origin": "Milwaukee, WI",
+      "text": "[Our host] has a beautiful home in a Framingham near everything you need to get to! I was there on business and had appointments that were all minutes away from home. The best part of my room was the big movie screen TV. and the mattress felt like I was sleeping on clouds. Thank you [our host] for a wonderful stay. I will be in the area again soon and would like to stay again. Best! Jacquelyn Boyd",
+      "when": "July 2022"
+    }
+  ]
+}

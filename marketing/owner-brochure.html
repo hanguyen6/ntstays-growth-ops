@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>NTStays: property management for owners</title>
+<!-- One-page owner brochure for EMAIL (not the public site: it shows a revenue range).
+     Edit here, then run:  python tools/build_brochure.py  ({{TOKENS}} are filled in from site/data/stats.json) -->
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Karla:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  @page { size: 8.5in 11in; margin: 0; }
+  :root { --coffee: #3b2a20; --coffee-2: #5a4232; --brass: #b08a3e; --brass-soft: #e9dcc0; --sage: #7d8f76;
+          --sage-soft: #e3e9df; --oat: #f6f1e7; --paper: #fffdf8; --ink: #2b211b; --muted: #6d6158; --line: #e4dbcc; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; } html { overflow: hidden; }
+  body { width: 8.5in; height: 10.96in; background: var(--paper); color: var(--ink); font: 10.4pt/1.42 Karla, system-ui, sans-serif;
+         -webkit-print-color-adjust: exact; print-color-adjust: exact; overflow: hidden; display: flex; flex-direction: column; }
+  h1, h2, h3 { font-family: Fraunces, Georgia, serif; color: var(--coffee); margin: 0; line-height: 1.12; }
+  .pad { padding-left: .55in; padding-right: .55in; }
+
+  header { background: var(--coffee); color: var(--oat); display: flex; justify-content: space-between; align-items: center; padding-top: .2in; padding-bottom: .2in; }
+  .logo { font: 650 22pt Fraunces, Georgia, serif; color: var(--paper); }
+  .logo span { color: var(--brass); }
+  header .tag { font-size: 9.5pt; color: #e7dccd; margin-top: 2px; }
+  header .contact { text-align: right; font-size: 9.5pt; color: #e7dccd; line-height: 1.5; }
+  header .contact b { color: var(--paper); }
+
+  .hero { padding-top: .2in; }
+  .eyebrow { text-transform: uppercase; letter-spacing: .12em; font-size: 7.8pt; font-weight: 700; color: var(--brass); margin: 0 0 4px; }
+  h1 { font-size: 23pt; }
+  .lede { color: var(--muted); margin: 6px 0 0; font-size: 10.6pt; max-width: 6.6in; }
+
+  .photos { display: grid; grid-template-columns: 1.25fr 1fr 1fr; gap: 7px; margin-top: .14in; height: 1.5in; }
+  .photos figure { margin: 0; position: relative; border-radius: 9px; overflow: hidden; }
+  .photos img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .photos figcaption { position: absolute; left: 7px; bottom: 7px; background: rgba(43, 33, 27, .72); color: var(--paper); font-size: 7.8pt; border-radius: 999px; padding: 2px 8px; }
+
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: .12in; }
+  .stat { background: var(--oat); border: 1px solid var(--line); border-radius: 9px; padding: 8px 11px; }
+  .stat b { display: block; font: 650 17pt Fraunces, Georgia, serif; color: var(--coffee); line-height: 1.1; }
+  .stat span { color: var(--muted); font-size: 8.6pt; }
+
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: .22in; margin-top: .14in; }
+  h2 { font-size: 13pt; margin-bottom: 7px; }
+  .way { border-left: 3px solid var(--brass); padding: 1px 0 1px 10px; margin-bottom: 9px; }
+  .way h3 { font-size: 10.8pt; margin-bottom: 2px; }
+  .way p { margin: 0; color: var(--ink); font-size: 9.6pt; }
+  .note { color: var(--muted); font-size: 9pt; margin: 2px 0 0; }
+
+  .case { background: var(--sage-soft); border-radius: 11px; padding: 11px 14px; }
+  .case .sub { color: var(--muted); font-size: 8.8pt; margin: -3px 0 8px; }
+  .kpis { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 12px; }
+  .kpi b { display: block; font: 650 15pt Fraunces, Georgia, serif; color: var(--coffee); line-height: 1.1; }
+  .kpi span { font-size: 8.6pt; color: #3f5139; }
+
+  .handle { margin-top: .12in; }
+  .handle ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px 10px; }
+  .handle li { font-size: 9.2pt; padding-left: 16px; position: relative; }
+  .handle li::before { content: ""; position: absolute; left: 0; top: 4px; width: 9px; height: 9px; border-radius: 50%; background: var(--sage); }
+
+  .quote { margin-top: .12in; display: grid; grid-template-columns: 1fr 1fr; gap: .22in; }
+  blockquote { margin: 0; font: 500 10.2pt/1.4 Fraunces, Georgia, serif; color: var(--coffee-2); }
+  blockquote cite { display: block; font: 400 8.6pt Karla, sans-serif; color: var(--muted); margin-top: 3px; font-style: normal; }
+  .stars { color: var(--brass); letter-spacing: 1px; font-size: 9pt; }
+
+  .cta { margin-top: auto; background: var(--brass-soft); display: flex; justify-content: space-between; align-items: center; gap: .3in; padding-top: .16in; padding-bottom: .16in; }
+  .cta h2 { font-size: 14pt; margin: 0 0 3px; }
+  .cta p { margin: 0; font-size: 9.6pt; color: var(--coffee-2); }
+  .cta .how { text-align: right; font-size: 9.8pt; line-height: 1.55; white-space: nowrap; }
+  .cta .how b { color: var(--coffee); }
+  footer { background: var(--coffee); color: #cbbba6; font-size: 7.4pt; padding-top: 7px; padding-bottom: 7px; display: flex; justify-content: space-between; gap: 16px; white-space: nowrap; }
+</style>
+</head>
+<body>
+  <header class="pad">
+    <div>
+      <div class="logo">NT<span>Stays</span></div>
+      <div class="tag">Property management from hosts who run their own homes</div>
+    </div>
+    <div class="contact"><b>ntstays.com</b><br>hello@ntstays.com</div>
+  </header>
+
+  <section class="hero pad">
+    <p class="eyebrow">For homeowners in MetroWest, the South Shore and the Providence area</p>
+    <h1>Your home, cared for like ours,<br>and earning all year.</h1>
+    <p class="lede">NTStays is owner-run: since 2021 we've hosted guests in our own three homes:
+      nightly stays when demand is high, furnished monthly stays the rest of the year. We'd like to do the same for yours.</p>
+    <div class="photos">
+      <figure><img src="../site/img/home-2/01-living-room-800.jpg" alt=""><figcaption>Cranston, RI</figcaption></figure>
+      <figure><img src="../site/img/home-3/01-front-800.jpg" alt=""><figcaption>Abington, MA</figcaption></figure>
+      <figure><img src="../site/img/home-1/02-bedroom-2-800.jpg" alt=""><figcaption>Framingham, MA</figcaption></figure>
+    </div>
+    <div class="stats">
+      <div class="stat"><b>{{RATING}} &#9733;</b><span>from {{REVIEWS}} verified guest reviews</span></div>
+      <div class="stat"><b>{{STAYS}}</b><span>stays hosted since 2021</span></div>
+      <div class="stat"><b>{{STATES}} states</b><span>and {{COUNTRIES}} countries our guests came from</span></div>
+      <div class="stat"><b>4 channels</b><span>Airbnb, Vrbo, Booking.com and direct</span></div>
+    </div>
+  </section>
+
+  <section class="cols pad">
+    <div>
+      <h2>Two ways your home can earn</h2>
+      <div class="way"><h3>Nightly stays</h3>
+        <p>Listed on Airbnb, Vrbo, Booking.com and our own site, priced for peak season and weekends.</p></div>
+      <div class="way"><h3>Longer stays, flexible terms</h3>
+        <p>Furnished stays of a few weeks to many months for traveling nurses, professionals, and families placed by
+          their insurance. Steady income and far fewer turnovers.</p></div>
+      <p class="note">We mix the two to keep the calendar full, and we run both in our own homes today.</p>
+    </div>
+    <div class="case">
+      <h2>Our Cranston 4-bedroom</h2>
+      <p class="sub">Results from our own home, from booking records</p>
+      <div class="kpis">
+        <div class="kpi"><b>+82%</b><span>average nightly rate, 2022 to 2024</span></div>
+        <div class="kpi"><b>40%</b><span>of nights booked in 2024, nightly stays only</span></div>
+        <div class="kpi"><b>Full</b><span>every night of July and August 2024</span></div>
+        <div class="kpi"><b>$XXk&ndash;YYk</b><span>gross booking revenue in 2024</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="handle pad">
+    <h2>What we take care of</h2>
+    <ul>
+      <li>Listing, photos and pricing</li>
+      <li>Guest screening and messages</li>
+      <li>Monthly-stay placements</li>
+      <li>Direct bookings, no platform fees</li>
+      <li>Cleaning and turnovers</li>
+      <li>Maintenance and repairs</li>
+      <li>Staging and furnishing</li>
+      <li>Renovation projects</li>
+    </ul>
+  </section>
+
+  <section class="quote pad">
+    <blockquote><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span><br>&ldquo;Property is very well kept. It's renovated,
+      clean, decor is very creative and unique. We loved it here!&rdquo;<cite>Bre H., Vrbo guest, Cranston</cite></blockquote>
+    <blockquote><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span><br>&ldquo;We had a wonderful stay here! The home was
+      beautiful and the host was extremely communicative.&rdquo;<cite>Emily, Airbnb guest, Cranston</cite></blockquote>
+  </section>
+
+  <section class="cta pad">
+    <div>
+      <h2>Tell us about your home</h2>
+      <p>We'll reply with what it could earn, which kind of stays fit it best, and how we'd run it.</p>
+    </div>
+    <div class="how"><b>ntstays.com</b>, choose "Property management"<br>or email <b>hello@ntstays.com</b></div>
+  </section>
+  <footer class="pad">
+    <span>NTStays LLC, registered in Massachusetts</span>
+    <span>Figures from our own homes' booking records, 2021&ndash;2026. Past results don't guarantee future earnings.</span>
+  </footer>
+</body>
+</html>

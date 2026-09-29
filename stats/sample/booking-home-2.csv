@@ -1,0 +1,15 @@
+Book number,Booked by,Guest name(s),Check-in,Check-out,Booked on,Status,Rooms,People,Price,Commission %,Commission amount,Payment status,Booker country,Travel purpose,Duration (nights)
+4000001000,"Chen, Quinn",Sam Garcia,2025-06-19,2025-06-26,2025-05-30 10:12:00,ok,1,1,1173.0 USD,15,175.95 USD,Paid,de,Leisure,7
+4000001001,"Garcia, Quinn",Morgan Chen,2025-06-29,2025-07-02,2025-06-22 10:12:00,ok,1,4,557.0 USD,15,83.55 USD,Paid,au,Leisure,3
+4000001002,"Kim, Drew",Casey Kim,2025-07-07,2025-07-12,2025-04-21 10:12:00,ok,1,3,865.0 USD,15,129.75 USD,Paid,us,Leisure,5
+4000001003,"Davis, Quinn",Parker Davis,2025-07-16,2025-07-19,2025-06-18 10:12:00,ok,1,3,557.0 USD,15,83.55 USD,Paid,jp,Leisure,3
+4000001004,"Smith, Sam",Drew Kim,2025-07-20,2025-07-23,2025-06-27 10:12:00,cancelled_by_guest,1,5,557.0 USD,15,83.55 USD,Paid,mx,Leisure,3
+4000001005,"Patel, Morgan",Morgan Lopez,2025-07-25,2025-07-28,2025-05-01 10:12:00,ok,1,5,557.0 USD,15,83.55 USD,Paid,ca,Leisure,3
+4000001006,"Chen, Riley",Parker Smith,2025-08-06,2025-08-11,2025-05-30 10:12:00,ok,1,3,865.0 USD,15,129.75 USD,Paid,gb,Leisure,5
+4000001007,"Kim, Morgan",Sam Davis,2025-08-19,2025-08-24,2025-07-13 10:12:00,ok,1,1,865.0 USD,15,129.75 USD,Paid,gb,Leisure,5
+4000001008,"Garcia, Drew",Sam Kim,2025-08-25,2025-08-30,2025-08-16 10:12:00,ok,1,5,865.0 USD,15,129.75 USD,Paid,au,Leisure,5
+4000001009,"Brown, Avery",Taylor Miller,2025-08-31,2025-09-02,2025-08-25 10:12:00,ok,1,5,403.0 USD,15,60.45 USD,Paid,au,Leisure,2
+4000001010,"Lopez, Alex",Parker Patel,2025-09-04,2025-09-07,2025-07-22 10:12:00,ok,1,3,557.0 USD,15,83.55 USD,Paid,jp,Leisure,3
+4000001011,"Smith, Quinn",Morgan Chen,2025-09-12,2025-09-17,2025-06-23 10:12:00,ok,1,2,865.0 USD,15,129.75 USD,Paid,gb,Leisure,5
+4000001012,"Davis, Jordan",Morgan Chen,2025-09-20,2025-09-27,2025-07-15 10:12:00,ok,1,5,1173.0 USD,15,175.95 USD,Paid,us,Leisure,7
+4000001013,"Miller, Casey",Taylor Patel,2025-09-28,2025-10-01,2025-08-07 10:12:00,cancelled_by_guest,1,4,557.0 USD,15,83.55 USD,Paid,jp,Leisure,3

@@ -1,0 +1,748 @@
+{
+  "name": "NTStays: follow-ups (payment reminders, thank-yous, extensions)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 9 * * *"
+            }
+          ]
+        }
+      },
+      "name": "Every morning",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        200
+      ],
+      "id": "a267f0be-feb4-5537-bc9f-04f1f8d355b9"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ntstays-followups-run",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "name": "Run follow-ups now",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        380
+      ],
+      "id": "269ac7ee-3a35-5a59-b78a-b3f6704bb40f",
+      "webhookId": "6114f091-3cec-54fb-98e0-4b5009388621"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Runs from the morning schedule, or from the run-now webhook with the internal key.\nconst j = $input.first().json;\nif (j.headers) {\n  const key = $env.FOLLOWUP_KEY || $env.UNSUBSCRIBE_SECRET;\n  if (!key || j.headers['x-ntstays-key'] !== key) return [];\n}\nreturn [{ json: { stripe: Boolean($env.STRIPE_SECRET_KEY) } }];"
+      },
+      "name": "Start check",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        220,
+        300
+      ],
+      "id": "1de0bf40-4c04-5f90-872e-491d97f4fb17"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "a481391a-1e31-5126-863e-c03f3f9e2e84",
+              "leftValue": "={{ $json.stripe }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "name": "Stripe on?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        440,
+        300
+      ],
+      "id": "374c39fc-7747-528a-ae10-48546560bbd4"
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ ($env.STRIPE_BASE_URL || 'https://api.stripe.com') + '/v1/payment_links?active=true&limit=100' }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.STRIPE_SECRET_KEY }}"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "name": "Stripe: open payment links",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        660,
+        300
+      ],
+      "id": "21cecfc4-8a4c-51f0-a28d-1e9c68fa069c",
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ ($env.STRIPE_BASE_URL || 'https://api.stripe.com') + '/v1/payment_intents/search?limit=100&query=' + encodeURIComponent(\"metadata['ntstays']:'booking' AND status:'succeeded'\") }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.STRIPE_SECRET_KEY }}"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "name": "Stripe: paid stays",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        880,
+        300
+      ],
+      "id": "bfcf20c8-62a1-5edd-b80c-3ec215321591",
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000
+    },
+    {
+      "parameters": {
+        "jsCode": "// Which follow-ups are due today. Payment reminders are marked on the payment link in Stripe (so they're never sent\n// twice); thank-yous and extension offers are remembered here and only look at a 2-day window.\nconst links = $('Stripe: open payment links').first().json.data || [];\nconst paid = $input.first().json.data || [];\nconst store = $getWorkflowStaticData('global');\nstore.done = store.done || [];\nconst DAY = 86400000, now = new Date();\nconst today = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());\nconst d = s => (/^\\d{4}-\\d{2}-\\d{2}$/.test(s || '') ? Date.parse(s + 'T00:00:00Z') : NaN);\nconst paidRefs = new Set(paid.map(pi => (pi.metadata || {}).ref).filter(Boolean));\nconst items = [];\nfor (const l of links) {\n  const m = l.metadata || {};\n  if (m.ntstays !== 'booking' || !m.ref || m.nudge_queued || paidRefs.has(m.ref)) continue;\n  if (!(today - d(m.sent) >= 2 * DAY)) continue;       // give the guest two days first\n  if (d(m.check_in) < today) continue;                 // the stay date has passed\n  items.push({ kind: 'payment_reminder', key: `nudge:${m.ref}`, link_id: l.id, url: l.url, meta: m });\n}\nfor (const pi of paid) {\n  const m = pi.metadata || {};\n  if (m.ntstays !== 'booking') continue;\n  const ci = d(m.check_in), co = d(m.check_out);\n  if (co >= today - 2 * DAY && co <= today - DAY && !store.done.includes(`thanks:${pi.id}`))\n    items.push({ kind: 'thank_you', key: `thanks:${pi.id}`, meta: m });\n  if ((co - ci) / DAY >= 28 && co - today >= 13 * DAY && co - today <= 14 * DAY && !store.done.includes(`extend:${pi.id}`))\n    items.push({ kind: 'extension', key: `extend:${pi.id}`, meta: m });\n}\nstore.done = [...store.done, ...items.filter(i => i.kind !== 'payment_reminder').map(i => i.key)].slice(-500);\nreturn items.map(i => ({ json: i }));"
+      },
+      "name": "Find due follow-ups",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1100,
+        300
+      ],
+      "id": "835bb234-db48-514b-a047-537307adefb8"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ ($env.FOLLOWUP_BASE_URL || 'http://localhost:5678') + '/webhook/ntstays-followup' }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-ntstays-key",
+              "value": "={{ $env.FOLLOWUP_KEY || $env.UNSUBSCRIBE_SECRET }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "name": "Start follow-up review",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1320,
+        300
+      ],
+      "id": "055cbd8b-1cdf-5c6b-82d3-5be8f4371a1e",
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "bd59050d-3379-5f73-8c5a-3408fa3926c9",
+              "leftValue": "={{ $('Find due follow-ups').item.json.kind === 'payment_reminder' }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "name": "Payment reminder?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1540,
+        300
+      ],
+      "id": "b3ce60a3-a042-53eb-bf35-723a2bfc6e3d"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ ($env.STRIPE_BASE_URL || 'https://api.stripe.com') + '/v1/payment_links/' + $('Find due follow-ups').item.json.link_id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.STRIPE_SECRET_KEY }}"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 30000
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/x-www-form-urlencoded",
+        "body": "={{ 'metadata[nudge_queued]=' + new Date().toISOString().slice(0, 10) }}"
+      },
+      "name": "Stripe: mark reminder queued",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1760,
+        220
+      ],
+      "id": "8c3aac00-709f-5cc0-8831-5f577c50c5f3",
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ntstays-followup",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "name": "Follow-up to review",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        700
+      ],
+      "id": "17e79162-d416-5c22-8d23-fd73c95769e1",
+      "webhookId": "4532318d-b836-5206-8281-732fbf5e1065"
+    },
+    {
+      "parameters": {
+        "jsCode": "// A follow-up draft for the owner to review. Only runs with the internal key (sent by the morning check).\nconst j = $input.first().json;\nconst key = $env.FOLLOWUP_KEY || $env.UNSUBSCRIBE_SECRET;\nif (!key || (j.headers || {})['x-ntstays-key'] !== key) return [];\nconst f = j.body || {};\nconst m = f.meta || {};\nif (!m.email || !['payment_reminder', 'thank_you', 'extension'].includes(f.kind)) return [];\nconst HOMES = { 'home-1': 'Framingham Center House', 'home-2': 'Cranston House', 'home-3': 'Abington Colonial' };\nconst esc = x => (x ?? '').toString().replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');\nconst fmt = iso => iso ? new Date(iso + 'T12:00:00Z').toLocaleDateString('en-US', { month: 'long', day: 'numeric', timeZone: 'UTC' }) : '';\nconst home = HOMES[m.home] || 'our home', first = m.first_name || 'there', owner = $env.OWNER_NAME || 'The NTStays team';\nconst dates = m.check_in && m.check_out ? `${fmt(m.check_in)} to ${fmt(m.check_out)}` : '';\nconst DRAFTS = {\n  payment_reminder: { label: 'Payment reminder', subject: `Your ${home} stay: payment link`,\n    message: `Hi ${first},\\n\\nJust checking in about your stay at ${home}${dates ? ` (${dates})` : ''}. Your secure payment link is below whenever you're ready; your stay is confirmed as soon as the payment goes through.\\n\\nPay securely by card: ${f.url}?prefilled_email=${encodeURIComponent(m.email)}\\n\\nIf anything has changed or you have questions, just reply to this email.\\n\\nBest,\\n${owner}` },\n  thank_you: { label: 'Thank-you and review request', subject: 'Thank you for staying with us',\n    message: `Hi ${first},\\n\\nThank you for staying at ${home}. We hope everything was comfortable; it was a pleasure to host you.\\n\\nIf you have two minutes, we'd love to hear how it went. Your feedback helps us look after our homes and helps other guests find us:\\nhttps://ntstays.com/review\\n\\nWhenever you need a place again, for a new assignment, a visit or anything else, just reply and we'll check the calendar for you.\\n\\nWarm regards,\\n${owner}` },\n  extension: { label: 'Extension offer', subject: `Your stay at ${home}: need a few more weeks?`,\n    message: `Hi ${first},\\n\\nYour stay at ${home} ends on ${fmt(m.check_out)}. If your assignment is extended or you need a little more time, just reply and we'll check the calendar for you. We're flexible, and it's easiest to arrange early.\\n\\nBest,\\n${owner}` },\n};\nconst dr = DRAFTS[f.kind];\nconst reviewUrl = $execution.resumeFormUrl;\nconst ownerHtml = `<div style=\"font-family:Arial,sans-serif;font-size:15px;color:#2b211b;max-width:640px\">\n  <h2 style=\"margin:0 0 8px;color:#3b2a20\">Follow-up ready: ${esc(dr.label)} for ${esc(first)}</h2>\n  <p style=\"margin:0 0 10px\">${esc(m.email)} &middot; ${esc(home)}${dates ? ` &middot; ${esc(dates)}` : ''}</p>\n  <div style=\"background:#f6f1e7;border-radius:8px;padding:12px 14px;margin:14px 0\"><b>${esc(dr.subject)}</b><br><br>${esc(dr.message).replace(/\\n/g, '<br>')}</div>\n  <p><a href=\"${reviewUrl}\" style=\"display:inline-block;background:#3b2a20;color:#fffdf8;padding:10px 18px;border-radius:999px;text-decoration:none;font-weight:bold\">Review, edit &amp; send</a></p>\n  <p style=\"font-size:12px;color:#6d6158\">Nothing is sent to ${esc(first)} until you submit the form. The link expires in 5 days.</p></div>`;\nreturn [{ json: { kind: f.kind, label: dr.label, subject: dr.subject, message: dr.message, meta: m,\n  owner_email: { sender: { name: 'NTStays follow-ups', email: $env.FROM_EMAIL }, to: [{ email: $env.OWNER_EMAIL, name: $env.OWNER_NAME || 'NTStays' }],\n    replyTo: { email: m.email, name: first }, subject: `[NTStays] Follow-up ready: ${dr.label} for ${first}`, htmlContent: ownerHtml,\n    tags: ['ntstays-followup-review'] } } }];"
+      },
+      "name": "Build follow-up draft",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        220,
+        700
+      ],
+      "id": "539e8b1a-40bf-5291-9c85-b878f701b698"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.BREVO_BASE_URL }}/v3/smtp/email",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "api-key",
+              "value": "={{ $env.BREVO_API_KEY }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.owner_email) }}",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "name": "Email owner the follow-up",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        440,
+        700
+      ],
+      "id": "dd300785-c06a-5433-a5dd-70bbf215eb46",
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: $('Build follow-up draft').first().json }];"
+      },
+      "name": "Load follow-up",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        660,
+        700
+      ],
+      "id": "5f96d3de-1fac-5204-ab76-651ced719928"
+    },
+    {
+      "parameters": {
+        "resume": "form",
+        "formTitle": "={{ $json.label }} for {{ $json.meta.first_name }}",
+        "formDescription": "=To {{ $json.meta.email }}. Edit the message if you like, then choose Send.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Decision",
+              "fieldType": "dropdown",
+              "requiredField": true,
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Send this follow-up"
+                  },
+                  {
+                    "option": "Don't send"
+                  }
+                ]
+              }
+            },
+            {
+              "fieldLabel": "Subject",
+              "fieldType": "text",
+              "defaultValue": "={{ $json.subject }}"
+            },
+            {
+              "fieldLabel": "Message",
+              "fieldType": "textarea",
+              "defaultValue": "={{ $json.message }}"
+            }
+          ]
+        },
+        "limitWaitTime": true,
+        "limitType": "afterTimeInterval",
+        "resumeAmount": 5,
+        "resumeUnit": "days",
+        "options": {
+          "respondWithOptions": {
+            "values": {
+              "formSubmittedText": "Done. Your decision was saved."
+            }
+          }
+        }
+      },
+      "name": "Owner follow-up form",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        880,
+        700
+      ],
+      "id": "afe6f6ea-e077-5194-96ca-3d82f32e1502",
+      "webhookId": "6b10532b-795a-5a80-8d3c-be75d380fb44"
+    },
+    {
+      "parameters": {
+        "jsCode": "// The owner's choice. Anything but an explicit \"Send\" means nothing goes out.\nconst f = $input.first().json;\nconst d = $('Build follow-up draft').first().json;\nconst send = (f['Decision'] || '').toString().startsWith('Send');\nconst subject = (f['Subject'] || '').toString().trim() || d.subject;\nconst message = (f['Message'] || '').toString().trim() || d.message;\nconst owner = $env.OWNER_NAME || 'NTStays';\nconst esc = x => x.replace(/&/g, '&amp;').replace(/</g, '&lt;');\nconst html = message.split(/\\n{2,}/).map(p => `<p>${esc(p).replace(/\\n/g, '<br>').replace(/(https:\\/\\/[^\\s<]+)/g, '<a href=\"$1\">$1</a>')}</p>`).join('');\nreturn [{ json: { ...d, send, has_contact: Boolean(d.meta.contact_id),\n  guest_email: { sender: { name: `${owner} at NTStays`, email: $env.FROM_EMAIL }, to: [{ email: d.meta.email, name: d.meta.first_name || '' }],\n    replyTo: { email: $env.REPLY_TO_EMAIL || $env.FROM_EMAIL, name: `${owner} at NTStays` }, subject, textContent: message,\n    htmlContent: `<div style=\"font-family:Arial,sans-serif;font-size:15px;color:#2b211b;max-width:600px\">${html}</div>`,\n    tags: ['ntstays-followup', `ntstays-followup-${d.kind}`] },\n  note: { properties: { hs_timestamp: new Date().toISOString(), hs_note_body: `<p><b>Follow-up sent:</b> ${esc(d.label)} (${esc(subject)})</p>` },\n    associations: [{ to: { id: d.meta.contact_id }, types: [{ associationCategory: 'HUBSPOT_DEFINED', associationTypeId: 202 }] }] } } }];"
+      },
+      "name": "Read follow-up decision",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1100,
+        700
+      ],
+      "id": "d4db1213-b085-58af-a263-a4abdaf039e1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "b6f3230d-8f37-5daa-b8f2-12ddae59f3eb",
+              "leftValue": "={{ $json.send }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "name": "Send follow-up?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1320,
+        700
+      ],
+      "id": "a077b004-d410-56d8-ac83-68a9c2a44e78"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.BREVO_BASE_URL }}/v3/smtp/email",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "api-key",
+              "value": "={{ $env.BREVO_API_KEY }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($('Read follow-up decision').first().json.guest_email) }}",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "name": "Email guest the follow-up",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1540,
+        620
+      ],
+      "id": "e4b8e2f1-9a2a-5b53-ae27-0b5735350760",
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "a748b8ed-5324-5dc5-88a0-95bfe09da4d1",
+              "leftValue": "={{ $('Read follow-up decision').first().json.has_contact }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "name": "Contact in HubSpot?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1760,
+        620
+      ],
+      "id": "b8dca2d7-03e9-5e33-844e-fbb5c82e472a"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.HUBSPOT_BASE_URL }}/crm/v3/objects/notes",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.HUBSPOT_TOKEN }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($('Read follow-up decision').first().json.note) }}",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "name": "HubSpot: log follow-up",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1980,
+        540
+      ],
+      "id": "0b34980e-d787-59c4-8fbb-31d78f50c3f8",
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000
+    }
+  ],
+  "connections": {
+    "Every morning": {
+      "main": [
+        [
+          {
+            "node": "Start check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run follow-ups now": {
+      "main": [
+        [
+          {
+            "node": "Start check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start check": {
+      "main": [
+        [
+          {
+            "node": "Stripe on?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Stripe on?": {
+      "main": [
+        [
+          {
+            "node": "Stripe: open payment links",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Stripe: open payment links": {
+      "main": [
+        [
+          {
+            "node": "Stripe: paid stays",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Stripe: paid stays": {
+      "main": [
+        [
+          {
+            "node": "Find due follow-ups",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find due follow-ups": {
+      "main": [
+        [
+          {
+            "node": "Start follow-up review",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start follow-up review": {
+      "main": [
+        [
+          {
+            "node": "Payment reminder?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Payment reminder?": {
+      "main": [
+        [
+          {
+            "node": "Stripe: mark reminder queued",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Follow-up to review": {
+      "main": [
+        [
+          {
+            "node": "Build follow-up draft",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build follow-up draft": {
+      "main": [
+        [
+          {
+            "node": "Email owner the follow-up",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email owner the follow-up": {
+      "main": [
+        [
+          {
+            "node": "Load follow-up",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load follow-up": {
+      "main": [
+        [
+          {
+            "node": "Owner follow-up form",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Owner follow-up form": {
+      "main": [
+        [
+          {
+            "node": "Read follow-up decision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read follow-up decision": {
+      "main": [
+        [
+          {
+            "node": "Send follow-up?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send follow-up?": {
+      "main": [
+        [
+          {
+            "node": "Email guest the follow-up",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email guest the follow-up": {
+      "main": [
+        [
+          {
+            "node": "Contact in HubSpot?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Contact in HubSpot?": {
+      "main": [
+        [
+          {
+            "node": "HubSpot: log follow-up",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "id": "ntstaysFollowups01",
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "America/New_York",
+    "errorWorkflow": "ntstaysErrorAlert01",
+    "saveDataSuccessExecution": "all"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "tags": []
+}

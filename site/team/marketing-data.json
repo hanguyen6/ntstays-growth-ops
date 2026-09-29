@@ -1,0 +1,543 @@
+{
+ "generated": "2026-09-29",
+ "months": [
+  "2025-10",
+  "2025-11",
+  "2025-12",
+  "2026-01",
+  "2026-02",
+  "2026-03",
+  "2026-04",
+  "2026-05",
+  "2026-06",
+  "2026-07",
+  "2026-08",
+  "2026-09"
+ ],
+ "lead_types": {
+  "travel_nurse": "Travel nurses",
+  "insurance": "Insurance housing",
+  "professional": "Professionals",
+  "family": "Families",
+  "owner": "Property owners",
+  "guest": "Other guests",
+  "other": "Other"
+ },
+ "airbnb_perf": [],
+ "pipeline": {
+  "has_data": false,
+  "rows": []
+ },
+ "money": [
+  {
+   "month": "2025-10",
+   "channel": "Airbnb",
+   "property": "home-1",
+   "value": 1257.76,
+   "fees": 37.73
+  },
+  {
+   "month": "2025-10",
+   "channel": "Airbnb",
+   "property": "home-2",
+   "value": 2379.32,
+   "fees": 71.38
+  },
+  {
+   "month": "2025-10",
+   "channel": "Airbnb",
+   "property": "home-3",
+   "value": 1237.91,
+   "fees": 37.13
+  },
+  {
+   "month": "2025-10",
+   "channel": "Booking.com",
+   "property": "home-1",
+   "value": 1221.07,
+   "fees": 183.16
+  },
+  {
+   "month": "2025-11",
+   "channel": "Airbnb",
+   "property": "home-1",
+   "value": 700.13,
+   "fees": 21.0
+  },
+  {
+   "month": "2025-11",
+   "channel": "Airbnb",
+   "property": "home-2",
+   "value": 498.1,
+   "fees": 14.94
+  },
+  {
+   "month": "2025-11",
+   "channel": "Airbnb",
+   "property": "home-3",
+   "value": 2597.19,
+   "fees": 77.92
+  },
+  {
+   "month": "2025-12",
+   "channel": "Airbnb",
+   "property": "home-1",
+   "value": 1895.36,
+   "fees": 56.86
+  },
+  {
+   "month": "2025-12",
+   "channel": "Airbnb",
+   "property": "home-2",
+   "value": 998.87,
+   "fees": 29.96
+  },
+  {
+   "month": "2025-12",
+   "channel": "Airbnb",
+   "property": "home-3",
+   "value": 3515.92,
+   "fees": 105.47
+  },
+  {
+   "month": "2026-01",
+   "channel": "Airbnb",
+   "property": "home-1",
+   "value": 1620.25,
+   "fees": 48.61
+  },
+  {
+   "month": "2026-01",
+   "channel": "Airbnb",
+   "property": "home-2",
+   "value": 992.76,
+   "fees": 29.79
+  },
+  {
+   "month": "2026-01",
+   "channel": "Airbnb",
+   "property": "home-3",
+   "value": 2581.44,
+   "fees": 77.44
+  },
+  {
+   "month": "2026-02",
+   "channel": "Airbnb",
+   "property": "home-1",
+   "value": 504.34,
+   "fees": 15.13
+  },
+  {
+   "month": "2026-02",
+   "channel": "Airbnb",
+   "property": "home-3",
+   "value": 1867.53,
+   "fees": 56.02
+  },
+  {
+   "month": "2026-03",
+   "channel": "Airbnb",
+   "property": "home-1",
+   "value": 456.37,
+   "fees": 13.69
+  },
+  {
+   "month": "2026-03",
+   "channel": "Airbnb",
+   "property": "home-2",
+   "value": 1255.04,
+   "fees": 37.65
+  },
+  {
+   "month": "2026-03",
+   "channel": "Airbnb",
+   "property": "home-3",
+   "value": 661.06,
+   "fees": 19.83
+  },
+  {
+   "month": "2026-04",
+   "channel": "Airbnb",
+   "property": "home-1",
+   "value": 706.15,
+   "fees": 21.18
+  },
+  {
+   "month": "2026-04",
+   "channel": "Airbnb",
+   "property": "home-2",
+   "value": 859.18,
+   "fees": 25.77
+  },
+  {
+   "month": "2026-04",
+   "channel": "Airbnb",
+   "property": "home-3",
+   "value": 3616.89,
+   "fees": 108.51
+  },
+  {
+   "month": "2026-05",
+   "channel": "Airbnb",
+   "property": "home-2",
+   "value": 1611.62,
+   "fees": 48.34
+  },
+  {
+   "month": "2026-05",
+   "channel": "Airbnb",
+   "property": "home-3",
+   "value": 2828.58,
+   "fees": 84.86
+  },
+  {
+   "month": "2026-06",
+   "channel": "Airbnb",
+   "property": "home-1",
+   "value": 463.91,
+   "fees": 13.92
+  },
+  {
+   "month": "2026-06",
+   "channel": "Airbnb",
+   "property": "home-2",
+   "value": 557.14,
+   "fees": 16.71
+  },
+  {
+   "month": "2026-06",
+   "channel": "Airbnb",
+   "property": "home-3",
+   "value": 1823.76,
+   "fees": 54.71
+  },
+  {
+   "month": "2026-06",
+   "channel": "Direct",
+   "property": "home-1",
+   "value": 820.0,
+   "fees": 0.0
+  },
+  {
+   "month": "2026-07",
+   "channel": "Airbnb",
+   "property": "home-1",
+   "value": 1685.47,
+   "fees": 50.56
+  },
+  {
+   "month": "2026-07",
+   "channel": "Airbnb",
+   "property": "home-2",
+   "value": 1341.34,
+   "fees": 40.25
+  },
+  {
+   "month": "2026-07",
+   "channel": "Airbnb",
+   "property": "home-3",
+   "value": 3476.65,
+   "fees": 104.3
+  },
+  {
+   "month": "2026-08",
+   "channel": "Airbnb",
+   "property": "home-1",
+   "value": 1466.09,
+   "fees": 43.98
+  },
+  {
+   "month": "2026-08",
+   "channel": "Airbnb",
+   "property": "home-2",
+   "value": 1112.51,
+   "fees": 33.38
+  },
+  {
+   "month": "2026-08",
+   "channel": "Airbnb",
+   "property": "home-3",
+   "value": 2811.79,
+   "fees": 84.36
+  },
+  {
+   "month": "2026-09",
+   "channel": "Airbnb",
+   "property": "home-1",
+   "value": 2427.45,
+   "fees": 72.82
+  },
+  {
+   "month": "2026-09",
+   "channel": "Airbnb",
+   "property": "home-2",
+   "value": 1751.85,
+   "fees": 52.56
+  },
+  {
+   "month": "2026-09",
+   "channel": "Airbnb",
+   "property": "home-3",
+   "value": 3169.81,
+   "fees": 95.1
+  }
+ ],
+ "channels": {
+  "has_direct": true,
+  "rows": [
+   {
+    "month": "2025-10",
+    "channel": "Airbnb",
+    "property": "home-1",
+    "nights": 5,
+    "stays": 2
+   },
+   {
+    "month": "2025-10",
+    "channel": "Airbnb",
+    "property": "home-2",
+    "nights": 14,
+    "stays": 3
+   },
+   {
+    "month": "2025-10",
+    "channel": "Airbnb",
+    "property": "home-3",
+    "nights": 4,
+    "stays": 2
+   },
+   {
+    "month": "2025-10",
+    "channel": "Booking.com",
+    "property": "home-1",
+    "nights": 5,
+    "stays": 2
+   },
+   {
+    "month": "2025-11",
+    "channel": "Airbnb",
+    "property": "home-1",
+    "nights": 3,
+    "stays": 1
+   },
+   {
+    "month": "2025-11",
+    "channel": "Airbnb",
+    "property": "home-2",
+    "nights": 3,
+    "stays": 1
+   },
+   {
+    "month": "2025-11",
+    "channel": "Airbnb",
+    "property": "home-3",
+    "nights": 9,
+    "stays": 3
+   },
+   {
+    "month": "2025-12",
+    "channel": "Airbnb",
+    "property": "home-1",
+    "nights": 8,
+    "stays": 3
+   },
+   {
+    "month": "2025-12",
+    "channel": "Airbnb",
+    "property": "home-2",
+    "nights": 6,
+    "stays": 2
+   },
+   {
+    "month": "2025-12",
+    "channel": "Airbnb",
+    "property": "home-3",
+    "nights": 13,
+    "stays": 3
+   },
+   {
+    "month": "2026-01",
+    "channel": "Airbnb",
+    "property": "home-1",
+    "nights": 7,
+    "stays": 3
+   },
+   {
+    "month": "2026-01",
+    "channel": "Airbnb",
+    "property": "home-2",
+    "nights": 5,
+    "stays": 2
+   },
+   {
+    "month": "2026-01",
+    "channel": "Airbnb",
+    "property": "home-3",
+    "nights": 8,
+    "stays": 3
+   },
+   {
+    "month": "2026-02",
+    "channel": "Airbnb",
+    "property": "home-1",
+    "nights": 2,
+    "stays": 1
+   },
+   {
+    "month": "2026-02",
+    "channel": "Airbnb",
+    "property": "home-3",
+    "nights": 6,
+    "stays": 2
+   },
+   {
+    "month": "2026-03",
+    "channel": "Airbnb",
+    "property": "home-1",
+    "nights": 2,
+    "stays": 1
+   },
+   {
+    "month": "2026-03",
+    "channel": "Airbnb",
+    "property": "home-2",
+    "nights": 7,
+    "stays": 1
+   },
+   {
+    "month": "2026-03",
+    "channel": "Airbnb",
+    "property": "home-3",
+    "nights": 2,
+    "stays": 1
+   },
+   {
+    "month": "2026-04",
+    "channel": "Airbnb",
+    "property": "home-1",
+    "nights": 3,
+    "stays": 1
+   },
+   {
+    "month": "2026-04",
+    "channel": "Airbnb",
+    "property": "home-2",
+    "nights": 5,
+    "stays": 2
+   },
+   {
+    "month": "2026-04",
+    "channel": "Airbnb",
+    "property": "home-3",
+    "nights": 12,
+    "stays": 2
+   },
+   {
+    "month": "2026-05",
+    "channel": "Airbnb",
+    "property": "home-2",
+    "nights": 10,
+    "stays": 2
+   },
+   {
+    "month": "2026-05",
+    "channel": "Airbnb",
+    "property": "home-3",
+    "nights": 10,
+    "stays": 3
+   },
+   {
+    "month": "2026-06",
+    "channel": "Airbnb",
+    "property": "home-1",
+    "nights": 2,
+    "stays": 1
+   },
+   {
+    "month": "2026-06",
+    "channel": "Airbnb",
+    "property": "home-2",
+    "nights": 3,
+    "stays": 1
+   },
+   {
+    "month": "2026-06",
+    "channel": "Airbnb",
+    "property": "home-3",
+    "nights": 6,
+    "stays": 2
+   },
+   {
+    "month": "2026-06",
+    "channel": "Direct",
+    "property": "home-1",
+    "nights": 4,
+    "stays": 1
+   },
+   {
+    "month": "2026-07",
+    "channel": "Airbnb",
+    "property": "home-1",
+    "nights": 8,
+    "stays": 2
+   },
+   {
+    "month": "2026-07",
+    "channel": "Airbnb",
+    "property": "home-2",
+    "nights": 8,
+    "stays": 2
+   },
+   {
+    "month": "2026-07",
+    "channel": "Airbnb",
+    "property": "home-3",
+    "nights": 12,
+    "stays": 2
+   },
+   {
+    "month": "2026-08",
+    "channel": "Airbnb",
+    "property": "home-1",
+    "nights": 7,
+    "stays": 1
+   },
+   {
+    "month": "2026-08",
+    "channel": "Airbnb",
+    "property": "home-2",
+    "nights": 7,
+    "stays": 1
+   },
+   {
+    "month": "2026-08",
+    "channel": "Airbnb",
+    "property": "home-3",
+    "nights": 10,
+    "stays": 3
+   },
+   {
+    "month": "2026-09",
+    "channel": "Airbnb",
+    "property": "home-1",
+    "nights": 11,
+    "stays": 3
+   },
+   {
+    "month": "2026-09",
+    "channel": "Airbnb",
+    "property": "home-2",
+    "nights": 10,
+    "stays": 4
+   },
+   {
+    "month": "2026-09",
+    "channel": "Airbnb",
+    "property": "home-3",
+    "nights": 11,
+    "stays": 3
+   }
+  ]
+ },
+ "costs": {}
+}

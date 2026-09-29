@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>NTStays: temporary housing partner for insurers and housing providers</title>
+<!-- One-page portfolio for insurance companies, adjusters and housing providers. Sent by email with approved replies
+     to insurance-housing inquiries. {{TOKENS}} and the map data are filled in by: python tools/build_brochure.py -->
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Karla:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  @page { size: 8.5in 11in; margin: 0; }
+  :root { --coffee: #3b2a20; --coffee-2: #5a4232; --brass: #b08a3e; --brass-soft: #e9dcc0; --sage: #7d8f76;
+          --sage-soft: #e3e9df; --oat: #f6f1e7; --paper: #fffdf8; --ink: #2b211b; --muted: #6d6158; --line: #e4dbcc; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; } html { overflow: hidden; }
+  body { width: 8.5in; height: 10.96in; background: var(--paper); color: var(--ink); font: 10.2pt/1.4 Karla, system-ui, sans-serif;
+         -webkit-print-color-adjust: exact; print-color-adjust: exact; overflow: hidden; display: flex; flex-direction: column; }
+  h1, h2, h3 { font-family: Fraunces, Georgia, serif; color: var(--coffee); margin: 0; line-height: 1.12; }
+  .pad { padding-left: .5in; padding-right: .5in; }
+  header { background: var(--coffee); color: var(--oat); display: flex; justify-content: space-between; align-items: center; padding-top: .2in; padding-bottom: .2in; }
+  .logo { font: 650 22pt Fraunces, Georgia, serif; color: var(--paper); }
+  .logo span { color: var(--brass); }
+  header .tag { font-size: 9.4pt; color: #e7dccd; margin-top: 2px; }
+  header .contact { text-align: right; font-size: 9.4pt; color: #e7dccd; line-height: 1.5; }
+  header .contact b { color: var(--paper); }
+  .hero { padding-top: .18in; }
+  .eyebrow { text-transform: uppercase; letter-spacing: .12em; font-size: 7.6pt; font-weight: 700; color: var(--brass); margin: 0 0 4px; }
+  h1 { font-size: 22pt; }
+  .lede { color: var(--muted); margin: 5px 0 0; font-size: 10.4pt; max-width: 7in; }
+  .homes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: .13in; }
+  .home { border: 1px solid var(--line); border-radius: 9px; overflow: hidden; background: var(--paper); }
+  .home img { width: 100%; height: 1.2in; object-fit: cover; display: block; }
+  .home div { padding: 6px 9px 8px; }
+  .home h3 { font-size: 10.6pt; }
+  .home p { margin: 1px 0 0; font-size: 8.4pt; color: var(--muted); }
+  .home .facts { color: var(--coffee-2); font-weight: 700; }
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: .12in; }
+  .stat { background: var(--oat); border: 1px solid var(--line); border-radius: 9px; padding: 7px 10px; }
+  .stat b { display: block; font: 650 16pt Fraunces, Georgia, serif; color: var(--coffee); line-height: 1.1; }
+  .stat span { color: var(--muted); font-size: 8.4pt; }
+  .cols { display: grid; grid-template-columns: 1fr 1.15fr; gap: .2in; margin-top: .14in; }
+  h2 { font-size: 12.5pt; margin-bottom: 6px; }
+  ul.checks { list-style: none; margin: 0; padding: 0; display: grid; gap: 5px; }
+  ul.checks li { padding-left: 18px; position: relative; font-size: 9.6pt; }
+  ul.checks li::before { content: ""; position: absolute; left: 0; top: 3px; width: 11px; height: 11px; border-radius: 50%; background: var(--sage); }
+  ul.checks li b { color: var(--coffee); }
+  .mapbox { background: var(--sage-soft); border-radius: 11px; padding: 9px 12px 7px; }
+  .mapbox .sub { color: var(--muted); font-size: 8.4pt; margin: -3px 0 2px; }
+  #map svg { width: 100%; height: auto; display: block; }
+  #map .land { fill: #f1ebdf; stroke: #fffdf8; stroke-width: .8; }
+  #map .land.v { fill: #d9e2d3; }
+  #map .route { fill: none; stroke: var(--brass); stroke-width: 1.3; stroke-opacity: .6; }
+  #map .pin { fill: var(--brass); stroke: #fffdf8; stroke-width: 1.5; }
+  #map .ours { fill: var(--coffee); stroke: #fffdf8; stroke-width: 1.5; }
+  .legend { display: flex; gap: 12px; font-size: 7.8pt; color: var(--muted); margin-top: 3px; }
+  .legend i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--brass); margin-right: 4px; }
+  .legend i.o { background: var(--coffee); }
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: .14in; }
+  .step { border-left: 3px solid var(--brass); padding: 1px 0 1px 9px; }
+  .step h3 { font-size: 10.2pt; }
+  .step p { margin: 1px 0 0; font-size: 8.8pt; color: var(--muted); }
+  .quotes { display: grid; grid-template-columns: 1fr 1fr; gap: .2in; margin-top: .13in; }
+  blockquote { margin: 0; font: 500 9.8pt/1.38 Fraunces, Georgia, serif; color: var(--coffee-2); }
+  blockquote cite { display: block; font: 400 8.2pt Karla, sans-serif; color: var(--muted); margin-top: 2px; font-style: normal; }
+  .stars { color: var(--brass); letter-spacing: 1px; font-size: 8.6pt; }
+  .cta { margin-top: auto; background: var(--brass-soft); display: flex; justify-content: space-between; align-items: center; gap: .3in; padding-top: .15in; padding-bottom: .15in; }
+  .cta h2 { font-size: 13.5pt; margin: 0 0 2px; }
+  .cta p { margin: 0; font-size: 9.4pt; color: var(--coffee-2); }
+  .cta .how { text-align: right; font-size: 9.6pt; line-height: 1.55; white-space: nowrap; }
+  .cta .how b { color: var(--coffee); }
+  footer { background: var(--coffee); color: #cbbba6; font-size: 7.4pt; padding-top: 7px; padding-bottom: 7px; display: flex; justify-content: space-between; gap: 16px; white-space: nowrap; }
+</style>
+</head>
+<body>
+  <header class="pad">
+    <div>
+      <div class="logo">NT<span>Stays</span></div>
+      <div class="tag">Temporary housing partner for insurers and housing providers</div>
+    </div>
+    <div class="contact"><b>ntstays.com/insurance-housing</b><br>hello@ntstays.com</div>
+  </header>
+
+  <section class="hero pad">
+    <p class="eyebrow">For insurance companies, adjusters and housing providers</p>
+    <h1>Furnished whole homes for displaced families</h1>
+    <p class="lede">When a family can't live at home after a fire, flood or storm, we give them a real home nearby: furnished,
+      sized for families, and billed directly to you. We own and run every home ourselves.</p>
+    <div class="homes">
+      <div class="home"><img src="../site/img/home-3/01-front-800.jpg" alt=""><div>
+        <h3>Abington, MA</h3><p class="facts">4 bedrooms · 2 baths · sleeps 6&ndash;8</p>
+        <p>South Shore: near Braintree, Weymouth, Brockton</p></div></div>
+      <div class="home"><img src="../site/img/home-2/01-living-room-800.jpg" alt=""><div>
+        <h3>Cranston, RI</h3><p class="facts">4 bedrooms · 2.5 baths · sleeps 6&ndash;8</p>
+        <p>Next to Providence and Warwick</p></div></div>
+      <div class="home"><img src="../site/img/home-1/01-living-room-800.jpg" alt=""><div>
+        <h3>Framingham, MA</h3><p class="facts">3 bedrooms · 2 baths · sleeps 6</p>
+        <p>MetroWest, minutes from Framingham Center</p></div></div>
+    </div>
+    <div class="stats">
+      <div class="stat"><b>{{RATING}} &#9733;</b><span>from {{REVIEWS}} verified guest reviews</span></div>
+      <div class="stat"><b>{{STAYS}}</b><span>stays hosted since 2021</span></div>
+      <div class="stat"><b>11 bedrooms</b><span>across 3 whole homes, up to 8 people each</span></div>
+      <div class="stat"><b>1 day</b><span>to reply with availability, on business days</span></div>
+    </div>
+  </section>
+
+  <section class="cols pad">
+    <div>
+      <h2>Why partners work with us</h2>
+      <ul class="checks">
+        <li><b>Direct billing.</b> We invoice the insurer or housing company; the family doesn't pay and wait.</li>
+        <li><b>Premium locations.</b> Whole family-sized homes in established neighborhoods, not hotel rooms.</li>
+        <li><b>Move-in ready.</b> Fully furnished, so families arrive with what they could bring.</li>
+        <li><b>Flexible terms</b> that follow the repair timeline, from a few weeks to many months.</li>
+        <li><b>Attentive, owner-run service.</b> One point of contact; issues fixed by the people who own the home.</li>
+        <li><b>Proven hosts.</b> Guests have stayed with us from {{STATES}} states and {{COUNTRIES}} countries.</li>
+      </ul>
+    </div>
+    <div class="mapbox">
+      <h2>Guests travel to us from across the US</h2>
+      <p class="sub">Each line is a guest's trip from home to one of our houses</p>
+      <div id="map"></div>
+      <div class="legend"><span><i></i>Guest's home city</span><span><i class="o"></i>Our homes</span></div>
+    </div>
+  </section>
+
+  <section class="pad">
+    <div class="steps">
+      <div class="step"><h3>1. Send the placement</h3><p>Family size, move-in date and expected repair timeline.</p></div>
+      <div class="step"><h3>2. We confirm a home</h3><p>Availability within one business day, to you and the family.</p></div>
+      <div class="step"><h3>3. Family moves in</h3><p>Written confirmation, check-in details, and monthly invoices to you.</p></div>
+    </div>
+    <div class="quotes">
+      <blockquote><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span><br>&ldquo;Nicely updated home with plenty of space to
+        spread out. Great kitchen and flow of home in a safe, walkable neighborhood.&rdquo;<cite>Robert B., family stay, Cranston (Vrbo)</cite></blockquote>
+      <blockquote><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span><br>&ldquo;I booked very last minute and kind of in a pinch.
+        Thankfully [our host] responded to my reservation quickly.&rdquo;<cite>Rebecca, guest from Attleboro, MA (Airbnb)</cite></blockquote>
+    </div>
+  </section>
+
+  <section class="cta pad">
+    <div>
+      <h2>Add us to your supplier list</h2>
+      <p>Send us your next placement for the South Shore, MetroWest or Providence area.</p>
+    </div>
+    <div class="how"><b>hello@ntstays.com</b><br>ntstays.com/insurance-housing</div>
+  </section>
+  <footer class="pad">
+    <span>NTStays LLC, registered in Massachusetts</span>
+    <span>Ratings and stays from our own homes' booking and review records, 2021&ndash;2026.</span>
+  </footer>
+
+<script>const STATS = /*__STATS__*/null;</script>
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+<script>
+// Static version of the website's route map (no animation, for printing).
+(async () => {
+  const HOMES = { 'home-1': [42.28, -71.42], 'home-2': [41.78, -71.44], 'home-3': [42.10, -70.95] };
+  const us = await fetch('https://cdn.jsdelivr.net/npm/us-atlas@3.0.1/states-10m.json').then(r => r.json());
+  const states = topojson.feature(us, us.objects.states);
+  const proj = d3.geoAlbersUsa().fitSize([960, 560], states);
+  const svg = d3.select('#map').append('svg').attr('viewBox', '0 0 960 560');
+  const visited = new Set(STATS.origin_states || []);
+  svg.append('g').selectAll('path').data(states.features).join('path')
+    .attr('class', d => 'land' + (visited.has(d.properties.name) ? ' v' : '')).attr('d', d3.geoPath(proj));
+  const places = (STATS.origin_places || []).filter(p => /, [A-Z]{2}$/.test(p.name));
+  const homes = Object.values(HOMES);
+  const near = p => homes.reduce((a, h) => Math.hypot(h[0] - p.lat, h[1] - p.lon) < Math.hypot(a[0] - p.lat, a[1] - p.lon) ? h : a);
+  const arcs = places.flatMap(p => (p.to?.length ? p.to.map(id => HOMES[id]).filter(Boolean) : [near(p)]).map(h => {
+    const a = proj([p.lon, p.lat]), b = proj([h[1], h[0]]);
+    if (!a || !b) return null;
+    const dx = b[0] - a[0], dy = b[1] - a[1], dist = Math.hypot(dx, dy);
+    if (dist < 4) return null;
+    const bend = Math.min(dist * .28, 140), nx = -dy / dist, ny = dx / dist, up = ny > 0 ? -1 : 1;
+    return `M${a[0]},${a[1]} Q${(a[0] + b[0]) / 2 + nx * bend * up},${(a[1] + b[1]) / 2 + ny * bend * up} ${b[0]},${b[1]}`;
+  })).filter(Boolean);
+  svg.append('g').selectAll('path').data(arcs).join('path').attr('class', 'route').attr('d', d => d);
+  svg.append('g').selectAll('circle').data(places).join('circle').attr('class', 'pin').attr('r', 7)
+    .attr('cx', p => proj([p.lon, p.lat])?.[0]).attr('cy', p => proj([p.lon, p.lat])?.[1]);
+  svg.append('g').selectAll('circle').data(homes).join('circle').attr('class', 'ours').attr('r', 9)
+    .attr('cx', h => proj([h[1], h[0]])[0]).attr('cy', h => proj([h[1], h[0]])[1]);
+})();
+</script>
+</body>
+</html>

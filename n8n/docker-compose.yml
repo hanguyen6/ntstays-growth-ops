@@ -1,0 +1,54 @@
+# NTStays automation server: n8n behind Caddy (automatic HTTPS).
+#   Production:  docker compose up -d
+#   Local test:  docker compose -f docker-compose.yml -f docker-compose.local.yml --profile mock up -d
+services:
+  n8n:
+    image: n8nio/n8n:2.40.5          # the version this workflow was tested on
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      - N8N_HOST=${N8N_DOMAIN}
+      - N8N_PROTOCOL=https
+      - N8N_PORT=5678
+      - WEBHOOK_URL=https://${N8N_DOMAIN}/
+      - N8N_PROXY_HOPS=1
+      - N8N_BLOCK_ENV_ACCESS_IN_NODE=false   # the workflow reads its settings from .env
+      - N8N_DIAGNOSTICS_ENABLED=false
+      - GENERIC_TIMEZONE=America/New_York
+      - TZ=America/New_York
+      - EXECUTIONS_DATA_PRUNE=true
+      - EXECUTIONS_DATA_MAX_AGE=720          # keep 30 days of run history
+    volumes:
+      - n8n_data:/home/node/.n8n
+      - ./workflow:/workflows:ro
+    expose:
+      - "5678"
+
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - N8N_DOMAIN=${N8N_DOMAIN}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - n8n
+
+  mock:
+    profiles: ["mock"]
+    image: python:3.12-slim
+    command: python /mock/mock_server.py
+    volumes:
+      - ./mock:/mock:ro
+    ports:
+      - "8765:8765"
+
+volumes:
+  n8n_data:
+  caddy_data:
+  caddy_config:

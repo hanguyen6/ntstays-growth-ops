@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>NTStays team</title>
+<!-- Team home (ntstays.com/team): sign-in only. Shows the pages this person may open (worker/index.js decides). -->
+<style>
+  :root { color-scheme: light; --page: #f6f1e7; --surface: #fcfcfb; --line: #e4dbcc; --text: #2b211b; --muted: #736b64; --accent: #b08a3e; }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) { color-scheme: dark; --page: #141312; --surface: #1a1a19; --line: #34322f; --text: #f3efe8; --muted: #9a978d; --accent: #d9b56a; }
+  }
+  :root[data-theme="dark"] { color-scheme: dark; --page: #141312; --surface: #1a1a19; --line: #34322f; --text: #f3efe8; --muted: #9a978d; --accent: #d9b56a; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--page); color: var(--text); font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 40px 16px 64px; }
+  h1 { font: 650 1.7rem Georgia, serif; margin: 0; }
+  .sub { color: var(--muted); margin: 6px 0 0; }
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin-top: 22px; }
+  a.card { display: block; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px;
+    color: inherit; text-decoration: none; }
+  a.card:hover, a.card:focus { border-color: var(--accent); outline: none; }
+  a.card b { display: block; font: 650 1.15rem Georgia, serif; }
+  a.card span { color: var(--muted); font-size: .9rem; }
+  .empty { color: var(--muted); font-style: italic; margin-top: 22px; }
+  .foot { margin-top: 28px; font-size: .85rem; color: var(--muted); }
+  .foot a { color: inherit; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>NTStays team</h1>
+  <p class="sub" id="who">Loading…</p>
+  <div class="cards" id="cards"></div>
+  <p class="foot"><a href="/">Back to ntstays.com</a></p>
+</div>
+<script>
+const PAGES = [
+  { role: 'dashboard', href: '/team/marketing', title: 'Marketing dashboard', text: 'Airbnb, Vrbo and Furnished Finder pipelines, bookings by channel, channel value.' },
+  { role: 'log', href: '/team/log', title: 'Log numbers', text: 'Bookings, Furnished Finder and Vrbo numbers, Airbnb conversion rates.' },
+];
+const el = (tag, attrs = {}, text) => { const e = document.createElement(tag); for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v); if (text != null) e.textContent = text; return e; };
+fetch('/team/api/me', { cache: 'no-store' }).then(r => r.ok ? r.json() : Promise.reject(r.status)).then(me => {
+  document.getElementById('who').textContent = `Signed in as ${me.email}.`;
+  const cards = document.getElementById('cards');
+  const mine = PAGES.filter(p => me.roles[p.role]);
+  for (const p of mine) { const a = el('a', { class: 'card', href: p.href }); a.append(el('b', {}, p.title), el('span', {}, p.text)); cards.append(a); }
+  if (!mine.length) cards.replaceWith(el('p', { class: 'empty' }, 'Your account has no team pages yet. Ask the owner to add you.'));
+}).catch(() => { document.getElementById('who').textContent = 'Couldn\'t check your access. Please reload the page.'; });
+</script>
+</body>
+</html>

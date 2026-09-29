@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NTStays campaign links</title>
+<!-- Campaign link builder: makes tagged links (and QR codes for print) so every lead shows where it came from.
+     Open this file in a browser; it is not part of the public website. How tracking works: SETUP.md, "Campaign tracking". -->
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,650&family=Karla:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root { --coffee: #3b2a20; --brass: #b08a3e; --oat: #f6f1e7; --paper: #fffdf8; --ink: #2b211b; --muted: #6d6158; --line: #e4dbcc; --sage-soft: #e3e9df; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--oat); color: var(--ink); font: 16px/1.5 Karla, system-ui, sans-serif; }
+  main { max-width: 860px; margin: 0 auto; padding: 32px 16px 64px; }
+  h1, h2 { font-family: Fraunces, Georgia, serif; color: var(--coffee); margin: 0 0 8px; }
+  h2 { font-size: 1.2rem; margin-top: 28px; }
+  p { margin: 0 0 12px; }
+  .muted { color: var(--muted); }
+  .panel { background: var(--paper); border: 1px solid var(--line); border-radius: 14px; padding: 20px; margin-top: 16px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  label { display: block; font-weight: 700; font-size: .92rem; }
+  label small { font-weight: 400; color: var(--muted); }
+  input, select { width: 100%; margin-top: 4px; padding: 9px 10px; border: 1px solid var(--line); border-radius: 9px; font: inherit; background: #fff; }
+  .out { display: flex; gap: 8px; margin-top: 18px; }
+  .out input { font-family: ui-monospace, Consolas, monospace; font-size: .85rem; background: var(--sage-soft); }
+  button { border: 0; border-radius: 9px; background: var(--coffee); color: var(--paper); padding: 0 16px; font: 700 .92rem Karla, sans-serif; cursor: pointer; }
+  button.light { background: var(--paper); color: var(--coffee); border: 1px solid var(--line); padding: 8px 14px; }
+  .qr { display: flex; gap: 18px; align-items: center; margin-top: 16px; }
+  #qr { background: #fff; padding: 10px; border-radius: 10px; border: 1px solid var(--line); min-width: 180px; min-height: 180px; }
+  table { border-collapse: collapse; width: 100%; font-size: .92rem; }
+  td, th { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  code { background: var(--sage-soft); padding: 1px 5px; border-radius: 5px; }
+  .warn { color: #a3412f; font-size: .88rem; min-height: 1.2em; margin-top: 6px; }
+  @media (max-width: 640px) { .grid { grid-template-columns: 1fr; } .qr { flex-direction: column; align-items: flex-start; } }
+</style>
+</head>
+<body>
+<main>
+  <h1>Campaign links</h1>
+  <p class="muted">Use a tagged link wherever you share the website: a post, an email, an ad, a flyer. When someone sends a request
+    after clicking it, their contact in HubSpot shows the source and campaign, and the owner email says where they came from.</p>
+
+  <div class="panel">
+    <div class="grid">
+      <label>Page
+        <select id="page">
+          <option value="/travel-nurses">Travel nurses</option>
+          <option value="/insurance-housing">Insurance housing</option>
+          <option value="/">Home page</option>
+          <option value="/#services">Owners (property services)</option>
+          <option value="/review">Feedback form</option>
+        </select></label>
+      <label>Where you'll share it (source)
+        <input id="source" list="sources" placeholder="facebook">
+        <datalist id="sources">
+          <option value="facebook"><option value="instagram"><option value="google"><option value="linkedin"><option value="nextdoor">
+          <option value="email"><option value="flyer"><option value="hospital-board"><option value="furnished-finder">
+          <option value="craigslist"><option value="partner"><option value="business-card">
+        </datalist></label>
+      <label>Kind of channel (medium)
+        <select id="medium">
+          <option value="social">social (posts, groups)</option>
+          <option value="email">email</option>
+          <option value="print">print (flyers, cards, signs)</option>
+          <option value="ads">ads (paid)</option>
+          <option value="listing">listing (another site lists us)</option>
+          <option value="partner">partner (a company sends people)</option>
+        </select></label>
+      <label>Campaign <small>(who and when, e.g. nurses-2026-10)</small>
+        <input id="campaign" placeholder="nurses-2026-10"></label>
+      <label>Version <small>(optional: which post, flyer or ad)</small>
+        <input id="content" placeholder="group-post-1"></label>
+    </div>
+    <div class="warn" id="warn"></div>
+    <div class="out"><input id="link" readonly aria-label="Your campaign link"><button id="copy">Copy</button></div>
+    <div class="qr">
+      <div id="qr"></div>
+      <div>
+        <p><b>For print:</b> put this QR code on the flyer or card. Scans count like clicks.</p>
+        <button class="light" id="download">Download QR code (PNG)</button>
+      </div>
+    </div>
+  </div>
+
+  <h2>Naming rules</h2>
+  <table>
+    <tr><th>Rule</th><th>Why</th></tr>
+    <tr><td>Lowercase, words joined with <code>-</code> (the builder does this)</td><td><code>Facebook</code> and <code>facebook</code> would count as two sources.</td></tr>
+    <tr><td>Source = the place: <code>facebook</code>, <code>hospital-board</code>, <code>furnished-finder</code></td><td>Answers "where did they see us?"</td></tr>
+    <tr><td>Campaign = audience + month: <code>nurses-2026-10</code>, <code>adjusters-2026-q4</code>, <code>owners-mailer-2026-11</code></td><td>Compare efforts over time.</td></tr>
+    <tr><td>Version only when you're testing two versions: <code>blue-flyer</code> vs <code>photo-flyer</code></td><td>See which one works better.</td></tr>
+    <tr><td>Keep a short list of your campaigns (name, dates, what it was, what it cost)</td><td>So the numbers make sense months later.</td></tr>
+  </table>
+
+  <h2>What isn't tracked</h2>
+  <p class="muted">Someone who clicks a link, leaves, and types ntstays.com days later shows up as "direct": the site only
+    remembers the link for that visit, with no cookies. Word of mouth, calls and repeat guests don't come through links at all;
+    the "How did you hear about us?" question on the request forms covers those.</p>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+const SITE = 'https://ntstays.com';
+const $ = id => document.getElementById(id);
+const tidy = v => v.trim().toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9._-]/g, '');
+let qr = null;
+
+function build() {
+  const page = $('page').value, [path, hash] = page.split('#');
+  const q = new URLSearchParams();
+  const src = tidy($('source').value), camp = tidy($('campaign').value), content = tidy($('content').value);
+  if (src) q.set('utm_source', src);
+  q.set('utm_medium', $('medium').value);
+  if (camp) q.set('utm_campaign', camp);
+  if (content) q.set('utm_content', content);
+  const link = SITE + path + '?' + q.toString() + (hash ? '#' + hash : '');
+  $('link').value = link;
+  $('warn').textContent = !src || !camp ? 'Add a source and a campaign name.' : '';
+  if (window.QRCode) {
+    $('qr').innerHTML = '';
+    qr = new QRCode($('qr'), { text: link, width: 180, height: 180, correctLevel: QRCode.CorrectLevel.M });
+  }
+}
+['page', 'source', 'medium', 'campaign', 'content'].forEach(id => $(id).addEventListener('input', build));
+$('copy').addEventListener('click', async () => {
+  try { await navigator.clipboard.writeText($('link').value); } catch (_) { $('link').select(); document.execCommand('copy'); }
+  $('copy').textContent = 'Copied'; setTimeout(() => { $('copy').textContent = 'Copy'; }, 1500);
+});
+$('download').addEventListener('click', () => {
+  const img = $('qr').querySelector('canvas') || $('qr').querySelector('img');
+  if (!img) return;
+  const a = document.createElement('a');
+  a.href = img.tagName === 'CANVAS' ? img.toDataURL('image/png') : img.src;
+  a.download = `ntstays-qr-${tidy($('source').value) || 'link'}-${tidy($('campaign').value) || 'campaign'}.png`;
+  a.click();
+});
+build();
+</script>
+</body>
+</html>

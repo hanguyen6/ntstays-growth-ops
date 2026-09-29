@@ -1,0 +1,96 @@
+{
+  "name": "NTStays: error alerts",
+  "nodes": [
+    {
+      "parameters": {},
+      "name": "When the inquiry workflow fails",
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        300
+      ],
+      "id": "049e34c2-7ceb-579b-9108-8f4161c5dd19"
+    },
+    {
+      "parameters": {
+        "jsCode": "const e = $input.first().json;\nconst ex = e.execution || {};\nconst wf = e.workflow || {};\nconst esc = s => (s ?? '').toString().replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');\nconst step = ex.lastNodeExecuted || (ex.error && ex.error.node && ex.error.node.name) || 'unknown step';\nconst msg = (ex.error && (ex.error.description || ex.error.message)) || 'No error message';\nconst HINTS = [\n  [/^Build welcome/i, 'A setting is missing from .env (the error names it). Add it on the server, then run: docker compose up -d --force-recreate n8n'],\n  [/Claude/i, 'Check ANTHROPIC_API_KEY, CLAUDE_MODEL and your Claude credit balance/spend limit.'],\n  [/HubSpot/i, 'Check HUBSPOT_TOKEN and that the private app still has contacts read/write scopes.'],\n  [/Email|Brevo/i, 'Check BREVO_API_KEY, the verified sender, Authorized IPs and your Brevo daily limit.'],\n  [/Stripe/i, 'Check STRIPE_SECRET_KEY in .env (test vs live key) and that the restricted key has the permissions listed in SETUP.md.'],\n];\nconst hint = (HINTS.find(([re]) => re.test(step)) || [null, 'Open the execution to see which step failed and why.'])[1];\nconst html = `<div style=\"font-family:Arial,sans-serif;font-size:15px;color:#2b211b;max-width:620px\">\n  <h2 style=\"margin:0 0 8px;color:#a3412f\">NTStays automation failed</h2>\n  <p>A run of <b>${esc(wf.name)}</b> stopped at <b>${esc(step)}</b>.</p>\n  <p style=\"background:#f5e1dc;border-radius:8px;padding:10px 12px\"><b>Error:</b> ${esc(msg)}</p>\n  <p><b>Likely fix:</b> ${esc(hint)}</p>\n  ${ex.url ? `<p><a href=\"${esc(ex.url)}\" style=\"display:inline-block;background:#3b2a20;color:#fffdf8;padding:10px 18px;border-radius:999px;text-decoration:none;font-weight:bold\">Open the failed run</a></p>` : ''}\n  <p style=\"font-size:12px;color:#6d6158\">If this was a website inquiry, the visitor already saw \"Thanks\" and is waiting for a reply.\n  Their details are in the failed run (first step). After fixing the cause, reply to them manually or ask them to resend.</p>\n</div>`;\nreturn [{ json: { alert_email: {\n  sender: { name: 'NTStays automation', email: $env.FROM_EMAIL },\n  to: [{ email: $env.OWNER_EMAIL, name: $env.OWNER_NAME || 'NTStays' }],\n  subject: `[NTStays] Automation failed at \"${step}\"`,\n  htmlContent: html,\n  tags: ['ntstays-error-alert'],\n} } }];"
+      },
+      "name": "Build alert email",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        300
+      ],
+      "id": "7efd7306-ba33-531d-8197-a41f1da293a2"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.BREVO_BASE_URL }}/v3/smtp/email",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "api-key",
+              "value": "={{ $env.BREVO_API_KEY }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.alert_email) }}",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "name": "Email owner the alert",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        480,
+        300
+      ],
+      "id": "9fb9adb9-039b-58aa-ae6e-f6c51a431904",
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000
+    }
+  ],
+  "connections": {
+    "When the inquiry workflow fails": {
+      "main": [
+        [
+          {
+            "node": "Build alert email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build alert email": {
+      "main": [
+        [
+          {
+            "node": "Email owner the alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "id": "ntstaysErrorAlert01",
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "America/New_York"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "tags": []
+}

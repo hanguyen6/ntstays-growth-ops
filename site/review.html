@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Share your feedback | NTStays</title>
+<!-- Private link for past guests and partners; not linked from the site or listed in the sitemap. -->
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Karla:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/landing.css">
+<style>
+  .feedback { max-width: 760px; margin: 0 auto; padding: 48px 20px 64px; }
+  .feedback h1 { margin-bottom: .2em; }
+  fieldset { border: 0; padding: 0; margin: 0 0 16px; }
+  legend { font-weight: 700; font-size: .9rem; color: var(--coffee-2); margin-bottom: 6px; padding: 0; }
+  .choices { display: grid; gap: 8px; }
+  .choice { display: flex; gap: 10px; align-items: flex-start; font-weight: 400; color: var(--ink); margin: 0; background: #fff;
+    border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; cursor: pointer; }
+  .choice input { width: auto; margin: 4px 0 0; }
+  .choice:has(input:checked) { border-color: var(--brass); background: #fffaf0; }
+  .stars { display: flex; flex-direction: row-reverse; justify-content: flex-end; gap: 4px; }
+  .stars input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  .stars label { font-size: 2.2rem; line-height: 1; color: #d9cfbd; cursor: pointer; margin: 0; }
+  .stars input:checked ~ label, .stars label:hover, .stars label:hover ~ label { color: var(--brass); }
+  .stars input:focus-visible + label { outline: 2px solid var(--brass); outline-offset: 2px; border-radius: 4px; }
+  .partner-only { display: none; }
+  form[data-role="partner"] .partner-only { display: block; }
+  .thanks { display: none; text-align: center; padding: 30px 10px; }
+  .thanks.show { display: block; }
+</style>
+<script src="assets/source.js"></script>
+</head>
+<body>
+<header class="top">
+  <div class="wrap nav">
+    <a class="logo" href="/">NT<span>Stays</span></a>
+    <ul><li><a class="btn btn-primary btn-small" href="/">Visit our site</a></li></ul>
+  </div>
+</header>
+
+<main class="feedback">
+  <p class="eyebrow">Your feedback</p>
+  <h1>How was your experience with us?</h1>
+  <p class="lede">Thank you for staying with us or working with us. Your feedback helps us look after our homes and
+    guests, and helps other families, travelers and partners find us. It takes about two minutes.</p>
+
+  <form class="panel" id="review-form" data-turnstile novalidate style="margin-top:24px">
+    <fieldset>
+      <legend>I'm writing as</legend>
+      <div class="choices">
+        <label class="choice"><input type="radio" name="role" value="guest" checked> A guest (short stay)</label>
+        <label class="choice"><input type="radio" name="role" value="monthly_guest"> A monthly guest (travel nurse, professional or family)</label>
+        <label class="choice"><input type="radio" name="role" value="insurance_family"> A family placed by an insurance company or housing provider</label>
+        <label class="choice"><input type="radio" name="role" value="partner"> An insurance company, adjuster or housing provider</label>
+      </div>
+    </fieldset>
+
+    <div class="row">
+      <label>First name<input name="first_name" required autocomplete="given-name"></label>
+      <label>Last name <span class="opt">(optional)</span><input name="last_name" autocomplete="family-name"></label>
+    </div>
+    <label>Email <span class="opt">(never published; we'll send a thank-you)</span><input type="email" name="email" required autocomplete="email"></label>
+    <label class="partner-only">Company<input name="company" autocomplete="organization"></label>
+
+    <div class="row">
+      <label>Which home?
+        <select name="property_id">
+          <option value="home-1">Framingham, MA</option>
+          <option value="home-2">Cranston, RI</option>
+          <option value="home-3">Abington, MA</option>
+          <option value="several">More than one home</option>
+        </select>
+      </label>
+      <label>When? <span class="opt">(month of your stay)</span><input type="month" name="stay_month"></label>
+    </div>
+
+    <fieldset>
+      <legend>Your rating</legend>
+      <div class="stars" role="radiogroup" aria-label="Rating out of 5 stars">
+        <input type="radio" id="r5" name="rating" value="5"><label for="r5" title="5 stars: excellent">&#9733;</label>
+        <input type="radio" id="r4" name="rating" value="4"><label for="r4" title="4 stars: very good">&#9733;</label>
+        <input type="radio" id="r3" name="rating" value="3"><label for="r3" title="3 stars: good">&#9733;</label>
+        <input type="radio" id="r2" name="rating" value="2"><label for="r2" title="2 stars: fair">&#9733;</label>
+        <input type="radio" id="r1" name="rating" value="1"><label for="r1" title="1 star: poor">&#9733;</label>
+      </div>
+    </fieldset>
+
+    <label>Your review<textarea name="review" rows="5" required placeholder="What did you like? How was the home, the location, and working with us?"></textarea></label>
+    <label>Anything we could do better? <span class="opt">(optional, private: never published)</span><textarea name="private_note" rows="3"></textarea></label>
+    <label>Where do you live? <span class="opt">(optional, e.g. Tampa, FL: it adds your city to our guest map)</span><input name="home_city" autocomplete="address-level2"></label>
+
+    <fieldset>
+      <legend>May we share your review?</legend>
+      <div class="choices">
+        <label class="choice"><input type="radio" name="publish_as" value="initial" checked> Yes, with my first name and last initial</label>
+        <label class="choice partner-only"><input type="radio" name="publish_as" value="company"> Yes, with my company name</label>
+        <label class="choice"><input type="radio" name="publish_as" value="anonymous"> Yes, but without my name</label>
+        <label class="choice"><input type="radio" name="publish_as" value="private"> No, this is private feedback for NTStays</label>
+      </div>
+    </fieldset>
+
+    <div class="hp" aria-hidden="true"><label>Leave this empty<input name="website" tabindex="-1" autocomplete="off"></label></div>
+    <button class="btn btn-primary" type="submit">Send feedback</button>
+    <div class="status" id="review-status" role="status" aria-live="polite"></div>
+    <p class="fine">We use your details to thank you and, only if you agree above, to share your review on our website
+      and in our materials. See our <a href="privacy.html">privacy notice</a>.</p>
+  </form>
+
+  <div class="thanks" id="thanks">
+    <h2>Thank you!</h2>
+    <p class="lede" style="margin:0 auto">We read every message ourselves. Your feedback means a lot to us.</p>
+    <p style="margin-top:20px"><a class="btn btn-ghost" href="/">Back to NTStays</a></p>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>&copy; <span id="year"></span> NTStays LLC, registered in Massachusetts</span>
+    <span><a href="/">Home</a> &middot; <a href="mailto:hello@ntstays.com">hello@ntstays.com</a> &middot; <a href="privacy.html">Privacy</a></span>
+  </div>
+</footer>
+
+<script>
+const WEBHOOK_URL = 'https://n8n.ntstays.com/webhook/ntstays-inquiry';
+const form = document.getElementById('review-form'), st = document.getElementById('review-status');
+document.getElementById('year').textContent = new Date().getFullYear();
+// Partners see the company fields; "company name" is only offered to them.
+const syncRole = () => {
+  const partner = form.role.value === 'partner';
+  form.dataset.role = partner ? 'partner' : '';
+  if (!partner && form.publish_as.value === 'company') form.querySelector('[name="publish_as"][value="initial"]').checked = true;
+};
+form.addEventListener('change', e => { if (e.target.name === 'role') syncRole(); });
+syncRole();
+
+form.addEventListener('submit', async e => {
+  e.preventDefault();
+  const d = Object.fromEntries(new FormData(form));
+  delete d['cf-turnstile-response'];
+  d.turnstile = window.ntTurnstile ? window.ntTurnstile.token(form) : '';
+  const show = (kind, msg) => { st.className = 'status ' + kind; st.textContent = msg; };
+  if (!d.first_name?.trim() || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(d.email || '')) return show('err', 'Please add your first name and a valid email.');
+  if (!d.rating) return show('err', 'Please choose a star rating.');
+  if ((d.review || '').trim().length < 10) return show('err', 'Please write a few words in your review.');
+  const btn = form.querySelector('button[type="submit"]');
+  btn.disabled = true; btn.textContent = 'Sending...';
+  try {
+    const res = await fetch(WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ form_type: 'review', ...d, page: location.href, submitted_at: new Date().toISOString() }) });
+    let body = {};
+    try { body = await res.json(); } catch (_) {}
+    if (!res.ok) throw Object.assign(new Error('failed'), { body });
+    form.style.display = 'none';
+    document.getElementById('thanks').classList.add('show');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  } catch (err) {
+    const why = err.body?.errors?.join(', ');
+    show('err', why ? `Please check: ${why}.` : 'Sorry, something went wrong. Please email us at hello@ntstays.com.');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Send feedback';
+    if (window.ntTurnstile) window.ntTurnstile.reset(form);
+  }
+});
+</script>
+<script src="assets/turnstile.js"></script>
+</body>
+</html>

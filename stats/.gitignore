@@ -1,0 +1,4 @@
+# Raw platform exports contain guest names; the dashboard contains revenue. Keep both off GitHub.
+exports/
+out/
+__pycache__/

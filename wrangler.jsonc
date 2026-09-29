@@ -1,0 +1,24 @@
+{
+  // Cloudflare Workers config: serves the static website in ./site
+  // "name" must match the Worker's name in the Cloudflare dashboard.
+  "name": "ntstays",
+  "compatibility_date": "2026-09-01",
+  // The Worker only runs for /team/* (sign-in pages); everything else is served straight from ./site.
+  "main": "worker/index.js",
+  "assets": {
+    "directory": "./site",
+    "binding": "ASSETS",
+    "not_found_handling": "404-page",
+    "run_worker_first": ["/team", "/team/*"]
+  },
+  // Cloudflare Access for /team/* (SETUP.md, "Marketing dashboard (sign-in)"). Not secrets: the team domain
+  // (e.g. "") and the application's Audience (AUD) tag. Empty = /team/* refused.
+  // N8N_TEAM_URL: the n8n "team data" workflow. TEAM_API_KEY is a Worker *secret* (Cloudflare dashboard -> Worker ->
+  // Settings -> Variables and secrets), the same value as TEAM_API_KEY in the server's .env.
+  "vars": {
+    "ACCESS_TEAM_DOMAIN": "",
+    "ACCESS_AUD": "",
+    "N8N_TEAM_URL": "https://n8n.ntstays.com/webhook/ntstays-team"
+  },
+  "workers_dev": true
+}

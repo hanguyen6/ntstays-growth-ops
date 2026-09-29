@@ -1,0 +1,894 @@
+{
+  "name": "NTStays: monthly channel report (AI summary, checked and approved)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 8 1 * *"
+            }
+          ]
+        }
+      },
+      "name": "On the 1st of the month",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        200
+      ],
+      "id": "5a401185-4d43-54f2-8749-303741f01599"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ntstays-report-run",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "name": "Run report now",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        380
+      ],
+      "id": "efe4d5fd-abee-5035-9978-b3c42e2a5fec",
+      "webhookId": "02ac2ebc-f1f2-5bc0-815b-7c3a7c9b69cf"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Which month to report on: last month (New York time), or {\"month\": \"YYYY-MM\"} on a manual run.\n// Manual runs need the internal key, like the follow-ups run.\nconst j = $input.first().json;\nconst manual = Boolean(j.headers);\nif (manual) {\n  const key = $env.FOLLOWUP_KEY || $env.UNSUBSCRIBE_SECRET;\n  if (!key || j.headers['x-ntstays-key'] !== key) return [];\n}\nconst ny = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/New_York' }));\nconst last = new Date(ny.getFullYear(), ny.getMonth() - 1, 1);\nconst asked = manual && /^\\d{4}-(0[1-9]|1[0-2])$/.test((j.body || {}).month || '') ? j.body.month : '';\nconst month = asked || `${last.getFullYear()}-${String(last.getMonth() + 1).padStart(2, '0')}`;\nconst [y, m] = month.split('-').map(Number);\nconst p = new Date(y, m - 2, 1);\nconst prev = `${p.getFullYear()}-${String(p.getMonth() + 1).padStart(2, '0')}`;\nreturn [{ json: { month, prev, manual } }];"
+      },
+      "name": "Start report",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        220,
+        300
+      ],
+      "id": "ecc92e33-008a-58e8-9057-5226ff03b65e"
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ ($env.INTERNAL_BASE_URL || 'http://localhost:5678') + '/webhook/ntstays-team' }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-ntstays-key",
+              "value": "={{ $env.TEAM_API_KEY }}"
+            },
+            {
+              "name": "x-ntstays-user",
+              "value": "monthly-report@ntstays.com"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "name": "Get logged numbers",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        440,
+        300
+      ],
+      "id": "05b1e7b4-d73f-5b88-a161-f70ff402952b",
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000
+    },
+    {
+      "parameters": {
+        "jsCode": "// Last month's numbers, computed here in code; the AI never calculates. Export-based numbers are built in from\n// site/team/marketing-data.json when the stats are refreshed; logged numbers come from the team data workflow.\n// Percentages only for money (revenue share, fee %), never amounts.\nconst EXPORT = {\"months\": [\"2025-10\", \"2025-11\", \"2025-12\", \"2026-01\", \"2026-02\", \"2026-03\", \"2026-04\", \"2026-05\", \"2026-06\", \"2026-07\", \"2026-08\", \"2026-09\"], \"generated\": \"2026-09-29\", \"channels\": {\"has_direct\": true, \"rows\": [{\"month\": \"2025-10\", \"channel\": \"Airbnb\", \"property\": \"home-1\", \"nights\": 5, \"stays\": 2}, {\"month\": \"2025-10\", \"channel\": \"Airbnb\", \"property\": \"home-2\", \"nights\": 14, \"stays\": 3}, {\"month\": \"2025-10\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"nights\": 4, \"stays\": 2}, {\"month\": \"2025-10\", \"channel\": \"Booking.com\", \"property\": \"home-1\", \"nights\": 5, \"stays\": 2}, {\"month\": \"2025-11\", \"channel\": \"Airbnb\", \"property\": \"home-1\", \"nights\": 3, \"stays\": 1}, {\"month\": \"2025-11\", \"channel\": \"Airbnb\", \"property\": \"home-2\", \"nights\": 3, \"stays\": 1}, {\"month\": \"2025-11\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"nights\": 9, \"stays\": 3}, {\"month\": \"2025-12\", \"channel\": \"Airbnb\", \"property\": \"home-1\", \"nights\": 8, \"stays\": 3}, {\"month\": \"2025-12\", \"channel\": \"Airbnb\", \"property\": \"home-2\", \"nights\": 6, \"stays\": 2}, {\"month\": \"2025-12\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"nights\": 13, \"stays\": 3}, {\"month\": \"2026-01\", \"channel\": \"Airbnb\", \"property\": \"home-1\", \"nights\": 7, \"stays\": 3}, {\"month\": \"2026-01\", \"channel\": \"Airbnb\", \"property\": \"home-2\", \"nights\": 5, \"stays\": 2}, {\"month\": \"2026-01\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"nights\": 8, \"stays\": 3}, {\"month\": \"2026-02\", \"channel\": \"Airbnb\", \"property\": \"home-1\", \"nights\": 2, \"stays\": 1}, {\"month\": \"2026-02\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"nights\": 6, \"stays\": 2}, {\"month\": \"2026-03\", \"channel\": \"Airbnb\", \"property\": \"home-1\", \"nights\": 2, \"stays\": 1}, {\"month\": \"2026-03\", \"channel\": \"Airbnb\", \"property\": \"home-2\", \"nights\": 7, \"stays\": 1}, {\"month\": \"2026-03\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"nights\": 2, \"stays\": 1}, {\"month\": \"2026-04\", \"channel\": \"Airbnb\", \"property\": \"home-1\", \"nights\": 3, \"stays\": 1}, {\"month\": \"2026-04\", \"channel\": \"Airbnb\", \"property\": \"home-2\", \"nights\": 5, \"stays\": 2}, {\"month\": \"2026-04\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"nights\": 12, \"stays\": 2}, {\"month\": \"2026-05\", \"channel\": \"Airbnb\", \"property\": \"home-2\", \"nights\": 10, \"stays\": 2}, {\"month\": \"2026-05\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"nights\": 10, \"stays\": 3}, {\"month\": \"2026-06\", \"channel\": \"Airbnb\", \"property\": \"home-1\", \"nights\": 2, \"stays\": 1}, {\"month\": \"2026-06\", \"channel\": \"Airbnb\", \"property\": \"home-2\", \"nights\": 3, \"stays\": 1}, {\"month\": \"2026-06\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"nights\": 6, \"stays\": 2}, {\"month\": \"2026-06\", \"channel\": \"Direct\", \"property\": \"home-1\", \"nights\": 4, \"stays\": 1}, {\"month\": \"2026-07\", \"channel\": \"Airbnb\", \"property\": \"home-1\", \"nights\": 8, \"stays\": 2}, {\"month\": \"2026-07\", \"channel\": \"Airbnb\", \"property\": \"home-2\", \"nights\": 8, \"stays\": 2}, {\"month\": \"2026-07\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"nights\": 12, \"stays\": 2}, {\"month\": \"2026-08\", \"channel\": \"Airbnb\", \"property\": \"home-1\", \"nights\": 7, \"stays\": 1}, {\"month\": \"2026-08\", \"channel\": \"Airbnb\", \"property\": \"home-2\", \"nights\": 7, \"stays\": 1}, {\"month\": \"2026-08\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"nights\": 10, \"stays\": 3}, {\"month\": \"2026-09\", \"channel\": \"Airbnb\", \"property\": \"home-1\", \"nights\": 11, \"stays\": 3}, {\"month\": \"2026-09\", \"channel\": \"Airbnb\", \"property\": \"home-2\", \"nights\": 10, \"stays\": 4}, {\"month\": \"2026-09\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"nights\": 11, \"stays\": 3}]}, \"money\": [{\"month\": \"2025-10\", \"channel\": \"Airbnb\", \"property\": \"home-1\", \"value\": 1257.76, \"fees\": 37.73}, {\"month\": \"2025-10\", \"channel\": \"Airbnb\", \"property\": \"home-2\", \"value\": 2379.32, \"fees\": 71.38}, {\"month\": \"2025-10\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"value\": 1237.91, \"fees\": 37.13}, {\"month\": \"2025-10\", \"channel\": \"Booking.com\", \"property\": \"home-1\", \"value\": 1221.07, \"fees\": 183.16}, {\"month\": \"2025-11\", \"channel\": \"Airbnb\", \"property\": \"home-1\", \"value\": 700.13, \"fees\": 21.0}, {\"month\": \"2025-11\", \"channel\": \"Airbnb\", \"property\": \"home-2\", \"value\": 498.1, \"fees\": 14.94}, {\"month\": \"2025-11\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"value\": 2597.19, \"fees\": 77.92}, {\"month\": \"2025-12\", \"channel\": \"Airbnb\", \"property\": \"home-1\", \"value\": 1895.36, \"fees\": 56.86}, {\"month\": \"2025-12\", \"channel\": \"Airbnb\", \"property\": \"home-2\", \"value\": 998.87, \"fees\": 29.96}, {\"month\": \"2025-12\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"value\": 3515.92, \"fees\": 105.47}, {\"month\": \"2026-01\", \"channel\": \"Airbnb\", \"property\": \"home-1\", \"value\": 1620.25, \"fees\": 48.61}, {\"month\": \"2026-01\", \"channel\": \"Airbnb\", \"property\": \"home-2\", \"value\": 992.76, \"fees\": 29.79}, {\"month\": \"2026-01\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"value\": 2581.44, \"fees\": 77.44}, {\"month\": \"2026-02\", \"channel\": \"Airbnb\", \"property\": \"home-1\", \"value\": 504.34, \"fees\": 15.13}, {\"month\": \"2026-02\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"value\": 1867.53, \"fees\": 56.02}, {\"month\": \"2026-03\", \"channel\": \"Airbnb\", \"property\": \"home-1\", \"value\": 456.37, \"fees\": 13.69}, {\"month\": \"2026-03\", \"channel\": \"Airbnb\", \"property\": \"home-2\", \"value\": 1255.04, \"fees\": 37.65}, {\"month\": \"2026-03\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"value\": 661.06, \"fees\": 19.83}, {\"month\": \"2026-04\", \"channel\": \"Airbnb\", \"property\": \"home-1\", \"value\": 706.15, \"fees\": 21.18}, {\"month\": \"2026-04\", \"channel\": \"Airbnb\", \"property\": \"home-2\", \"value\": 859.18, \"fees\": 25.77}, {\"month\": \"2026-04\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"value\": 3616.89, \"fees\": 108.51}, {\"month\": \"2026-05\", \"channel\": \"Airbnb\", \"property\": \"home-2\", \"value\": 1611.62, \"fees\": 48.34}, {\"month\": \"2026-05\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"value\": 2828.58, \"fees\": 84.86}, {\"month\": \"2026-06\", \"channel\": \"Airbnb\", \"property\": \"home-1\", \"value\": 463.91, \"fees\": 13.92}, {\"month\": \"2026-06\", \"channel\": \"Airbnb\", \"property\": \"home-2\", \"value\": 557.14, \"fees\": 16.71}, {\"month\": \"2026-06\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"value\": 1823.76, \"fees\": 54.71}, {\"month\": \"2026-06\", \"channel\": \"Direct\", \"property\": \"home-1\", \"value\": 820.0, \"fees\": 0.0}, {\"month\": \"2026-07\", \"channel\": \"Airbnb\", \"property\": \"home-1\", \"value\": 1685.47, \"fees\": 50.56}, {\"month\": \"2026-07\", \"channel\": \"Airbnb\", \"property\": \"home-2\", \"value\": 1341.34, \"fees\": 40.25}, {\"month\": \"2026-07\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"value\": 3476.65, \"fees\": 104.3}, {\"month\": \"2026-08\", \"channel\": \"Airbnb\", \"property\": \"home-1\", \"value\": 1466.09, \"fees\": 43.98}, {\"month\": \"2026-08\", \"channel\": \"Airbnb\", \"property\": \"home-2\", \"value\": 1112.51, \"fees\": 33.38}, {\"month\": \"2026-08\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"value\": 2811.79, \"fees\": 84.36}, {\"month\": \"2026-09\", \"channel\": \"Airbnb\", \"property\": \"home-1\", \"value\": 2427.45, \"fees\": 72.82}, {\"month\": \"2026-09\", \"channel\": \"Airbnb\", \"property\": \"home-2\", \"value\": 1751.85, \"fees\": 52.56}, {\"month\": \"2026-09\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"value\": 3169.81, \"fees\": 95.1}], \"airbnb_perf\": [], \"costs\": {}};\nconst LIVE = $input.first().json;\nconst { month, prev } = $('Start report').first().json;\nconst HOMES = { 'home-1': 'Framingham', 'home-2': 'Cranston', 'home-3': 'Abington' };\nconst sum = (a, k) => a.reduce((t, r) => t + (Number(r[k]) || 0), 0);\nconst pct = (a, b) => b ? `${(a / b * 100).toFixed(1)}%` : null;\nconst rate = v => v == null ? null : `${+v}%`;\nconst monthName = mm => new Date(mm + '-15T12:00:00Z').toLocaleString('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' });\nconst lastDay = mm => { const [y, m] = mm.split('-').map(Number); return new Date(Date.UTC(y, m, 0)).toISOString().slice(0, 10); };\nconst nightsIn = (a, b, mm) => { let n = 0; for (let d = Date.parse(a + 'T12:00Z'), e = Date.parse(b + 'T12:00Z'); d < e; d += 864e5)\n  if (new Date(d).toISOString().slice(0, 7) === mm) n++; return n; };\nconst missing = [];\n\n// Exports freshness\nif (!(EXPORT.months || []).includes(month) || (EXPORT.generated || '') < lastDay(month))\n  missing.push(`Airbnb, Vrbo and Booking.com exports were last refreshed ${EXPORT.generated || 'never'}, so their ${monthName(month)} stays may be incomplete`);\n\n// Airbnb: the month's booking conversion rates (all listings), bookings made from the monthly reports\nconst abRow = mm => (LIVE.airbnb || []).find(r => r.month === mm && (r.property_id || 'all') === 'all') || null;\nconst abM = abRow(month), abP = abRow(prev);\nconst abBooked = mm => sum((EXPORT.airbnb_perf || []).filter(r => r.month === mm), 'bookings');\nconst airbnb = abM ? {\n  overall_conversion: rate(abM.overall_conversion), similar_listings: rate(abM.similar_overall),\n  first_page_rate: rate(abM.first_page_rate), search_to_listing: rate(abM.search_to_listing),\n  listing_to_booking: rate(abM.listing_to_booking), bookings_made: abBooked(month),\n  previous_month: abP ? { overall_conversion: rate(abP.overall_conversion), listing_to_booking: rate(abP.listing_to_booking) } : null,\n} : null;\nif (!abM) missing.push(`Airbnb conversion rates for ${monthName(month)} aren't logged`);\n\n// Vrbo: last-30-day counts per property, one entry per home a month\nconst vr = mm => (LIVE.vrbo || []).filter(r => r.month === mm);\nconst vM = vr(month), vP = vr(prev);\nfor (const pid of [...new Set((LIVE.vrbo || []).map(r => r.property_id))])\n  if (!vM.some(r => r.property_id === pid)) missing.push(`Vrbo numbers for ${HOMES[pid] || pid} for ${monthName(month)} aren't logged`);\nconst vrbo = vM.length ? {\n  properties: vM.map(r => HOMES[r.property_id] || r.property_id).join(', '),\n  search_impressions: sum(vM, 'impressions'), property_views: sum(vM, 'views'), bookings: sum(vM, 'bookings'),\n  viewed: pct(sum(vM, 'views'), sum(vM, 'impressions')), booked: pct(sum(vM, 'bookings'), sum(vM, 'views')),\n  previous_month: vP.length ? { property_views: sum(vP, 'views'), bookings: sum(vP, 'bookings') } : null,\n} : null;\n\n// Furnished Finder: panel entries per listing; totals since joining become the month's new counts by difference\nconst byListing = {};\nfor (const s of LIVE.furnished_finder || []) if (s.property_id) (byListing[s.property_id] = byListing[s.property_id] || []).push(s);\nconst ffRows = [];\nfor (const [pid, list] of Object.entries(byListing)) {\n  list.sort((a, b) => a.as_of.localeCompare(b.as_of));\n  const inM = list.filter(s => s.as_of.slice(0, 7) === month).pop();\n  if (!inM) { missing.push(`Furnished Finder numbers for ${HOMES[pid] || pid} weren't logged in ${monthName(month)}`); continue; }\n  const before = list.filter(s => s.as_of < inM.as_of).pop();\n  const diff = k => before && inM[k] != null && before[k] != null && inM[k] >= before[k] ? inM[k] - before[k] : null;\n  ffRows.push({ impressions: inM.impressions, views: inM.listing_views, inq: diff('booking_inquiries'),\n    msg: diff('direct_messages'), rev: diff('phone_reveals'), first: !before });\n}\nconst add = k => ffRows.some(x => x[k] != null) ? ffRows.reduce((t, x) => t + (x[k] || 0), 0) : null;\nconst ffLeases = (LIVE.bookings || []).filter(b => b.channel === 'furnished_finder' && (b.signed || b.move_in || '').slice(0, 7) === month).length;\nconst furnished_finder = ffRows.length ? {\n  listings_logged: ffRows.length, impressions_last_90_days: add('impressions'), listing_views_last_90_days: add('views'),\n  new_booking_inquiries: add('inq'), new_direct_messages: add('msg'), new_phone_reveals: add('rev'), leases_signed: ffLeases,\n  inquiry_to_lease: add('inq') ? pct(ffLeases, add('inq')) : null,\n  note: ffRows.every(x => x.first) ? 'first month logged: new inquiry counts start with next month\\'s entry' : null,\n} : (ffLeases ? { leases_signed: ffLeases } : null);\n\n// Bookings by channel: stays by check-in (move-in) month and nights in the month\nconst ch = {};\nconst addCh = (c, k, n) => { if (!n) return; ch[c] = ch[c] || { stays: 0, nights: 0 }; ch[c][k] += n; };\nfor (const r of (EXPORT.channels || {}).rows || []) if (r.month === month) { addCh(r.channel, 'stays', r.stays); addCh(r.channel, 'nights', r.nights); }\nfor (const b of LIVE.bookings || []) {\n  const c = b.channel === 'furnished_finder' ? 'Furnished Finder' : 'Direct';\n  if ((b.move_in || '').slice(0, 7) === month) addCh(c, 'stays', 1);\n  addCh(c, 'nights', nightsIn(b.move_in, b.move_out, month));\n}\nconst bookings_by_channel = Object.entries(ch).sort((a, b) => b[1].nights - a[1].nights).map(([channel, v]) => ({ channel, stays: v.stays, nights: v.nights }));\n\n// Channel value: revenue share and fee %, from booking value (exports, logged rent) and fees (platform fees, Furnished Finder's fee)\nconst val = {};\nconst addV = (c, v, f) => { val[c] = val[c] || { value: 0, fees: 0 }; val[c].value += v; val[c].fees += f; };\nfor (const r of EXPORT.money || []) if (r.month === month) addV(r.channel, r.value, r.fees);\nfor (const b of LIVE.bookings || []) if (b.monthly_rent) addV(b.channel === 'furnished_finder' ? 'Furnished Finder' : 'Direct',\n  nightsIn(b.move_in, b.move_out, month) * b.monthly_rent * 12 / 365, 0);\nconst fee = (EXPORT.costs || {})['furnished-finder'];\nif (fee && val['Furnished Finder']) val['Furnished Finder'].fees += fee / 12;\nconst totalValue = Object.values(val).reduce((t, v) => t + v.value, 0);\nconst channel_value = Object.entries(val).filter(([, v]) => v.value > 0).sort((a, b) => b[1].value - a[1].value)\n  .map(([channel, v]) => ({ channel, revenue_share: pct(v.value, totalValue), fee: pct(v.fees, v.value) }));\n\nconst facts = { month: monthName(month), airbnb, vrbo, furnished_finder, bookings_by_channel, channel_value, missing };\n// Every number the report may use: the ones in the facts, as written there (also without the % sign).\nconst allowed = [...new Set((JSON.stringify(facts).match(/\\d[\\d,]*(?:\\.\\d+)?%?/g) || [])\n  .flatMap(n => { const x = n.replace(/,/g, ''); return [x, x.replace(/%$/, '')]; }))];\nreturn [{ json: { month, prev, facts, allowed } }];"
+      },
+      "name": "Compute the month",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        660,
+        300
+      ],
+      "id": "d9c01680-4a13-5c4e-9bc0-840274be6dae"
+    },
+    {
+      "parameters": {
+        "jsCode": "// The Claude request: structured JSON, numbers only as given in FACTS.\nconst d = $input.first().json;\nconst SYSTEM = `You write NTStays' monthly channel report for the owner and the marketing manager. NTStays rents three\nfurnished homes (Framingham, Cranston, Abington) through Airbnb, Vrbo, Booking.com, Furnished Finder and direct bookings.\nRules:\n- Use only numbers that appear in FACTS, written exactly as they appear there (same rounding, same % sign). Never\n  calculate, round, add, subtract or estimate a number. If a comparison would need a new number, say it in words.\n- No dollar amounts.\n- If a channel's facts are null, say its numbers weren't logged. Don't guess.\n- FACTS contain no causes: write \"likely\" or \"worth checking\" for any explanation.\n- Plain, direct sentences. Headline under 15 words. Each channel paragraph under 60 words. At most 3 items to watch and\n  3 next actions.\n- Every item in \"missing\" must appear in \"watch\" or \"next_actions\" as something to log or refresh.`;\nconst CH = ['Airbnb', 'Vrbo', 'Furnished Finder', 'Booking.com', 'Bookings by channel', 'Channel value'];\nconst schema = { type: 'object', additionalProperties: false, required: ['subject', 'headline', 'channels', 'watch', 'next_actions'],\n  properties: {\n    subject: { type: 'string' }, headline: { type: 'string' },\n    channels: { type: 'array', items: { type: 'object', additionalProperties: false, required: ['name', 'text'],\n      properties: { name: { type: 'string', enum: CH }, text: { type: 'string' } } } },\n    watch: { type: 'array', items: { type: 'string' } }, next_actions: { type: 'array', items: { type: 'string' } } } };\nreturn [{ json: { ...d, started: Date.now(), claude_request: {\n  model: $env.REPORT_MODEL || $env.CLAUDE_MODEL, max_tokens: 1200,\n  system: SYSTEM, messages: [{ role: 'user', content: 'FACTS:\\n' + JSON.stringify(d.facts, null, 1) }],\n  output_config: { format: { type: 'json_schema', schema } } } } }];"
+      },
+      "name": "Build the Claude request",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        880,
+        300
+      ],
+      "id": "9f6543ed-3d7f-5b03-b133-f6f31b2d1d5d"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.ANTHROPIC_BASE_URL }}/v1/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "={{ $env.ANTHROPIC_API_KEY }}"
+            },
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.claude_request) }}",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "name": "Claude: write the report",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1100,
+        300
+      ],
+      "id": "a4635b9f-09da-5ffc-ac99-30da3199c622",
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000
+    },
+    {
+      "parameters": {
+        "jsCode": "// Faithfulness check: every number in the draft must be one of the computed facts; no dollar amounts; missing inputs\n// mentioned. A draft that fails is blocked: the owner gets the reasons, and nothing is sent.\nconst res = $input.first().json, prep = $('Build the Claude request').first().json;\nconst PRICES = { haiku: [1, 5], 'sonnet-5': [2, 10], sonnet: [3, 15], 'opus-5-5': [4, 20], opus: [5, 25] };  // USD per million tokens\nconst problems = [], badNumbers = [];\nlet r = null;\nconst text = (res.content || []).filter(c => c.type === 'text').map(c => c.text).join('');\nif (res.stop_reason === 'refusal') problems.push('the model declined to write it');\ntry { r = JSON.parse(text); } catch (e) { problems.push('the draft was not valid JSON'); }\nconst allowed = new Set(prep.allowed);\nconst parts = r ? [r.subject, r.headline, ...(r.channels || []).map(c => c.text), ...(r.watch || []), ...(r.next_actions || [])] : [];\nfor (const s of parts) {\n  for (const raw of (String(s).match(/\\d[\\d,]*(?:\\.\\d+)?%?/g) || [])) {\n    const n = raw.replace(/,/g, '');\n    if (allowed.has(n) || (/^\\d+$/.test(n) && Number(n) <= 12) || /^(19|20)\\d\\d$/.test(n)) continue;\n    if (!badNumbers.includes(n)) badNumbers.push(n);\n  }\n  if (/\\$\\s?\\d/.test(String(s))) problems.push('a dollar amount');\n}\nif (badNumbers.length) problems.push(`numbers not in the data: ${badNumbers.join(', ')}`);\nconst missingNamed = (prep.facts.missing || []).length === 0 || /log|refresh|export/i.test([...(r?.watch || []), ...(r?.next_actions || [])].join(' '));\nif (r && !missingNamed) problems.push('missing inputs are not mentioned');\nconst u = res.usage || {}, model = String(prep.claude_request.model || '');\nconst price = Object.entries(PRICES).find(([k]) => model.includes(k));\nconst cost = price ? +(((u.input_tokens || 0) * price[1][0] + (u.output_tokens || 0) * price[1][1]) / 1e6).toFixed(5) : null;\nconst plain = r ? [r.headline, '', ...(r.channels || []).map(c => `${c.name}: ${c.text}`), '',\n  'To watch:', ...(r.watch || []).map(x => '- ' + x), '', 'Next actions:', ...(r.next_actions || []).map(x => '- ' + x)].join('\\n') : '';\nreturn [{ json: { month: prep.month, facts: prep.facts, allowed: prep.allowed, report: r, plain, subject: r?.subject || `NTStays channel report: ${prep.facts.month}`,\n  passed: problems.length === 0, problems, bad_numbers: badNumbers,\n  call: { model, input_tokens: u.input_tokens || 0, output_tokens: u.output_tokens || 0, cost_usd: cost,\n    seconds: +((Date.now() - prep.started) / 1000).toFixed(1) } } }];"
+      },
+      "name": "Check the report",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1320,
+        300
+      ],
+      "id": "2991ad09-25c3-5bf8-93c1-d92151f6b8ca"
+    },
+    {
+      "parameters": {
+        "jsCode": "// One audit row per model call: tokens, cost, time, and whether the draft passed its checks.\nconst c = $('Check the report').first().json;\nreturn [{ json: { kind: 'ai_call', entered_by: 'monthly-report', entered_at: new Date().toISOString(),\n  data: JSON.stringify({ workflow: 'monthly report', month: c.month, ...c.call, passed: c.passed, problems: c.problems }) } }];"
+      },
+      "name": "AI call audit row",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1540,
+        300
+      ],
+      "id": "fc452bab-bac2-54ad-8c8b-e8101041160c"
+    },
+    {
+      "parameters": {
+        "resource": "row",
+        "operation": "insert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "ntstays_team_log"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": []
+        },
+        "options": {}
+      },
+      "name": "Log the AI call",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        300
+      ],
+      "id": "f408a4c5-933b-5afe-b2e6-7688afecfe65"
+    },
+    {
+      "parameters": {
+        "jsCode": "// The emails. The numbers table comes from the computed facts, never from the AI, so it is always exact.\nconst c = $('Check the report').first().json;\nconst esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');\nconst f = c.facts, rows = [];\nconst row = (k, v) => { if (v !== null && v !== undefined && v !== '') rows.push(`<tr><td style=\"padding:3px 14px 3px 0;color:#6d6158\">${esc(k)}</td><td>${esc(v)}</td></tr>`); };\nif (f.airbnb) { row('Airbnb overall conversion', f.airbnb.overall_conversion); row('Airbnb similar listings', f.airbnb.similar_listings);\n  row('Airbnb search \u2192 listing', f.airbnb.search_to_listing); row('Airbnb listing \u2192 booking', f.airbnb.listing_to_booking); row('Airbnb bookings made', f.airbnb.bookings_made); }\nif (f.vrbo) { row('Vrbo impressions \u2192 views \u2192 bookings', `${f.vrbo.search_impressions} \u2192 ${f.vrbo.property_views} \u2192 ${f.vrbo.bookings}`); }\nif (f.furnished_finder) { row('Furnished Finder new booking inquiries', f.furnished_finder.new_booking_inquiries);\n  row('Furnished Finder leases signed', f.furnished_finder.leases_signed); row('Furnished Finder inquiry \u2192 lease', f.furnished_finder.inquiry_to_lease); }\nfor (const b of f.bookings_by_channel) row(`${b.channel}: stays, nights`, `${b.stays}, ${b.nights}`);\nfor (const v of f.channel_value) row(`${v.channel}: revenue share, fee`, `${v.revenue_share}, ${v.fee}`);\nconst table = `<table style=\"font-size:14px;margin:12px 0\">${rows.join('')}</table>`;\nconst body = r => !r ? '' : `<p style=\"font-size:17px;font-weight:bold;margin:0 0 10px\">${esc(r.headline)}</p>` +\n  r.channels.map(x => `<p style=\"margin:0 0 10px\"><b>${esc(x.name)}.</b> ${esc(x.text)}</p>`).join('') +\n  (r.watch.length ? `<p style=\"margin:12px 0 4px\"><b>To watch</b></p><ul>${r.watch.map(x => `<li>${esc(x)}</li>`).join('')}</ul>` : '') +\n  (r.next_actions.length ? `<p style=\"margin:12px 0 4px\"><b>Next actions</b></p><ul>${r.next_actions.map(x => `<li>${esc(x)}</li>`).join('')}</ul>` : '');\nconst wrap = inner => `<div style=\"font-family:Arial,sans-serif;font-size:15px;color:#2b211b;max-width:640px\">${inner}</div>`;\nconst to = [{ email: $env.OWNER_EMAIL, name: $env.OWNER_NAME || 'NTStays' }];\nconst sender = { name: 'NTStays reports', email: $env.FROM_EMAIL };\nconst approval = { sender, to, subject: `[NTStays] Review the ${f.month} channel report`, tags: ['ntstays-report-review'],\n  htmlContent: wrap(`<p style=\"color:#6d6158\">Draft written by Claude and checked: every number in it matches the data.\n    Review it, edit if you like, and choose Send.</p>${body(c.report)}<p><b>The numbers</b> (computed, not written by AI)</p>${table}\n    <p><a href=\"${$execution.resumeFormUrl}\" style=\"display:inline-block;background:#3b2a20;color:#fffdf8;padding:10px 18px;border-radius:999px;text-decoration:none;font-weight:bold\">Review &amp; send</a></p>\n    <p style=\"font-size:12px;color:#6d6158\">${esc(c.call.model)} \u00b7 ${c.call.input_tokens} + ${c.call.output_tokens} tokens \u00b7 ${c.call.seconds} s. Nothing is sent until you choose Send; the link expires in 5 days.</p>`) };\nconst blocked = { sender, to, subject: `[NTStays] The ${f.month} channel report was blocked`, tags: ['ntstays-report-blocked'],\n  htmlContent: wrap(`<p><b>The AI draft failed its checks, so nothing was sent.</b></p><ul>${c.problems.map(p => `<li>${esc(p)}</li>`).join('')}</ul>\n    <p>The numbers for ${esc(f.month)} (computed, not written by AI):</p>${table}\n    <p style=\"font-size:13px;color:#6d6158\">Run it again from n8n, or send these numbers yourself.</p>`) };\nreturn [{ json: { ...c, table, approval_email: approval, blocked_email: blocked } }];"
+      },
+      "name": "Build the report emails",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1980,
+        300
+      ],
+      "id": "eb71470f-8a41-57b5-9499-84cf95d31e92"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "6de7c0b4-25b1-54d4-a307-405f38ea7823",
+              "leftValue": "={{ $json.passed }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "name": "Passed the checks?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2200,
+        300
+      ],
+      "id": "88476220-af6f-561d-86f9-8dd12b6f083c"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.BREVO_BASE_URL }}/v3/smtp/email",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "api-key",
+              "value": "={{ $env.BREVO_API_KEY }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.approval_email) }}",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "name": "Email the owner for review",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2420,
+        200
+      ],
+      "id": "38adc6aa-9c02-5c4e-b520-75a7a75d1d56",
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: $('Build the report emails').first().json }];"
+      },
+      "name": "Load the draft",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2640,
+        200
+      ],
+      "id": "c49bc36c-9fab-501d-a7fb-6f51787632c8"
+    },
+    {
+      "parameters": {
+        "resume": "form",
+        "formTitle": "=NTStays channel report: {{ $json.facts.month }}",
+        "formDescription": "=Edit the report if you like (numbers must stay as they are in the data), then choose Send. It goes to the report recipients.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Decision",
+              "fieldType": "dropdown",
+              "requiredField": true,
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Send to the team"
+                  },
+                  {
+                    "option": "Don't send"
+                  }
+                ]
+              }
+            },
+            {
+              "fieldLabel": "Subject",
+              "fieldType": "text",
+              "defaultValue": "={{ $json.subject }}"
+            },
+            {
+              "fieldLabel": "Report",
+              "fieldType": "textarea",
+              "defaultValue": "={{ $json.plain }}"
+            }
+          ]
+        },
+        "limitWaitTime": true,
+        "limitType": "afterTimeInterval",
+        "resumeAmount": 5,
+        "resumeUnit": "days",
+        "options": {
+          "respondWithOptions": {
+            "values": {
+              "formSubmittedText": "Done. Your decision was saved."
+            }
+          }
+        }
+      },
+      "name": "Owner report form",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2860,
+        200
+      ],
+      "id": "4066e893-b527-5e3d-8b1b-38315c1264d6",
+      "webhookId": "67bf04c3-98ba-584b-813d-4db559c6d7d4"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Read the owner's decision. Edited text is checked again: any number not in the data blocks the send.\nconst f = $input.first().json, c = $('Build the report emails').first().json;\nconst decision = String(f['Decision'] || '');\nconst text = String(f['Report'] ?? c.plain), subject = String(f['Subject'] || c.subject);\nconst allowed = new Set(c.allowed), bad = [];\nfor (const raw of (text + ' ' + subject).match(/\\d[\\d,]*(?:\\.\\d+)?%?/g) || []) {\n  const n = raw.replace(/,/g, '');\n  if (!allowed.has(n) && !(/^\\d+$/.test(n) && Number(n) <= 12) && !/^(19|20)\\d\\d$/.test(n) && !bad.includes(n)) bad.push(n);\n}\nconst dollars = /\\$\\s?\\d/.test(text + subject);\nconst wantsSend = decision.startsWith('Send');\nconst status = !wantsSend ? 'not_sent' : (bad.length || dollars) ? 'edit_blocked' : 'sent';\nconst esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');\nconst recipients = String($env.REPORT_RECIPIENTS || $env.OWNER_EMAIL || '').split(/[,\\s]+/).filter(x => x.includes('@'));\nconst html = `<div style=\"font-family:Arial,sans-serif;font-size:15px;color:#2b211b;max-width:640px\">` +\n  text.split(/\\n{2,}/).map(p => `<p style=\"margin:0 0 12px\">${esc(p).replace(/\\n/g, '<br>')}</p>`).join('') +\n  `<p><b>The numbers</b></p>${c.table}<p style=\"font-size:13px;color:#6d6158\">More detail on the marketing dashboard: ntstays.com/team/marketing</p></div>`;\nconst edited = text.trim() !== c.plain.trim() || subject !== c.subject;\nreturn [{ json: { status, edited, bad_numbers: bad, month: c.month,\n  team_email: { sender: { name: 'NTStays reports', email: $env.FROM_EMAIL }, to: recipients.map(email => ({ email })),\n    subject, htmlContent: html, tags: ['ntstays-report'] },\n  owner_note: { sender: { name: 'NTStays reports', email: $env.FROM_EMAIL }, to: [{ email: $env.OWNER_EMAIL }],\n    subject: `[NTStays] Your edit of the ${c.facts.month} report wasn't sent`, tags: ['ntstays-report-blocked'],\n    htmlContent: `<p>Your edited report had ${dollars ? 'a dollar amount' : ''}${dollars && bad.length ? ' and ' : ''}${bad.length ? 'numbers that aren\\'t in the data: ' + esc(bad.join(', ')) : ''}, so it wasn't sent. Run the report again from n8n, or fix the numbers and send it yourself.</p>` },\n  log: { kind: 'report', entered_by: 'monthly-report', entered_at: new Date().toISOString(),\n    data: JSON.stringify({ month: c.month, status, edited, recipients: status === 'sent' ? recipients.length : 0, bad_numbers: bad }) } } }];"
+      },
+      "name": "Read the decision",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3080,
+        200
+      ],
+      "id": "ea2ae159-03cd-5bbf-a4cd-03364f79ef38"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "e2c32fd1-9cc4-5485-91c4-713d68835515",
+              "leftValue": "={{ $json.status === 'sent' }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "name": "Send it?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        3300,
+        200
+      ],
+      "id": "8d33d55e-ca76-50d7-a594-ea413e6f43df"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.BREVO_BASE_URL }}/v3/smtp/email",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "api-key",
+              "value": "={{ $env.BREVO_API_KEY }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.team_email) }}",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "name": "Email the team the report",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3520,
+        100
+      ],
+      "id": "3a8539f2-37d3-57ff-85b7-e1813fab3eeb",
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "768eb65b-ccb4-5bad-96db-0cc960e557c6",
+              "leftValue": "={{ $('Read the decision').first().json.status === 'edit_blocked' }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "name": "Edit blocked?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        3520,
+        300
+      ],
+      "id": "7ea6fc2c-1e34-5bcf-a924-ba3cab37e17b"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.BREVO_BASE_URL }}/v3/smtp/email",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "api-key",
+              "value": "={{ $env.BREVO_API_KEY }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.owner_note) }}",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "name": "Tell the owner the edit was blocked",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3740,
+        300
+      ],
+      "id": "92e1a456-c19e-5133-a5b3-5201a2017dfe",
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: $('Read the decision').first().json.log }];"
+      },
+      "name": "Outcome audit row",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3960,
+        200
+      ],
+      "id": "d93c713d-df7c-509c-bb7a-62fa36bb2db2"
+    },
+    {
+      "parameters": {
+        "resource": "row",
+        "operation": "insert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "ntstays_team_log"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": []
+        },
+        "options": {}
+      },
+      "name": "Log the outcome",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        4180,
+        200
+      ],
+      "id": "03e2aa3e-097c-5434-aba8-b86f28c98f8d"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.BREVO_BASE_URL }}/v3/smtp/email",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "api-key",
+              "value": "={{ $env.BREVO_API_KEY }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.blocked_email) }}",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "name": "Email the owner: blocked",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2420,
+        420
+      ],
+      "id": "c7c19ee2-4e1b-5a7a-9722-2c102d9d1384",
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000
+    },
+    {
+      "parameters": {
+        "jsCode": "const c = $('Check the report').first().json;\nreturn [{ json: { kind: 'report', entered_by: 'monthly-report', entered_at: new Date().toISOString(),\n  data: JSON.stringify({ month: c.month, status: 'blocked', problems: c.problems }) } }];"
+      },
+      "name": "Blocked audit row",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2640,
+        420
+      ],
+      "id": "58d9229d-e6e8-5168-bc24-cc0fbae1f4dc"
+    },
+    {
+      "parameters": {
+        "resource": "row",
+        "operation": "insert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "ntstays_team_log"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": []
+        },
+        "options": {}
+      },
+      "name": "Log the block",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        2860,
+        420
+      ],
+      "id": "46a64995-9513-52ba-b8e5-3cbf1aeab986"
+    }
+  ],
+  "connections": {
+    "On the 1st of the month": {
+      "main": [
+        [
+          {
+            "node": "Start report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run report now": {
+      "main": [
+        [
+          {
+            "node": "Start report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start report": {
+      "main": [
+        [
+          {
+            "node": "Get logged numbers",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get logged numbers": {
+      "main": [
+        [
+          {
+            "node": "Compute the month",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Compute the month": {
+      "main": [
+        [
+          {
+            "node": "Build the Claude request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build the Claude request": {
+      "main": [
+        [
+          {
+            "node": "Claude: write the report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude: write the report": {
+      "main": [
+        [
+          {
+            "node": "Check the report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check the report": {
+      "main": [
+        [
+          {
+            "node": "AI call audit row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI call audit row": {
+      "main": [
+        [
+          {
+            "node": "Log the AI call",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log the AI call": {
+      "main": [
+        [
+          {
+            "node": "Build the report emails",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build the report emails": {
+      "main": [
+        [
+          {
+            "node": "Passed the checks?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Passed the checks?": {
+      "main": [
+        [
+          {
+            "node": "Email the owner for review",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Email the owner: blocked",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email the owner for review": {
+      "main": [
+        [
+          {
+            "node": "Load the draft",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load the draft": {
+      "main": [
+        [
+          {
+            "node": "Owner report form",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Owner report form": {
+      "main": [
+        [
+          {
+            "node": "Read the decision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read the decision": {
+      "main": [
+        [
+          {
+            "node": "Send it?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send it?": {
+      "main": [
+        [
+          {
+            "node": "Email the team the report",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit blocked?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit blocked?": {
+      "main": [
+        [
+          {
+            "node": "Tell the owner the edit was blocked",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Outcome audit row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email the team the report": {
+      "main": [
+        [
+          {
+            "node": "Outcome audit row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tell the owner the edit was blocked": {
+      "main": [
+        [
+          {
+            "node": "Outcome audit row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Outcome audit row": {
+      "main": [
+        [
+          {
+            "node": "Log the outcome",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email the owner: blocked": {
+      "main": [
+        [
+          {
+            "node": "Blocked audit row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Blocked audit row": {
+      "main": [
+        [
+          {
+            "node": "Log the block",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "id": "ntstaysReport01",
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "America/New_York",
+    "errorWorkflow": "ntstaysErrorAlert01",
+    "saveDataSuccessExecution": "all"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "tags": []
+}

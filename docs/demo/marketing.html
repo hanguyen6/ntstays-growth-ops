@@ -1,0 +1,789 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>NTStays marketing</title>
+<!-- The marketing manager's dashboard. Sign-in only: Cloudflare Access protects /team/*, and the site's Worker
+     (worker/index.js) refuses these pages without a valid Access login. Data: marketing-data.json in this folder
+     (written by stats/build_stats.py from the platform exports; counts only) and the entries from the Log numbers
+     page (/team/api/entries). Add ?demo=1 to see made-up data. -->
+<style>
+  :root {
+    color-scheme: light;
+    --page: #f6f1e7; --surface: #fcfcfb; --line: #e4dbcc; --grid: #ece6da;
+    --text: #2b211b; --text-2: #52514e; --muted: #736b64; --accent: #b08a3e; --note-bg: #fbeed3;
+    --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100; --s5: #e87ba4;  /* categorical, fixed order */
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      color-scheme: dark;
+      --page: #141312; --surface: #1a1a19; --line: #34322f; --grid: #2a2926;
+      --text: #f3efe8; --text-2: #c3c2b7; --muted: #9a978d; --accent: #d9b56a; --note-bg: #3a2f1a;
+      --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --page: #141312; --surface: #1a1a19; --line: #34322f; --grid: #2a2926;
+    --text: #f3efe8; --text-2: #c3c2b7; --muted: #9a978d; --accent: #d9b56a; --note-bg: #3a2f1a;
+    --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--page); color: var(--text); font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  a { color: inherit; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 24px 16px 64px; }
+  h1 { font: 650 1.7rem Georgia, serif; margin: 0; }
+  h2 { font: 650 1.2rem Georgia, serif; margin: 0; }
+  h3 { font-size: .95rem; margin: 20px 0 6px; color: var(--text-2); font-weight: 600; }
+  .sub { color: var(--muted); margin: 4px 0 0; font-size: .9rem; }
+  .filters { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; margin: 18px 0 0; }
+  .filters label { font-size: .85rem; color: var(--text-2); display: flex; gap: 8px; align-items: center; }
+  .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; overflow: hidden; background: var(--surface); }
+  .seg button { border: 0; background: transparent; color: var(--text-2); padding: 6px 12px; font: inherit; font-size: .85rem; cursor: pointer; }
+  .seg button[aria-pressed="true"] { background: var(--text); color: var(--surface); font-weight: 600; }
+  select { font: inherit; font-size: .85rem; padding: 6px 10px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--text); }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px; margin-top: 18px; }
+  .card-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 16px; align-items: baseline; }
+  .num-label { color: var(--muted); font-size: .8rem; text-transform: uppercase; letter-spacing: .06em; }
+  .hero { display: grid; grid-template-columns: minmax(190px, 240px) 1fr; gap: 28px; margin-top: 14px; align-items: start; }
+  .hero .minis { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); margin-top: 12px; }
+  .big { font-size: 2.8rem; font-weight: 650; line-height: 1.05; font-variant-numeric: tabular-nums; margin-top: 4px; }
+  .big-note { color: var(--text-2); font-size: .9rem; margin-top: 6px; }
+  .minis { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 10px; margin-top: 14px; }
+  .mini { border-top: 1px solid var(--line); padding-top: 8px; }
+  .mini b { display: block; font-size: 1.2rem; font-variant-numeric: tabular-nums; }
+  .mini span { color: var(--muted); font-size: .8rem; }
+  .steps { display: flex; flex-wrap: wrap; align-items: stretch; gap: 6px; }
+  .step { background: var(--page); border-radius: 10px; padding: 10px 12px; min-width: 110px; }
+  .step b { display: block; font-size: 1.35rem; font-variant-numeric: tabular-nums; }
+  .step span { color: var(--muted); font-size: .8rem; }
+  .arrow { align-self: center; color: var(--text-2); font-size: .8rem; text-align: center; min-width: 64px; }
+  .arrow b { display: block; color: var(--text); font-size: .95rem; font-variant-numeric: tabular-nums; }
+  .chart { position: relative; }
+  .chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .chart text { fill: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+  .chart .lbl { fill: var(--text); font-size: 12px; }
+  .chart [data-tip] { cursor: default; }
+  .chart [data-tip]:focus { outline: none; }
+  .chart path[data-tip]:hover, .chart rect[data-tip]:hover, .chart path[data-tip]:focus { opacity: .8; }
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: .85rem; color: var(--text-2); margin: 10px 0 4px; }
+  .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+  .legend i.line { width: 16px; height: 0; border-radius: 0; border-top: 2px solid; vertical-align: 3px; }
+  .legend i.dash { border-top-style: dashed; }
+  .tip { position: fixed; pointer-events: none; background: var(--surface); color: var(--text); border: 1px solid var(--line);
+         border-radius: 8px; padding: 8px 10px; font-size: .82rem; box-shadow: 0 6px 20px rgba(0,0,0,.15); display: none; z-index: 10; min-width: 150px; }
+  .tip .t { color: var(--muted); margin-bottom: 4px; }
+  .tip .r { display: flex; align-items: center; gap: 8px; }
+  .tip .r i { width: 12px; height: 2px; border-radius: 1px; }
+  .tip .r b { font-variant-numeric: tabular-nums; }
+  .tip .r span { color: var(--text-2); }
+  details.tbl { margin-top: 8px; font-size: .85rem; }
+  details.tbl summary { cursor: pointer; color: var(--text-2); }
+  table { width: 100%; border-collapse: collapse; font-size: .85rem; font-variant-numeric: tabular-nums; margin-top: 8px; }
+  th, td { padding: 6px 8px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap; }
+  th:first-child, td:first-child { text-align: left; white-space: normal; }
+  th { color: var(--text-2); font-weight: 600; }
+  .scroll { overflow-x: auto; }
+  .note { background: var(--note-bg); border-radius: 10px; padding: 10px 12px; font-size: .88rem; margin-top: 12px; }
+  .empty { color: var(--muted); font-style: italic; padding: 10px 0; }
+  .how { font-size: .88rem; color: var(--text-2); }
+  .how dt { font-weight: 600; color: var(--text); margin-top: 10px; }
+  .how dd { margin: 2px 0 0; }
+  .demo { background: var(--note-bg); border: 1px solid var(--accent); border-radius: 10px; padding: 8px 12px; margin-top: 14px; font-size: .88rem; }
+  @media (max-width: 720px) { .hero { grid-template-columns: 1fr; gap: 10px; } .big { font-size: 2.3rem; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Marketing dashboard</h1>
+  <p class="sub" id="updated"></p>
+  <p class="sub"><a href="/team">Team home</a> · <a href="log">Log a booking or channel numbers →</a></p>
+  <div id="demo-note"></div>
+
+  <div class="filters" role="group" aria-label="Filters">
+    <label>Time range <span class="seg" id="range">
+      <button type="button" data-v="3">3 months</button><button type="button" data-v="6">6 months</button><button type="button" data-v="12">12 months</button>
+    </span></label>
+    <label>Home <select id="home">
+      <option value="all">All homes</option><option value="home-1">Framingham</option><option value="home-2">Cranston</option><option value="home-3">Abington</option>
+    </select></label>
+  </div>
+
+  <section class="card" aria-labelledby="m1">
+    <div class="card-head"><h2 id="m1">1. Airbnb pipeline</h2>
+      <span class="sub">Search results → listing views → bookings, from Airbnb's booking conversion page</span></div>
+    <div id="airbnb"></div>
+  </section>
+
+  <section class="card" aria-labelledby="mv">
+    <div class="card-head"><h2 id="mv">2. Vrbo pipeline</h2>
+      <span class="sub">Search impressions → property views → bookings, from Vrbo's ranking metrics</span></div>
+    <div id="vrbo"></div>
+  </section>
+
+  <section class="card" aria-labelledby="m2">
+    <div class="card-head"><h2 id="m2">3. Furnished Finder pipeline</h2>
+      <span class="sub">Impressions → listing views → tenant inquiries → signed leases</span></div>
+    <div id="ff"></div>
+  </section>
+
+  <section class="card" aria-labelledby="m3">
+    <div class="card-head"><h2 id="m3">4. Bookings by channel</h2>
+      <span class="seg" id="unit"><button type="button" data-v="stays">Stays</button><button type="button" data-v="nights">Nights</button></span></div>
+    <div id="channels"></div>
+  </section>
+
+  <section class="card" aria-labelledby="m5">
+    <div class="card-head"><h2 id="m5">5. Channel value</h2>
+      <span class="sub">Where the booking value comes from, and what each channel costs (percentages only)</span></div>
+    <div id="value"></div>
+  </section>
+
+  <section class="card" aria-labelledby="m6">
+    <div class="card-head"><h2 id="m6">6. Monthly report runs</h2>
+      <span class="sub">The AI-written channel report: checked against the data, approved before it's sent</span></div>
+    <div id="runs"></div>
+  </section>
+
+  <section class="card how" aria-labelledby="how">
+    <h2 id="how">How these are measured</h2>
+    <dl>
+      <dt>Airbnb pipeline</dt>
+      <dd>Airbnb's own booking conversion numbers for all listings, logged once a month on the Log numbers page (Airbnb →
+        Performance → Conversion → Booking conversion, dates set to that month). <b>Search-to-listing</b>: share of search
+        results where the guest opened our listing. <b>Listing-to-booking</b>: share of listing views that became a booking.
+        <b>Overall conversion</b>: bookings ÷ search appearances, the two combined. <b>First-page impression rate</b>: how often
+        we appear on the first page of results. Similar listings are Airbnb's comparison group. Bookings are counted from
+        Airbnb's monthly performance reports.</dd>
+      <dt>Vrbo pipeline</dt>
+      <dd>From Vrbo's Ranking metrics for each property, copied monthly on the Log numbers page. Each entry covers the last
+        30 days, so one entry a month per property adds up to the months in the time range. <b>Viewed</b> = property views ÷
+        search impressions; <b>booked</b> = bookings ÷ property views; <b>overall</b> = bookings ÷ search impressions.</dd>
+      <dt>Furnished Finder pipeline</dt>
+      <dd>From Furnished Finder's Listing Performance panel, copied monthly on the Log numbers page. Impressions and listing
+        views cover the last 90 days. Booking inquiries, direct messages, phone number reveals and tenant leads are totals
+        since the listing started, so each month's new ones are the difference from the previous entry (they can overlap:
+        one tenant may message and call). <b>Inquiry → lease</b> = Furnished Finder leases logged ÷ new booking inquiries in
+        the same months. Cost per lease = the yearly listing fee ÷ Furnished Finder leases in the last 12 months.
+        Furnished Finder has no export or API, so these are copied by hand.</dd>
+      <dt>Channel value</dt>
+      <dd><b>Revenue share</b> = a channel's booking value ÷ all booking value in the time range, counted by the nights in each
+        month. <b>Fee %</b> = what the channel costs ÷ the booking value it brought: platform fees for Airbnb, Vrbo and
+        Booking.com (from their exports), Furnished Finder's yearly listing fee spread evenly over the months (a third per
+        home), and 0% for direct bookings (card processing fees aren't counted). The monthly line shows changes such as
+        Airbnb moving hosts from its 3% split fee to the 15.5% host-only fee. Furnished Finder and direct leases count only
+        when their monthly rent is logged. Amounts are never shown.</dd>
+      <dt>Monthly report runs</dt>
+      <dd>On the 1st of each month an n8n workflow computes last month's numbers in code, has Claude write the summary, and
+        blocks the draft unless every number in it appears in the computed data (and it has no dollar amounts). The owner
+        reviews and can edit it; an edit is checked again before it's sent. Each model call is logged with its tokens, cost
+        and time; each outcome (sent, not sent, blocked) is logged too.</dd>
+      <dt>Bookings by channel</dt>
+      <dd>Stays by check-in (or move-in) month, and nights in each month. Airbnb, Vrbo and Booking.com come from their
+        exports; Furnished Finder and other bookings from the Log numbers page.</dd>
+    </dl>
+  </section>
+</div>
+<div class="tip" id="tip" role="tooltip"></div>
+
+<script>
+const EMBEDDED = /*__TEAM_DATA__*/null;
+// Fixed color per channel, in stack order (validated palette order).
+const CHANNELS = [['Airbnb', 's1'], ['Furnished Finder', 's2'], ['Vrbo', 's3'], ['Booking.com', 's4'], ['Direct', 's5']];
+const FF_KINDS = [['booking_inquiries', 'Booking inquiries', 's1'], ['direct_messages', 'Direct messages', 's2'], ['phone_reveals', 'Phone number reveals', 's3']];
+const FF_TOTALS = ['booking_inquiries', 'direct_messages', 'phone_reveals', 'matched_leads', 'unmatched_leads'];
+const HOMES = { 'home-1': 'Framingham', 'home-2': 'Cranston', 'home-3': 'Abington' };
+const $ = s => document.querySelector(s);
+const el = (tag, attrs = {}, text) => { const e = document.createElement(tag); for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v); if (text != null) e.textContent = text; return e; };
+const svgEl = (tag, attrs = {}) => { const e = document.createElementNS('http://www.w3.org/2000/svg', tag); for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v); return e; };
+const pct = (a, b) => { if (!b) return '–'; const v = a / b * 100; return (v < 10 && v > 0 ? v.toFixed(1) : Math.round(v)) + '%'; };
+const rateTxt = v => v == null ? '–' : `${+v}%`;  // as Airbnb shows it (entered with up to 2 decimals)
+const fmtNum = v => v == null ? '–' : Number(v).toLocaleString('en-US');
+const usd = v => v == null ? '–' : '$' + Math.round(v).toLocaleString('en-US');
+const monthName = m => new Date(m + '-15').toLocaleString('en-US', { month: 'short' });
+const monthLong = m => new Date(m + '-15').toLocaleString('en-US', { month: 'long', year: 'numeric' });
+const dayLong = d => new Date(d + 'T12:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+const sum = (rows, k) => rows.reduce((a, r) => a + (r[k] || 0), 0);
+
+// ---------------------------------------------------------------- chart helpers
+const tip = $('#tip');
+function showTip(x, y, title, rows) {
+  tip.replaceChildren(el('div', { class: 't' }, title));
+  for (const [c, v, l] of rows) {
+    const r = el('div', { class: 'r' }), i = el('i');
+    i.style.background = c ? `var(--${c})` : 'transparent';
+    r.append(i, el('b', {}, v), el('span', {}, l)); tip.append(r);
+  }
+  tip.style.display = 'block';
+  const w = tip.offsetWidth, h = tip.offsetHeight;
+  tip.style.left = Math.min(window.innerWidth - w - 8, Math.max(8, x + 14)) + 'px';
+  tip.style.top = Math.max(8, y - h - 12 < 8 ? y + 16 : y - h - 12) + 'px';
+}
+const hideTip = () => { tip.style.display = 'none'; };
+function hover(node, title, rows) {
+  node.setAttribute('data-tip', ''); node.setAttribute('tabindex', '0');
+  node.setAttribute('aria-label', title + ': ' + rows.map(r => `${r[2]} ${r[1]}`).join(', '));
+  node.addEventListener('pointermove', e => showTip(e.clientX, e.clientY, title, rows));
+  node.addEventListener('pointerleave', hideTip);
+  node.addEventListener('focus', () => { const b = node.getBoundingClientRect(); showTip(b.left + b.width / 2, b.top, title, rows); });
+  node.addEventListener('blur', hideTip);
+}
+function barUp(x, y, w, h, r = 4) { r = Math.min(r, w / 2, h); return `M${x},${y + h}V${y + r}Q${x},${y} ${x + r},${y}H${x + w - r}Q${x + w},${y} ${x + w},${y + r}V${y + h}Z`; }
+function legend(items) {  // [label, color, 'box' | 'line' | 'dash']
+  const d = el('div', { class: 'legend' });
+  for (const [label, c, kind] of items) {
+    const s = el('span'), i = el('i', kind && kind !== 'box' ? { class: kind === 'dash' ? 'line dash' : 'line' } : {});
+    if (kind && kind !== 'box') i.style.borderColor = `var(--${c})`; else i.style.background = `var(--${c})`;
+    s.append(i, document.createTextNode(label)); d.append(s);
+  }
+  return d;
+}
+function tableView(summary, head, rows) {
+  const det = el('details', { class: 'tbl' }); det.append(el('summary', {}, summary));
+  const wrap = el('div', { class: 'scroll' }), t = el('table'), tr = el('tr');
+  head.forEach(h => tr.append(el('th', {}, h))); t.append(tr);
+  rows.forEach(r => { const row = el('tr'); r.forEach(c => row.append(el('td', {}, c))); t.append(row); });
+  wrap.append(t); det.append(wrap); return det;
+}
+const widthOf = node => Math.max(300, Math.round(node.getBoundingClientRect().width || 600));
+function niceTop(v, whole) {  // four even steps; whole numbers for counts
+  if (whole) { const raw = Math.max(v, 4) / 4, p = 10 ** Math.floor(Math.log10(raw)), n = raw / p; return 4 * Math.ceil((n <= 1 ? 1 : n <= 2 ? 2 : n <= 5 ? 5 : 10) * p); }
+  const raw = Math.max(v, 0.01) / 4, p = 10 ** Math.floor(Math.log10(raw)), n = raw / p; return 4 * (n <= 1 ? 1 : n <= 2 ? 2 : n <= 2.5 ? 2.5 : n <= 5 ? 5 : 10) * p;
+}
+function axes(svg, W, H, PL, PB, PT, top, fmt) {
+  const plotH = H - PB - PT;
+  for (let g = 0; g <= 4; g++) {
+    const y = PT + plotH - plotH * g / 4;
+    svg.append(svgEl('line', { x1: PL, x2: W, y1: y, y2: y, stroke: 'var(--grid)', 'stroke-width': 1 }));
+    const t = svgEl('text', { x: PL - 6, y: y + 4, 'text-anchor': 'end' }); t.textContent = fmt(top * g / 4); svg.append(t);
+  }
+  return plotH;
+}
+function steps(items) {  // [['step', value, label] | ['arrow', rate, label]]
+  const d = el('div', { class: 'steps' });
+  for (const [kind, v, l] of items) {
+    const n = el('div', { class: kind });
+    if (kind === 'step') n.append(el('b', {}, v), el('span', {}, l)); else n.append(el('b', {}, v), document.createTextNode(l));
+    d.append(n);
+  }
+  return d;
+}
+
+// ---------------------------------------------------------------- state and data
+const state = { range: 12, unit: 'stays', home: 'all' };
+let D = null, LIVE = null;
+const rangeMonths = () => D.months.slice(-state.range);
+const inHome = pid => state.home === 'all' || pid === state.home;
+const homeName = () => state.home === 'all' ? 'all homes' : HOMES[state.home];
+
+// ---------------------------------------------------------------- 1. Airbnb pipeline
+function renderAirbnb() {
+  const box = $('#airbnb'); box.replaceChildren();
+  const months = rangeMonths(), want = state.home === 'all' ? 'all' : state.home;
+  const rows = (LIVE ? LIVE.airbnb : []).filter(r => months.includes(r.month) && (r.property_id || 'all') === want);
+  const perf = (D.airbnb_perf || []).filter(x => inHome(x.property));
+  const booked = m => { const ps = perf.filter(x => x.month === m); return ps.length ? sum(ps, 'bookings') : 0; };
+  if (!rows.length) {
+    const p = el('p', { class: 'empty' }, !LIVE ? 'Couldn\'t load the logged numbers. '
+      : state.home === 'all' ? 'No Airbnb conversion rates logged for this range yet. '
+      : `No Airbnb rates logged for ${HOMES[state.home]} alone (log them with "Listings: ${HOMES[state.home]} only"). `);
+    p.append(el('a', { href: 'log#airbnb' }, 'Add them on the Log numbers page'), document.createTextNode(' (past months too).'));
+    box.append(p);
+  } else {
+    // Headline and funnel follow the time range: the average of the monthly rates logged in it.
+    const last = rows[rows.length - 1], n = rows.length;
+    const avg = (key, rs = rows) => { const v = rs.map(r => r[key]).filter(x => x != null); return v.length ? +(v.reduce((a, b) => a + b, 0) / v.length).toFixed(2) : null; };
+    const span = `last ${state.range} months`;
+    const seen = key => rows.filter(r => r[key] != null).length;  // months that have this rate
+    const from = key => seen(key) < n ? ` (${seen(key)} of ${n} months)` : '';
+    const hero = el('div', { class: 'hero' }), left = el('div'), right = el('div');
+    left.append(el('div', { class: 'num-label' }, `Overall conversion, ${span}`), el('div', { class: 'big' }, rateTxt(avg('overall_conversion'))));
+    const both = rows.filter(r => r.overall_conversion != null && r.similar_overall != null);
+    const diff = both.length ? avg('overall_conversion', both) - avg('similar_overall', both) : null;
+    left.append(el('div', { class: 'big-note' }, diff == null ? `average of ${n} month${n > 1 ? 's' : ''}; no similar-listings numbers logged`
+      : `${Math.abs(diff).toFixed(2)} points ${diff >= 0 ? 'above' : 'below'} similar listings (${rateTxt(avg('similar_overall', both))}` +
+        (both.length < n ? `, in the ${both.length} month${both.length > 1 ? 's' : ''} with both numbers)` : ')')));
+    const bookings = months.reduce((a, m) => a + booked(m), 0), minis = el('div', { class: 'minis' });
+    [[rateTxt(avg('first_page_rate')), 'on the first page of search' + from('first_page_rate')],
+     [rateTxt(last.overall_conversion), `overall conversion in ${monthLong(last.month)} alone`]]
+      .forEach(([v, l]) => { const m = el('div', { class: 'mini' }); m.append(el('b', {}, v), el('span', {}, l)); minis.append(m); });
+    right.append(el('div', { class: 'num-label' }, `The funnel, ${span}`), steps([
+      ['step', 'Search', 'guests saw the listing'],
+      ['arrow', rateTxt(avg('search_to_listing')), 'opened it →' + from('search_to_listing')],
+      ['step', 'Listing', 'guests viewed it'],
+      ['arrow', rateTxt(avg('listing_to_booking')), 'booked →' + from('listing_to_booking')],
+      ['step', fmtNum(bookings), 'bookings made']]));
+    right.append(minis);
+    hero.append(left, right); box.append(hero);
+    const footnote = `Rates are averages of the ${n} monthly rates logged; Airbnb's own figure for a longer date range weighs busier months more, so it can differ a little.`;
+
+    // Trend: our overall conversion vs similar listings (one axis, both are % of search appearances).
+    box.append(el('h3', {}, 'Overall conversion by month'),
+      legend([['NTStays', 's1', 'line'], ['Similar listings', 's2', 'dash']]));
+    const cw = el('div', { class: 'chart' }); box.append(cw);
+    const W = widthOf(cw), H = 200, PL = 44, PB = 24, PT = 8;
+    const svg = svgEl('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': 'Airbnb overall conversion by month, NTStays and similar listings' });
+    const vals = rows.flatMap(r => [r.overall_conversion, r.similar_overall]).filter(v => v != null);
+    const top = niceTop(Math.max(...vals, 0.1)), plotH = axes(svg, W, H, PL, PB, PT, top, v => v.toFixed(2) + '%');
+    const colW = (W - PL) / months.length, X = i => PL + colW * i + colW / 2, Y = v => PT + plotH - v / top * plotH;
+    const line = (key, c, dash) => {
+      const pts = months.map((m, i) => { const r = rows.find(x => x.month === m); return r && r[key] != null ? [X(i), Y(r[key])] : null; });
+      // Joined across months without a number; dots only where one was logged (the table shows the blanks).
+      let d = ''; pts.forEach(p => { if (p) d += (d ? 'L' : 'M') + p[0] + ',' + p[1]; });
+      if (d) svg.append(svgEl('path', { d, fill: 'none', stroke: `var(--${c})`, 'stroke-width': 2, 'stroke-dasharray': dash ? '5 4' : '', 'stroke-linejoin': 'round' }));
+      pts.forEach(p => { if (p) svg.append(svgEl('circle', { cx: p[0], cy: p[1], r: 4, fill: `var(--${c})`, stroke: 'var(--surface)', 'stroke-width': 2 })); });
+    };
+    line('similar_overall', 's2', true); line('overall_conversion', 's1', false);
+    months.forEach((m, i) => {
+      const t = svgEl('text', { x: X(i), y: H - 6, 'text-anchor': 'middle' }); t.textContent = monthName(m); svg.append(t);
+      const r = rows.find(x => x.month === m); if (!r) return;
+      const hit = svgEl('rect', { x: PL + colW * i, y: PT, width: colW, height: plotH, fill: 'transparent' });
+      hover(hit, monthLong(m), [['s1', rateTxt(r.overall_conversion), 'overall conversion'], ['s2', rateTxt(r.similar_overall), 'similar listings'],
+        [null, rateTxt(r.search_to_listing), 'search → listing'], [null, rateTxt(r.listing_to_booking), 'listing → booking'],
+        [null, fmtNum(booked(m)), 'bookings made']]);
+      svg.append(hit);
+    });
+    cw.append(svg);
+    box.append(el('p', { class: 'sub' }, footnote));
+    box.append(tableView('Show as a table', ['Month', 'Overall', 'Similar listings', 'First-page impressions', 'Search → listing', 'Listing → booking', 'Bookings'],
+      rows.map(r => [monthLong(r.month), rateTxt(r.overall_conversion), rateTxt(r.similar_overall), rateTxt(r.first_page_rate),
+        rateTxt(r.search_to_listing), rateTxt(r.listing_to_booking), fmtNum(booked(r.month))])));
+  }
+}
+
+// ---------------------------------------------------------------- Vrbo pipeline (last-30-day counts, one entry per home a month)
+function renderVrbo() {
+  const box = $('#vrbo'); box.replaceChildren();
+  const months = rangeMonths(), rows = (LIVE && LIVE.vrbo ? LIVE.vrbo : []).filter(r => months.includes(r.month) && inHome(r.property_id));
+  if (!rows.length) {
+    const p = el('p', { class: 'empty' }, !LIVE ? 'Couldn\'t load the logged numbers. ' : `No Vrbo numbers for ${homeName()} in this range yet. `);
+    p.append(el('a', { href: 'log#vrbo' }, 'Add them on the Log numbers page'), document.createTextNode('.'));
+    box.append(p); return;
+  }
+  const imp = sum(rows, 'impressions'), views = sum(rows, 'views'), booked = sum(rows, 'bookings');
+  const nMonths = new Set(rows.map(r => r.month)).size;
+  const hero = el('div', { class: 'hero' }), left = el('div'), right = el('div');
+  left.append(el('div', { class: 'num-label' }, `View → booking, ${homeName()}`), el('div', { class: 'big' }, pct(booked, views)),
+    el('div', { class: 'big-note' }, `${fmtNum(booked)} booking${booked === 1 ? '' : 's'} from ${fmtNum(views)} property views, ${nMonths} month${nMonths === 1 ? '' : 's'} logged`));
+  right.append(el('div', { class: 'num-label' }, `The funnel, last ${state.range} months`), steps([
+    ['step', fmtNum(imp), 'search impressions'], ['arrow', pct(views, imp), 'viewed →'],
+    ['step', fmtNum(views), 'property views'], ['arrow', pct(booked, views), 'booked →'],
+    ['step', fmtNum(booked), 'bookings']]));
+  const minis = el('div', { class: 'minis' });
+  const latest = rows.map(r => r.as_of).sort().pop();
+  [[pct(booked, imp), 'overall: bookings ÷ impressions'], [dayLong(latest), 'latest entry']]
+    .forEach(([v, l]) => { const m = el('div', { class: 'mini' }); m.append(el('b', {}, v), el('span', {}, l)); minis.append(m); });
+  right.append(minis);
+  hero.append(left, right); box.append(hero);
+  box.append(tableView('Show as a table', ['Month', 'Property', 'Search impressions', 'Property views', 'Bookings', 'Viewed', 'Booked'],
+    rows.slice().reverse().map(r => [monthLong(r.month), HOMES[r.property_id] || r.property_id, fmtNum(r.impressions), fmtNum(r.views), fmtNum(r.bookings),
+      pct(r.views, r.impressions), pct(r.bookings, r.views)])));
+}
+
+// ---------------------------------------------------------------- 2. Furnished Finder pipeline
+// One listing per home. Totals since joining become new counts per period *per listing*, then add up.
+function ffListings() {
+  const out = {};
+  for (const sn of (LIVE ? LIVE.furnished_finder : [])) if (sn.property_id && inHome(sn.property_id)) (out[sn.property_id] = out[sn.property_id] || []).push(sn);
+  for (const k of Object.keys(out)) out[k].sort((a, b) => a.as_of.localeCompare(b.as_of));
+  return out;
+}
+const ffLeases = pid => (LIVE ? LIVE.bookings : []).filter(b => b.channel === 'furnished_finder' && b.property_id === pid);
+// When a lease was agreed: its signed-on date, else move-in (older entries: the day it was logged).
+const leaseTime = b => Date.parse((b.signed || b.move_in) + 'T12:00Z') || Date.parse(b.entered_at);
+function ffPeriods(listings) {
+  const out = [];
+  for (const [pid, snaps] of Object.entries(listings)) {
+    for (let i = 1; i < snaps.length; i++) {
+      const a = snaps[i - 1], b = snaps[i], p = { property: pid, from: a.as_of, to: b.as_of, month: b.as_of.slice(0, 7) };
+      for (const k of FF_TOTALS) p[k] = a[k] != null && b[k] != null && b[k] >= a[k] ? b[k] - a[k] : null;
+      const t0 = Date.parse(a.as_of + 'T23:59Z'), t1 = Date.parse(b.as_of + 'T23:59Z');
+      p.leases = ffLeases(pid).filter(l => { const t = leaseTime(l); return t > t0 && t <= t1; }).length;
+      out.push(p);
+    }
+  }
+  return out;
+}
+function ffLast90(snaps, pid) {  // one listing: latest 90-day activity, inquiries and leases over about the same 90 days
+  const last = snaps[snaps.length - 1], t = Date.parse(last.as_of + 'T12:00Z');
+  const base = snaps.slice(0, -1).reverse().find(x => Date.parse(x.as_of + 'T12:00Z') <= t - 80 * 864e5);
+  const inq = base && base.booking_inquiries != null && last.booking_inquiries != null ? last.booking_inquiries - base.booking_inquiries : null;
+  const leases = base ? ffLeases(pid).filter(b => { const e = leaseTime(b); return e > Date.parse(base.as_of + 'T23:59Z') && e <= t + 864e5; }).length : null;
+  return { as_of: last.as_of, impressions: last.impressions, views: last.listing_views, inq, leases };
+}
+function renderFF() {
+  const box = $('#ff'); box.replaceChildren();
+  const listings = ffListings(), pids = Object.keys(listings).sort();
+  if (!pids.length) {
+    const p = el('p', { class: 'empty' }, !LIVE ? 'Couldn\'t load the logged numbers. ' : `No Furnished Finder numbers for ${homeName()} yet. `);
+    p.append(el('a', { href: 'log#ff' }, 'Add them on the Log numbers page'), document.createTextNode('.'));
+    box.append(p); return;
+  }
+  const months = rangeMonths(), periods = ffPeriods(listings).filter(p => months.includes(p.month));
+  const inq = sum(periods, 'booking_inquiries'), contacts = inq + sum(periods, 'direct_messages') + sum(periods, 'phone_reveals'), leases = sum(periods, 'leases');
+  // Until a listing has a second entry, show what the panel says: totals since the listing started.
+  const latest = pids.map(pid => listings[pid][listings[pid].length - 1]);
+  const total = k => latest.reduce((a, x) => a + (x[k] || 0), 0);
+  const sinceInq = total('booking_inquiries'), sinceContacts = sinceInq + total('direct_messages') + total('phone_reveals');
+  const leasesAll = pids.reduce((a, pid) => a + ffLeases(pid).length, 0);
+  const nextDate = (() => { const d = new Date(latest.map(x => x.as_of).sort()[0] + 'T12:00'); d.setMonth(d.getMonth() + 1);
+    return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric' }); })();
+  const hero = el('div', { class: 'hero' }), left = el('div'), right = el('div');
+  if (periods.length) left.append(el('div', { class: 'num-label' }, `Inquiry → lease, ${homeName()}`), el('div', { class: 'big' }, pct(leases, inq)),
+    el('div', { class: 'big-note' }, `${fmtNum(leases)} leases from ${fmtNum(inq)} new booking inquiries`));
+  else left.append(el('div', { class: 'num-label' }, `Booking inquiries since joining, ${homeName()}`), el('div', { class: 'big' }, fmtNum(sinceInq)),
+    el('div', { class: 'big-note' }, `Inquiry → lease by month starts with the next entry for each listing (around ${nextDate}).`));
+  const minis = el('div', { class: 'minis' });
+  const fee = D.costs['furnished-finder'];
+  const allFF = (LIVE ? LIVE.bookings : []).filter(b => b.channel === 'furnished_finder' && leaseTime(b) > Date.now() - 365 * 864e5);
+  // The yearly fee covers all three listings; for one home, a third of it.
+  const feeHere = fee == null ? null : state.home === 'all' ? fee : fee / 3, leases12 = allFF.filter(b => inHome(b.property_id)).length;
+  (periods.length ? [[fmtNum(contacts), 'tenant contacts'], [pct(leases, contacts), 'contact → lease']]
+    : [[fmtNum(sinceContacts), 'tenant contacts since joining'], [fmtNum(total('matched_leads')), 'matched leads since joining']])
+    .concat([[feeHere == null ? '–' : leases12 ? usd(feeHere / leases12) : 'no leases yet', 'cost per lease (12 mo.)']])
+    .forEach(([v, l]) => { const m = el('div', { class: 'mini' }); m.append(el('b', {}, v), el('span', {}, l)); minis.append(m); });
+
+  const l90 = pids.map(pid => ffLast90(listings[pid], pid));
+  const add = k => l90.every(x => x[k] == null) ? null : l90.reduce((a, x) => a + (x[k] || 0), 0);
+  const imp = add('impressions'), views = add('views'), inq90 = l90.some(x => x.inq == null) ? null : add('inq'), leases90 = inq90 == null ? null : add('leases');
+  const asOf = l90.map(x => x.as_of).sort().pop();
+  right.append(el('div', { class: 'num-label' }, `Last 90 days, as of ${dayLong(asOf)}`), steps([
+    ['step', fmtNum(imp), 'impressions'], ['arrow', pct(views, imp), 'viewed →'],
+    ['step', fmtNum(views), 'listing views'], ['arrow', inq90 == null ? '–' : pct(inq90, views), 'inquired →'],
+    ['step', inq90 == null ? fmtNum(sinceInq) : fmtNum(inq90), inq90 == null ? 'booking inquiries since joining' : 'booking inquiries'],
+    ['arrow', inq90 == null ? pct(leasesAll, sinceInq) : pct(leases90, inq90), inq90 == null ? 'signed (since joining) →' : 'signed →'],
+    ['step', inq90 == null ? fmtNum(leasesAll) : fmtNum(leases90), inq90 == null ? 'leases logged (all)' : 'leases logged']]));
+  right.append(minis);
+  if (inq90 == null) right.append(el('p', { class: 'sub' }, 'Booking inquiries, messages and phone reveals are totals since each listing started, so "viewed → inquired" '
+    + 'needs the next entry (monthly), and 90-day counts need entries about 3 months apart. "Signed (since joining)" = leases logged ÷ inquiries since '
+    + 'the listing started; it reads low unless leases from earlier years are logged too.'
+    + (leasesAll ? '' : ' Leases come from the New booking form ("Where it came from: Furnished Finder").')));
+  hero.append(left, right); box.append(hero);
+
+  // Compare the three listings (only with all homes).
+  if (state.home === 'all' && pids.length > 1) {
+    box.append(el('h3', {}, 'By listing'));
+    const wrap = el('div', { class: 'scroll' }), t = el('table'), tr = el('tr');
+    const monthly = periods.length > 0;
+    [ 'Listing', monthly ? 'New inquiries' : 'Inquiries since joining', monthly ? 'Leases' : 'Leases logged (all)', monthly ? 'Inquiry → lease' : 'Inquiry → lease (since joining)',
+      'Impressions (90 d)', 'Views (90 d)', 'Viewed'].forEach(h => tr.append(el('th', {}, h))); t.append(tr);
+    pids.forEach((pid, i) => {
+      const ps = periods.filter(p => p.property === pid), x = l90[i];
+      const q = monthly ? sum(ps, 'booking_inquiries') : latest[i].booking_inquiries, l = monthly ? sum(ps, 'leases') : ffLeases(pid).length;
+      const row = el('tr');
+      [HOMES[pid] || pid, fmtNum(q), fmtNum(l), monthly ? (ps.length ? pct(l, q) : '–') : pct(l, q), fmtNum(x.impressions), fmtNum(x.views), pct(x.views, x.impressions)]
+        .forEach(c => row.append(el('td', {}, c)));
+      t.append(row);
+    });
+    wrap.append(t); box.append(wrap);
+  }
+
+  // New contacts per month, by kind (stacked), listings added together.
+  box.append(el('h3', {}, 'New tenant contacts by month'));
+  const byMonth = months.map(m => {
+    const ps = periods.filter(p => p.month === m);
+    if (!ps.length) return null;
+    const x = { month: m, from: ps.map(p => p.from).sort()[0], to: ps.map(p => p.to).sort().pop() };
+    for (const k of [...FF_TOTALS, 'leases']) x[k] = sum(ps, k);
+    return x;
+  });
+  if (!byMonth.some(Boolean)) box.append(el('p', { class: 'empty' }, 'Shows after each listing\'s second monthly entry.'));
+  else {
+    box.append(legend(FF_KINDS.map(([, l, c]) => [l, c, 'box'])));
+    const cw = el('div', { class: 'chart' }); box.append(cw);
+    const W = widthOf(cw), H = 210, PL = 34, PB = 24, PT = 8;
+    const svg = svgEl('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': 'New Furnished Finder contacts by month' });
+    const top = niceTop(Math.max(1, ...byMonth.filter(Boolean).map(p => FF_KINDS.reduce((a, [k]) => a + (p[k] || 0), 0))), true);
+    const plotH = axes(svg, W, H, PL, PB, PT, top, v => fmtNum(v)), colW = (W - PL) / months.length, bw = Math.min(34, colW - 12);
+    months.forEach((m, i) => {
+      const x = PL + colW * i + (colW - bw) / 2, lab = svgEl('text', { x: x + bw / 2, y: H - 6, 'text-anchor': 'middle' });
+      lab.textContent = monthName(m); svg.append(lab);
+      const p = byMonth[i]; if (!p) return;
+      const tipRows = [...FF_KINDS.map(([k, l, c]) => [c, fmtNum(p[k]), l.toLowerCase()]), [null, fmtNum(p.leases), 'leases logged'], [null, fmtNum(p.matched_leads), 'matched leads']];
+      const parts = FF_KINDS.filter(([k]) => p[k]);
+      let y = PT + plotH;
+      parts.forEach(([k, , c], j) => {
+        const h = p[k] / top * plotH, gap = j < parts.length - 1 ? 2 : 0; y -= h;
+        const node = j === parts.length - 1 ? svgEl('path', { d: barUp(x, y, bw, h), fill: `var(--${c})` })
+          : svgEl('rect', { x, y: y + gap, width: bw, height: Math.max(h - gap, 0.5), fill: `var(--${c})` });
+        hover(node, `${monthLong(m)} (${dayLong(p.from)} to ${dayLong(p.to)})`, tipRows); svg.append(node);
+      });
+    });
+    cw.append(svg);
+  }
+  const all = pids.flatMap(pid => listings[pid].map(sn => ({ ...sn, pid }))).sort((a, b) => b.as_of.localeCompare(a.as_of) || a.pid.localeCompare(b.pid));
+  box.append(tableView('All Furnished Finder entries', ['As of', 'Listing', 'Impressions (90 d)', 'Views (90 d)', 'Booking inquiries*', 'Direct messages*', 'Phone reveals*', 'Matched leads*', 'Favorites (90 d)'],
+    all.map(sn => [dayLong(sn.as_of), HOMES[sn.pid] || sn.pid, fmtNum(sn.impressions), fmtNum(sn.listing_views), fmtNum(sn.booking_inquiries), fmtNum(sn.direct_messages),
+      fmtNum(sn.phone_reveals), fmtNum(sn.matched_leads), fmtNum(sn.favorites)])));
+  box.append(el('p', { class: 'sub' }, '* totals since the listing started, as shown by Furnished Finder.'));
+}
+
+// ---------------------------------------------------------------- 3. bookings by channel
+function loggedChannelRows() {
+  if (!LIVE) return [];
+  const set = new Set(D.months), out = {};
+  const add = (m, ch, pid, k) => { if (!set.has(m)) return; const key = m + '|' + ch + '|' + pid;
+    (out[key] = out[key] || { month: m, channel: ch, property: pid, nights: 0, stays: 0 })[k]++; };
+  for (const b of LIVE.bookings) {
+    const ch = b.channel === 'furnished_finder' ? 'Furnished Finder' : 'Direct';
+    add(b.move_in.slice(0, 7), ch, b.property_id, 'stays');
+    for (let d = Date.parse(b.move_in + 'T12:00Z'), end = Date.parse(b.move_out + 'T12:00Z'); d < end; d += 864e5) add(new Date(d).toISOString().slice(0, 7), ch, b.property_id, 'nights');
+  }
+  return Object.values(out);
+}
+function renderChannels() {
+  const box = $('#channels'); box.replaceChildren();
+  const months = rangeMonths(), u = state.unit;
+  const rows = D.channels.rows.concat(loggedChannelRows()).filter(r => months.includes(r.month) && inHome(r.property));
+  const shown = CHANNELS.filter(([c]) => c !== 'Direct' || rows.some(r => r.channel === 'Direct' && r[u]));
+  if (!rows.some(r => r[u])) { box.append(el('p', { class: 'empty' }, 'No bookings in this range yet.')); return; }
+  const tot = Object.fromEntries(shown.map(([c]) => [c, sum(rows.filter(r => r.channel === c), u)])), all = Object.values(tot).reduce((a, b) => a + b, 0);
+  const minis = el('div', { class: 'minis' });
+  shown.forEach(([c]) => { const m = el('div', { class: 'mini' }); m.append(el('b', {}, fmtNum(tot[c])), el('span', {}, `${c} · ${pct(tot[c], all)}`)); minis.append(m); });
+  box.append(minis, legend(shown.map(([c, v]) => [c, v, 'box'])));
+  const cw = el('div', { class: 'chart' }); box.append(cw);
+  const W = widthOf(cw), H = 230, PL = 34, PB = 24, PT = 8;
+  const svg = svgEl('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': `Booked ${u} by channel, by month` });
+  const top = niceTop(Math.max(1, ...months.map(m => sum(rows.filter(r => r.month === m), u))), true), plotH = axes(svg, W, H, PL, PB, PT, top, v => fmtNum(v));
+  const colW = (W - PL) / months.length, bw = Math.min(34, colW - 12);
+  months.forEach((m, i) => {
+    const rs = rows.filter(r => r.month === m), x = PL + colW * i + (colW - bw) / 2;
+    const lab = svgEl('text', { x: x + bw / 2, y: H - 6, 'text-anchor': 'middle' }); lab.textContent = monthName(m); svg.append(lab);
+    const parts = shown.map(([c, v]) => [c, v, sum(rs.filter(r => r.channel === c), u)]).filter(p => p[2]);
+    const tipRows = shown.map(([c, v]) => [v, fmtNum(sum(rs.filter(r => r.channel === c), u)), c]);
+    let y = PT + plotH;
+    parts.forEach(([c, v, val], j) => {
+      const h = val / top * plotH, gap = j < parts.length - 1 ? 2 : 0; y -= h;
+      const node = j === parts.length - 1 ? svgEl('path', { d: barUp(x, y, bw, h), fill: `var(--${v})` })
+        : svgEl('rect', { x, y: y + gap, width: bw, height: Math.max(h - gap, 0.5), fill: `var(--${v})` });
+      hover(node, `${monthLong(m)} (${u})`, tipRows); svg.append(node);
+    });
+  });
+  cw.append(svg);
+  box.append(tableView('Show as a table', ['Month', ...shown.map(c => c[0])],
+    months.map(m => { const rs = rows.filter(r => r.month === m); return [monthLong(m), ...shown.map(([c]) => fmtNum(sum(rs.filter(r => r.channel === c), u)))]; })));
+}
+
+// ---------------------------------------------------------------- 5. channel value (percentages only)
+function valueRows() {
+  // Exports: booking value and fees per month/channel/home. Logged leases: monthly rent spread over the nights.
+  const set = new Set(D.months), out = {};
+  const add = (m, ch, pid, value, fees) => { if (!set.has(m)) return; const k = m + '|' + ch + '|' + pid;
+    const r = out[k] = out[k] || { month: m, channel: ch, property: pid, value: 0, fees: 0 }; r.value += value; r.fees += fees; };
+  for (const r of D.money || []) add(r.month, r.channel, r.property, r.value, r.fees);
+  for (const b of LIVE ? LIVE.bookings : []) {
+    if (!b.monthly_rent) continue;
+    const ch = b.channel === 'furnished_finder' ? 'Furnished Finder' : 'Direct', perNight = b.monthly_rent * 12 / 365;
+    for (let d = Date.parse(b.move_in + 'T12:00Z'), end = Date.parse(b.move_out + 'T12:00Z'); d < end; d += 864e5)
+      add(new Date(d).toISOString().slice(0, 7), ch, b.property_id, perNight, 0);
+  }
+  // Furnished Finder's yearly fee, a twelfth each month, a third per listing.
+  const fee = D.costs['furnished-finder'];
+  if (fee) for (const m of D.months) for (const pid of Object.keys(HOMES)) add(m, 'Furnished Finder', pid, 0, fee / 12 / 3);
+  return Object.values(out);
+}
+function renderValue() {
+  const box = $('#value'); box.replaceChildren();
+  const months = rangeMonths(), rows = valueRows().filter(r => months.includes(r.month) && inHome(r.property));
+  const tot = Object.fromEntries(CHANNELS.map(([c]) => [c, { value: sum(rows.filter(r => r.channel === c), 'value'), fees: sum(rows.filter(r => r.channel === c), 'fees') }]));
+  const all = CHANNELS.reduce((a, [c]) => a + tot[c].value, 0);
+  const noRent = (LIVE ? LIVE.bookings : []).filter(b => !b.monthly_rent && inHome(b.property_id) && months.includes(b.move_in.slice(0, 7))).length;
+  if (!all) { box.append(el('p', { class: 'empty' }, 'No booking value in this range yet.')); return; }
+  const shown = CHANNELS.filter(([c]) => tot[c].value || tot[c].fees);
+
+  const hero = el('div', { class: 'hero' }), left = el('div'), right = el('div');
+  const top1 = shown.slice().sort((a, b) => tot[b[0]].value - tot[a[0]].value)[0][0];
+  left.append(el('div', { class: 'num-label' }, `Revenue share, last ${state.range} months`), el('div', { class: 'big' }, pct(tot[top1].value, all)),
+    el('div', { class: 'big-note' }, `of booking value came from ${top1}`));
+  // One bar split by channel, then the numbers.
+  const bw = el('div', { class: 'chart' }); left.append(bw);
+  const W = widthOf(bw), svg = svgEl('svg', { viewBox: `0 0 ${W} 22`, role: 'img', 'aria-label': 'Revenue share by channel' });
+  let x = 0;
+  shown.forEach(([c, v], i) => {
+    const w = tot[c].value / all * W; if (w <= 0) return;
+    const r = svgEl('rect', { x: x + (i ? 1 : 0), y: 2, width: Math.max(w - (i ? 2 : 0), 1), height: 18, rx: 3, fill: `var(--${v})` });
+    hover(r, c, [[v, pct(tot[c].value, all), 'of booking value'], [null, tot[c].value ? pct(tot[c].fees, tot[c].value) : '–', 'fee %']]);
+    svg.append(r); x += w;
+  });
+  bw.append(svg);
+  const minis = el('div', { class: 'minis' });
+  shown.forEach(([c]) => { const m = el('div', { class: 'mini' }); m.append(el('b', {}, pct(tot[c].value, all)), el('span', {}, c)); minis.append(m); });
+  minis.style.gridTemplateColumns = 'repeat(auto-fit, minmax(96px, 1fr))';
+
+  // Fee % by channel: horizontal bars, labeled.
+  right.append(el('div', { class: 'num-label' }, 'Fee %: what each channel costs per $ of booking value'));
+  const cw = el('div', { class: 'chart' }); right.append(cw);
+  const FW = widthOf(cw), rowH = 20, gap = 10, LW = 130, FH = shown.length * (rowH + gap);
+  const fees = shown.map(([c, v]) => [c, v, tot[c].value ? tot[c].fees / tot[c].value : null]);
+  const maxF = Math.max(0.05, ...fees.map(f => f[2] || 0)), scale = (FW - LW - 60) / maxF;
+  const fs = svgEl('svg', { viewBox: `0 0 ${FW} ${FH}`, role: 'img', 'aria-label': 'Fee percentage by channel' });
+  fees.forEach(([c, v, f], i) => {
+    const y = i * (rowH + gap);
+    const t = svgEl('text', { x: 0, y: y + rowH / 2 + 4, class: 'lbl' }); t.textContent = c; fs.append(t);
+    if (f == null) { const n = svgEl('text', { x: LW, y: y + rowH / 2 + 4 }); n.textContent = 'no booking value logged'; fs.append(n); return; }
+    const bar = svgEl('path', { d: `M${LW},${y}H${LW + Math.max(f * scale, 2) - 4}Q${LW + Math.max(f * scale, 2)},${y} ${LW + Math.max(f * scale, 2)},${y + 4}V${y + rowH - 4}Q${LW + Math.max(f * scale, 2)},${y + rowH} ${LW + Math.max(f * scale, 2) - 4},${y + rowH}H${LW}Z`, fill: `var(--${v})` });
+    hover(bar, c, [[v, (f * 100).toFixed(1) + '%', 'fee %'], [null, pct(tot[c].value, all), 'of booking value']]);
+    fs.append(bar);
+    const lab = svgEl('text', { x: LW + Math.max(f * scale, 2) + 8, y: y + rowH / 2 + 4, class: 'lbl' }); lab.textContent = (f * 100).toFixed(1) + '%'; fs.append(lab);
+  });
+  cw.append(fs);
+  const rl = el('div', { class: 'num-label' }, 'Revenue share by channel'); rl.style.marginTop = '14px';
+  right.append(rl, minis);
+  hero.append(left, right); box.append(hero);
+
+  // Fee % by month, one line per channel that charges (direct is always 0%). Gaps where a channel had no value.
+  const feeChannels = shown.filter(([c]) => c !== 'Direct');
+  const feeAt = (c, m) => { const rs = rows.filter(r => r.month === m && r.channel === c), v = sum(rs, 'value');
+    return v ? sum(rs, 'fees') / v * 100 : null; };
+  if (feeChannels.length) {
+    box.append(el('h3', {}, 'Fee % by month'), legend(feeChannels.map(([c, v]) => [c, v, 'line'])));
+    const lw = el('div', { class: 'chart' }); box.append(lw);
+    const LW2 = widthOf(lw), LH = 190, LPL = 40, LPB = 24, LPT = 8;
+    const ls = svgEl('svg', { viewBox: `0 0 ${LW2} ${LH}`, role: 'img', 'aria-label': 'Fee percentage by channel, by month' });
+    const allF = feeChannels.flatMap(([c]) => months.map(m => feeAt(c, m))).filter(v => v != null);
+    const ltop = niceTop(Math.max(5, ...allF)), lplotH = axes(ls, LW2, LH, LPL, LPB, LPT, ltop, v => Math.round(v) + '%');
+    const lcol = (LW2 - LPL) / months.length, LX = i => LPL + lcol * i + lcol / 2, LY = v => LPT + lplotH - v / ltop * lplotH;
+    feeChannels.forEach(([c, v]) => {
+      const pts = months.map((m, i) => { const f = feeAt(c, m); return f == null ? null : [LX(i), LY(f)]; });
+      let d = ''; pts.forEach((p, i) => { if (p) d += (d && pts[i - 1] ? 'L' : 'M') + p[0] + ',' + p[1]; });  // no line across months without value
+      if (d) ls.append(svgEl('path', { d, fill: 'none', stroke: `var(--${v})`, 'stroke-width': 2, 'stroke-linejoin': 'round' }));
+      pts.forEach(p => { if (p) ls.append(svgEl('circle', { cx: p[0], cy: p[1], r: 4, fill: `var(--${v})`, stroke: 'var(--surface)', 'stroke-width': 2 })); });
+    });
+    months.forEach((m, i) => {
+      const t = svgEl('text', { x: LX(i), y: LH - 6, 'text-anchor': 'middle' }); t.textContent = monthName(m); ls.append(t);
+      const vals = feeChannels.map(([c, v]) => [v, feeAt(c, m), c]);
+      if (vals.every(x => x[1] == null)) return;
+      const hit = svgEl('rect', { x: LPL + lcol * i, y: LPT, width: lcol, height: lplotH, fill: 'transparent' });
+      hover(hit, `${monthLong(m)}: fee %`, vals.map(([v, f, c]) => [v, f == null ? '–' : f.toFixed(1) + '%', c]));
+      ls.append(hit);
+    });
+    lw.append(ls);
+  }
+
+  // Month by month: revenue share (100% stacked).
+  box.append(el('h3', {}, 'Revenue share by month'), legend(shown.map(([c, v]) => [c, v, 'box'])));
+  const mw = el('div', { class: 'chart' }); box.append(mw);
+  const MW = widthOf(mw), MH = 200, PL = 40, PB = 24, PT = 6;
+  const ms = svgEl('svg', { viewBox: `0 0 ${MW} ${MH}`, role: 'img', 'aria-label': 'Revenue share by channel, by month' });
+  const plotH = axes(ms, MW, MH, PL, PB, PT, 1, v => Math.round(v * 100) + '%'), colW = (MW - PL) / months.length, cbw = Math.min(34, colW - 12);
+  months.forEach((m, i) => {
+    const rs = rows.filter(r => r.month === m), mt = sum(rs, 'value'), x0 = PL + colW * i + (colW - cbw) / 2;
+    const lab = svgEl('text', { x: x0 + cbw / 2, y: MH - 6, 'text-anchor': 'middle' }); lab.textContent = monthName(m); ms.append(lab);
+    if (!mt) return;
+    const parts = shown.map(([c, v]) => [c, v, sum(rs.filter(r => r.channel === c), 'value')]).filter(p => p[2] > 0);
+    const tipRows = shown.map(([c, v]) => [v, pct(sum(rs.filter(r => r.channel === c), 'value'), mt), c]);
+    let y = PT + plotH;
+    parts.forEach(([c, v, val], j) => {
+      const h = val / mt * plotH, gap = j < parts.length - 1 ? 2 : 0; y -= h;
+      const node = j === parts.length - 1 ? svgEl('path', { d: barUp(x0, y, cbw, h), fill: `var(--${v})` })
+        : svgEl('rect', { x: x0, y: y + gap, width: cbw, height: Math.max(h - gap, 0.5), fill: `var(--${v})` });
+      hover(node, `${monthLong(m)}: revenue share`, tipRows); ms.append(node);
+    });
+  });
+  mw.append(ms);
+  if (noRent) box.append(el('div', { class: 'note' }, `${noRent} logged lease${noRent > 1 ? 's have' : ' has'} no monthly rent, so ${noRent > 1 ? 'they\'re' : 'it\'s'} left out of the value. `
+    + 'To include ' + (noRent > 1 ? 'them' : 'it') + ', remove the entry on the Log numbers page and log it again with the monthly rent.'));
+  box.append(tableView('Show as a table', ['Month', ...shown.map(c => c[0] + ' share'), ...feeChannels.map(c => c[0] + ' fee %')],
+    months.map(m => { const rs = rows.filter(r => r.month === m), mt = sum(rs, 'value');
+      return [monthLong(m), ...shown.map(([c]) => mt ? pct(sum(rs.filter(r => r.channel === c), 'value'), mt) : '–'),
+        ...feeChannels.map(([c]) => { const f = feeAt(c, m); return f == null ? '–' : f.toFixed(1) + '%'; })]; })));
+}
+
+// ---------------------------------------------------------------- 6. monthly report runs (AI log)
+function renderRuns() {
+  const box = $('#runs'); box.replaceChildren();
+  const calls = LIVE && LIVE.ai_calls ? LIVE.ai_calls : [], reports = LIVE && LIVE.reports ? LIVE.reports : [];
+  if (!calls.length && !reports.length) {
+    box.append(el('p', { class: 'empty' }, LIVE ? 'No report runs yet. The first one runs on the 1st of next month.' : 'Couldn\'t load the report log.'));
+    return;
+  }
+  const STATUS = { sent: 'Sent', not_sent: 'Not sent (owner)', blocked: 'Blocked by the checks', edit_blocked: 'Edit blocked (numbers changed)' };
+  const passed = calls.filter(c => c.passed).length, cost = calls.reduce((t, c) => t + (c.cost_usd || 0), 0);
+  const minis = el('div', { class: 'minis' });
+  [[fmtNum(calls.length), 'model calls'], [calls.length ? pct(passed, calls.length) : '–', 'drafts passed the checks'],
+   [fmtNum(reports.filter(r => r.status === 'sent').length), 'reports sent'], ['$' + cost.toFixed(3), 'total model cost']]
+    .forEach(([v, l]) => { const m = el('div', { class: 'mini' }); m.append(el('b', {}, v), el('span', {}, l)); minis.append(m); });
+  box.append(minis);
+  const wrap = el('div', { class: 'scroll' }), t = el('table'), tr = el('tr');
+  ['When', 'Month', 'Checks', 'Outcome', 'Tokens in + out', 'Cost', 'Time'].forEach(h => tr.append(el('th', {}, h))); t.append(tr);
+  const outcome = c => { const r = reports.find(x => x.month === c.month && x.at >= c.at); return r ? (STATUS[r.status] || r.status) : 'Waiting for the owner'; };
+  for (const c of calls.slice(0, 12)) {
+    const row = el('tr');
+    [new Date(c.at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }), monthLong(c.month),
+     c.passed ? 'Passed' : 'Blocked: ' + (c.problems || []).join('; '), c.passed ? outcome(c) : 'Not sent',
+     `${fmtNum(c.input_tokens)} + ${fmtNum(c.output_tokens)}`, c.cost_usd == null ? '–' : '$' + c.cost_usd.toFixed(4), c.seconds == null ? '–' : c.seconds + ' s']
+      .forEach(v => row.append(el('td', {}, v)));
+    t.append(row);
+  }
+  wrap.append(t); box.append(wrap);
+}
+
+// ---------------------------------------------------------------- controls and loading
+function renderAll() {
+  document.querySelectorAll('.seg').forEach(seg => seg.querySelectorAll('button').forEach(b =>
+    b.setAttribute('aria-pressed', String(String(state[seg.id]) === b.dataset.v))));
+  renderAirbnb(); renderVrbo(); renderFF(); renderChannels(); renderValue(); renderRuns();
+}
+['range', 'unit'].forEach(id => $('#' + id).addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  state[id] = id === 'range' ? Number(b.dataset.v) : b.dataset.v; hideTip(); renderAll();
+}));
+$('#home').addEventListener('change', e => { state.home = e.target.value; hideTip(); renderAll(); });
+
+// Made-up numbers to preview the page (?demo=1).
+function demo() {
+  let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  const today = new Date(), months = [];
+  for (let i = 11; i >= 0; i--) months.push(new Date(today.getFullYear(), today.getMonth() - i, 15).toISOString().slice(0, 7));
+  const ch = [];
+  months.forEach(m => [['Airbnb', 3], ['Vrbo', 0.6], ['Booking.com', 0.8]].forEach(([c, base]) => {
+    const st = Math.round(base * (0.4 + rnd() * 1.2)); if (st) ch.push({ month: m, channel: c, property: 'home-' + (1 + Math.floor(rnd() * 3)), stays: st, nights: st * (2 + Math.round(rnd() * 4)) });
+  }));
+  const data = { generated: today.toISOString().slice(0, 10), months, channels: { has_direct: false, rows: ch },
+    airbnb_perf: months.map(m => ({ month: m, property: 'home-2', bookings: Math.round(rnd() * 4), nights: 0 })), costs: { 'furnished-finder': 597 },
+    money: ch.map(r => { const v = r.nights * (r.channel === 'Booking.com' ? 150 : 170); return { month: r.month, channel: r.channel, property: r.property, value: v,
+      fees: v * (r.channel === 'Airbnb' ? 0.07 : r.channel === 'Vrbo' ? 0.08 : 0.15) }; }) };
+  const bookings = [];
+  months.forEach(m => { if (rnd() < 0.6) { const s = new Date(m + '-05T12:00Z'), e = new Date(s.getTime() + (60 + Math.round(rnd() * 40)) * 864e5);
+    bookings.push({ id: bookings.length + 1, channel: rnd() < 0.8 ? 'furnished_finder' : 'referral', property_id: 'home-' + (1 + Math.floor(rnd() * 3)), move_in: s.toISOString().slice(0, 10),
+      move_out: e.toISOString().slice(0, 10), lead_type: 'travel_nurse', monthly_rent: rnd() < 0.85 ? 2800 + Math.round(rnd() * 8) * 100 : null,
+      entered_at: new Date(s.getTime() - 15 * 864e5).toISOString() }); } });
+  const furnished_finder = [];
+  ['home-1', 'home-2', 'home-3'].forEach((pid, h) => {
+    let bi = 20 + h * 10, dm = 14, pr = 18, ml = 60, ul = 300;
+    months.forEach(m => { bi += 1 + Math.round(rnd() * (2 + h)); dm += Math.round(rnd() * 2); pr += Math.round(rnd() * 2); ml += 1 + Math.round(rnd() * 3); ul += 8 + Math.round(rnd() * 10);
+      furnished_finder.push({ property_id: pid, as_of: m + '-01', impressions: 300 + h * 150 + Math.round(rnd() * 200), listing_views: 40 + h * 20 + Math.round(rnd() * 30),
+        favorites: 1 + Math.round(rnd() * 3), shares: Math.round(rnd() * 2), booking_inquiries: bi, direct_messages: dm, phone_reveals: pr, matched_leads: ml, unmatched_leads: ul }); });
+  });
+  const airbnb = months.map(m => ({ month: m, property_id: 'all', overall_conversion: +(0.15 + rnd() * 0.35).toFixed(2), similar_overall: +(0.25 + rnd() * 0.15).toFixed(2),
+    first_page_rate: +(45 + rnd() * 15).toFixed(1), search_to_listing: +(14 + rnd() * 8).toFixed(2), listing_to_booking: +(0.8 + rnd() * 1.4).toFixed(2) }));
+  const vrbo = months.slice(-6).flatMap(m => ['home-1', 'home-2'].map(pid => ({ property_id: pid, month: m, as_of: m + '-28',
+    impressions: 300 + Math.round(rnd() * 250), views: 40 + Math.round(rnd() * 50), bookings: Math.round(rnd() * 2) })));
+  const lastM = months[months.length - 2], prevM = months[months.length - 3];
+  const ai_calls = [{ at: lastM.slice(0, 7) + '-28T12:00:00Z', month: prevM, passed: true, input_tokens: 1580, output_tokens: 410, cost_usd: 0.0036, seconds: 4.2 },
+    { at: months[months.length - 1] + '-01T12:00:05Z', month: lastM, passed: false, problems: ['numbers not in the data: 0.47'], input_tokens: 1602, output_tokens: 395, cost_usd: 0.0036, seconds: 3.9 },
+    { at: months[months.length - 1] + '-01T12:10:00Z', month: lastM, passed: true, input_tokens: 1602, output_tokens: 402, cost_usd: 0.0036, seconds: 4.0 }].reverse();
+  const reports = [{ at: lastM + '-28T13:00:00Z', month: prevM, status: 'sent' }, { at: months[months.length - 1] + '-01T12:00:06Z', month: lastM, status: 'blocked' },
+    { at: months[months.length - 1] + '-01T15:00:00Z', month: lastM, status: 'sent' }].reverse();
+  return [data, { you: 'demo@example.com', bookings, furnished_finder, airbnb, vrbo, ai_calls, reports, recent: [] }];
+}
+
+(async () => {
+  const isDemo = new URLSearchParams(location.search).has('demo');
+  try {
+    if (isDemo) [D, LIVE] = demo();
+    else {
+      D = EMBEDDED || await fetch('marketing-data.json', { cache: 'no-store' }).then(r => { if (!r.ok) throw new Error(r.status); return r.json(); });
+      try { const r = await fetch('api/entries', { cache: 'no-store' }); if (r.ok) LIVE = await r.json(); } catch (e) { LIVE = null; }
+    }
+  } catch (e) { $('#airbnb').append(el('p', { class: 'empty' }, 'Couldn\'t load the numbers. Please reload the page.')); return; }
+  if (isDemo) $('#demo-note').append(el('div', { class: 'demo' }, 'Demo: made-up numbers to show how the page works.'));
+  $('#updated').textContent = `Exports updated ${dayLong(D.generated)} · logged numbers are live · counts and rates only, no guest details`;
+  renderAll();
+  let t; window.addEventListener('resize', () => { clearTimeout(t); t = setTimeout(() => { hideTip(); renderAll(); }, 150); });
+})();
+</script>
+</body>
+</html>

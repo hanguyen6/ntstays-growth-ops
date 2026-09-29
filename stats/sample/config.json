@@ -1,0 +1,10 @@
+{
+  "_help": "Config for the made-up sample exports. Your real config is stats/config.json.",
+  "currency": "USD",
+  "properties": [
+    { "id": "home-1", "name": "Property name #1", "match": ["Property name #1"], "hosting_since": "2024-01-01" },
+    { "id": "home-2", "name": "Property name #2", "match": ["Property name #2"], "hosting_since": "2024-01-01" },
+    { "id": "home-3", "name": "Property name #3", "match": ["Property name #3"], "hosting_since": "2024-01-01" }
+  ],
+  "public": { "stays_hosted": true, "guest_origins": true, "ratings": true, "featured_reviews": true, "occupancy": false }
+}

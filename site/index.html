@@ -1,0 +1,947 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NTStays | Short-term stays and property services</title>
+<meta name="description" content="Furnished homes in Framingham and Abington, MA and Cranston, RI: monthly stays for travel nurses, professionals and insurance placements, summer stays near Providence, and property management for owners.">
+<link rel="canonical" href="https://ntstays.com/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="NTStays: furnished homes for monthly and summer stays">
+<meta property="og:description" content="Owner-operated homes near Boston and Providence. Book directly with the owners.">
+<meta property="og:url" content="https://ntstays.com/">
+<meta property="og:image" content="https://ntstays.com/img/home-2/01-living-room.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Karla:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --coffee: #3b2a20;
+    --coffee-2: #5a4232;
+    --brass: #b08a3e;
+    --brass-soft: #e9dcc0;
+    --sage: #7d8f76;
+    --sage-soft: #e3e9df;
+    --oat: #f6f1e7;
+    --paper: #fffdf8;
+    --ink: #2b211b;
+    --muted: #6d6158;
+    --line: #e4dbcc;
+    --danger: #a3412f;
+    --radius: 14px;
+    --shadow: 0 8px 28px rgba(59, 42, 32, .08);
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--oat); color: var(--ink); font: 17px/1.6 Karla, system-ui, sans-serif; }
+  img { max-width: 100%; display: block; }
+  a { color: var(--coffee-2); }
+  h1, h2, h3 { font-family: Fraunces, Georgia, serif; font-weight: 650; line-height: 1.15; color: var(--coffee); margin: 0 0 .4em; }
+  h1 { font-size: clamp(2.1rem, 5vw, 3.4rem); }
+  h2 { font-size: clamp(1.7rem, 3.4vw, 2.3rem); }
+  h3 { font-size: 1.25rem; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
+  .eyebrow { text-transform: uppercase; letter-spacing: .12em; font-size: .78rem; font-weight: 700; color: var(--brass); margin: 0 0 .6em; }
+  .lede { color: var(--muted); max-width: 640px; font-size: 1.08rem; }
+  section { padding: 72px 0; }
+
+  /* header */
+  header.top { position: sticky; top: 0; z-index: 20; background: rgba(246, 241, 231, .92); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+  .nav { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+  .logo { font-family: Fraunces, Georgia, serif; font-size: 1.45rem; font-weight: 650; color: var(--coffee); text-decoration: none; letter-spacing: -.01em; }
+  .logo span { color: var(--brass); }
+  .nav ul { display: flex; gap: 22px; list-style: none; margin: 0; padding: 0; }
+  .nav ul a { text-decoration: none; color: var(--coffee-2); font-weight: 500; }
+  .nav ul a:hover { color: var(--brass); }
+  .nav ul a.btn-primary, .nav ul a.btn-primary:hover { color: var(--paper); }
+  @media (max-width: 640px) { .nav ul li:not(:last-child) { display: none; } }
+
+  .btn { display: inline-block; border: 0; border-radius: 999px; padding: 12px 22px; font: 700 .98rem Karla, sans-serif; cursor: pointer; text-decoration: none; transition: transform .15s, background .15s; }
+  .btn:hover { transform: translateY(-1px); }
+  .btn-primary { background: var(--coffee); color: var(--paper); }
+  .btn-primary:hover { background: var(--coffee-2); }
+  .btn-ghost { background: transparent; color: var(--coffee); box-shadow: inset 0 0 0 1.5px var(--coffee); }
+  .btn-small { padding: 8px 14px; font-size: .88rem; }
+
+  /* hero */
+  .hero { padding: 84px 0 64px; background: radial-gradient(1200px 400px at 85% 0%, var(--brass-soft), transparent 60%), var(--oat); }
+  .hero .ctas { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 24px; }
+  /* same check-mark list as the travel-nurse and insurance pages (assets/landing.css) */
+  .points { list-style: none; padding: 0; margin: 28px 0 0; display: grid; gap: 8px; }
+  .points li { padding-left: 28px; position: relative; color: var(--coffee-2); }
+  .points li::before { content: ""; position: absolute; left: 0; top: 5px; width: 18px; height: 18px; border-radius: 50%;
+    background: var(--sage) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 12l4 4 8-8'/%3E%3C/svg%3E") center / 12px no-repeat; }
+
+  /* cards */
+  .grid { display: grid; gap: 22px; }
+  .grid-3 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+  .grid-4 { grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
+  .card { background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; display: flex; flex-direction: column; }
+  .card-body { padding: 20px 22px 22px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+  .photo { aspect-ratio: 4 / 3; background: linear-gradient(135deg, var(--sage-soft), var(--brass-soft)); display: grid; place-items: center; color: var(--coffee-2); position: relative; }
+  .photo img { width: 100%; height: 100%; object-fit: cover; }
+  .photo .ph { font-size: .85rem; opacity: .75; text-align: center; }
+  .city { color: var(--muted); font-size: .93rem; }
+  .facts { display: flex; gap: 14px; flex-wrap: wrap; font-size: .9rem; color: var(--coffee-2); }
+  .tags { display: flex; gap: 8px; flex-wrap: wrap; }
+  .tag { background: var(--sage-soft); color: #3f5139; border-radius: 999px; padding: 3px 10px; font-size: .8rem; font-weight: 500; }
+  .card-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: auto; padding-top: 6px; }
+  .platform { font-size: .86rem; font-weight: 700; color: var(--coffee-2); text-decoration: none; border: 1px solid var(--line); border-radius: 999px; padding: 7px 12px; background: var(--oat); }
+  .platform:hover { border-color: var(--brass); }
+
+  .photo .nav-btn { position: absolute; top: 50%; transform: translateY(-50%); width: 34px; height: 34px; border-radius: 50%; border: 0;
+    background: rgba(255, 253, 248, .88); color: var(--coffee); font-size: 1.1rem; cursor: pointer; box-shadow: var(--shadow); }
+  .photo .nav-btn.prev { left: 10px; }
+  .photo .nav-btn.next { right: 10px; }
+  .photo .count { position: absolute; right: 10px; bottom: 10px; background: rgba(43, 33, 27, .7); color: var(--paper); font-size: .75rem; border-radius: 999px; padding: 2px 9px; }
+  .stay { align-self: flex-start; background: var(--brass-soft); color: var(--coffee); border-radius: 999px; padding: 3px 11px; font-size: .8rem; font-weight: 700; }
+  .facts:empty { display: none; }
+  .rating { font-size: .9rem; color: var(--coffee-2); font-weight: 700; }
+  .rating:empty { display: none; }
+  .rating span { color: var(--muted); font-weight: 400; }
+
+  /* guest reviews + numbers (from data/stats.json, built by stats/build_stats.py) */
+  .numbers { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); margin-top: 26px; }
+  .number { background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px 20px; }
+  .number b { display: block; font-family: Fraunces, Georgia, serif; font-size: 2rem; color: var(--coffee); line-height: 1.1; }
+  .number span { color: var(--muted); font-size: .92rem; }
+  .origins { color: var(--muted); font-size: .95rem; margin-top: 16px; }
+  .quote { padding: 22px; gap: 12px; }
+  .quote .stars { color: var(--brass); letter-spacing: 2px; }
+  .quote p { margin: 0; }
+  .quote .who { color: var(--muted); font-size: .9rem; margin-top: auto; }
+
+  .verify { margin-top: 18px; font-size: .95rem; }
+  .verify a { font-weight: 700; }
+
+  /* trust */
+  .trust { background: var(--sage-soft); border-top: 1px solid var(--line); }
+  .trust-grid { display: grid; gap: 22px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); margin-top: 26px; align-items: start; }
+  @media (max-width: 820px) { .trust-grid { grid-template-columns: 1fr; } }
+  .hosts { display: grid; gap: 14px; }
+  .host { display: flex; gap: 14px; align-items: flex-start; background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; }
+  .host .avatar { flex: none; width: 64px; height: 64px; border-radius: 50%; background: var(--brass-soft); color: var(--coffee); display: grid; place-items: center; font: 650 1.4rem Fraunces, Georgia, serif; overflow: hidden; }
+  .host .avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .host h3 { margin: 0; font-size: 1.1rem; }
+  .host .role { color: var(--muted); font-size: .88rem; }
+  .host p { margin: 6px 0 0; color: var(--ink); font-size: .95rem; }
+  .proof { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+  .proof li { background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px 12px 44px; position: relative; font-size: .95rem; }
+  .proof li::before { content: ""; position: absolute; left: 14px; top: 14px; width: 18px; height: 18px; border-radius: 50%; background: var(--sage) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 12l4 4 8-8'/%3E%3C/svg%3E") center / 12px no-repeat; }
+  .proof li span { display: block; color: var(--muted); font-size: .86rem; }
+  .safe { display: flex; gap: 14px; align-items: flex-start; margin-top: 22px; background: var(--paper); border: 1px dashed var(--brass); border-radius: var(--radius); padding: 16px 18px; }
+  .safe svg { flex: none; width: 28px; height: 28px; stroke: var(--coffee); }
+  .safe p { margin: 0; }
+
+  /* video tour */
+  .video-btn { font-size: .86rem; font-weight: 700; color: var(--coffee-2); border: 1px solid var(--line); border-radius: 999px; padding: 7px 12px; background: var(--oat); cursor: pointer; font-family: Karla, sans-serif; }
+  .video-btn:hover { border-color: var(--brass); }
+  dialog#video-dialog { border: 0; border-radius: var(--radius); padding: 12px; width: min(960px, calc(100vw - 32px)); background: var(--paper); }
+  dialog#video-dialog::backdrop { background: rgba(43, 33, 27, .75); }
+  .video-frame { aspect-ratio: 16 / 9; background: #000; border-radius: 10px; overflow: hidden; }
+  .video-frame iframe { width: 100%; height: 100%; border: 0; display: block; }
+  #video-close { margin-top: 10px; float: right; }
+
+  /* owners */
+  .owner-h { margin: 34px 0 14px; font-size: 1.2rem; }
+  .owner-proof { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+  .owner-proof .number { background: var(--oat); }
+  .owner-proof .number small { display: block; color: var(--muted); font-size: .8rem; margin-top: 4px; }
+  .ways { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); margin-top: 22px; }
+  .way-card { border-left: 4px solid var(--brass); background: var(--oat); border-radius: 0 var(--radius) var(--radius) 0; padding: 16px 20px; }
+  .way-card h3 { font-size: 1.1rem; margin-bottom: 4px; }
+  .way-card p { margin: 0; color: var(--muted); }
+  .owner-cta { display: flex; gap: 18px; align-items: center; justify-content: space-between; flex-wrap: wrap; margin-top: 28px;
+    background: var(--brass-soft); border-radius: var(--radius); padding: 20px 22px; }
+  .owner-cta div { flex: 1 1 320px; color: var(--coffee-2); }
+
+  /* where guests come from: real maps with a route from each guest's city to our home (no counts) */
+  .maps { position: relative; display: grid; gap: 16px; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); margin-top: 26px; align-items: start; }
+  @media (max-width: 900px) { .maps { grid-template-columns: 1fr; } }
+  .map .route { fill: none; stroke: var(--brass); stroke-width: 1.3; stroke-opacity: .55; stroke-linecap: round; }
+  .map .route.draw { transition: stroke-dashoffset 1.6s ease-out; }
+  .map-card .line { display: inline-block; width: 18px; height: 0; border-top: 2px solid var(--brass); margin-right: 5px; vertical-align: 3px; opacity: .8; }
+  .map-card { margin: 0; background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px 18px; }
+  .map-card h3 { font-size: 1rem; margin: 0 0 8px; }
+  .map { width: 100%; }
+  .map svg { width: 100%; height: auto; display: block; }
+  .map .land { fill: #efe7d8; stroke: #fffdf8; stroke-width: .8; }
+  .map .land.home { fill: #e3e9df; }
+  .map .pin { fill: var(--brass); stroke: #fffdf8; stroke-width: 1.5; cursor: default; }
+  .map .pin:hover { fill: var(--coffee); }
+  .map .ours { fill: var(--coffee); stroke: #fffdf8; stroke-width: 1.5; }
+  .map-card figcaption { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 8px; font-size: .82rem; color: var(--muted); }
+  .map-card .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: var(--brass); margin-right: 5px; vertical-align: -1px; }
+  .map-card .dot.ours { background: var(--coffee); }
+  .map-tip { position: absolute; pointer-events: none; background: var(--coffee); color: var(--paper); font-size: .8rem; padding: 4px 9px;
+    border-radius: 6px; white-space: nowrap; transform: translate(-50%, calc(-100% - 10px)); display: none; z-index: 3; }
+  .map-note { color: var(--muted); font-size: .8rem; margin-top: 12px; }
+
+  .audiences { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); margin-top: 26px; }
+  .audience { display: block; text-decoration: none; background: var(--brass-soft); border-radius: var(--radius); padding: 18px 22px; color: var(--coffee); }
+  .audience b { display: block; font: 650 1.15rem Fraunces, Georgia, serif; margin-bottom: 4px; }
+  .audience span { color: var(--coffee-2); font-size: .95rem; }
+  .audience:hover { background: #e2d2ae; }
+
+.book-steps { list-style: none; counter-reset: b; padding: 12px 14px; margin: 4px 0 16px; background: var(--oat);
+  border: 1px solid var(--line); border-radius: 10px; display: grid; gap: 4px; font-size: .9rem; color: var(--coffee-2); }
+.book-steps li { counter-increment: b; padding-left: 26px; position: relative; }
+.book-steps li::before { content: counter(b); position: absolute; left: 0; top: 1px; width: 18px; height: 18px; border-radius: 50%;
+  background: var(--coffee); color: var(--paper); font-size: .72rem; font-weight: 700; display: grid; place-items: center; }
+
+  .services { background: var(--paper); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .service .icon { width: 46px; height: 46px; border-radius: 12px; background: var(--brass-soft); display: grid; place-items: center; }
+  .service .icon svg { width: 24px; height: 24px; stroke: var(--coffee); }
+  .service p { margin: 0; color: var(--muted); }
+  .service ul { margin: 0; padding-left: 18px; color: var(--muted); font-size: .95rem; }
+
+  .steps { counter-reset: s; display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin-top: 26px; }
+  .step { background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; }
+  .step::before { counter-increment: s; content: counter(s); display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: var(--coffee); color: var(--paper); font-weight: 700; margin-bottom: 10px; }
+  .step p { margin: 0; color: var(--muted); }
+
+  /* form */
+  .contact { display: grid; gap: 36px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); align-items: start; }
+  @media (max-width: 860px) { .contact { grid-template-columns: 1fr; } }
+  form.panel { background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); padding: 26px; }
+  .row { display: grid; gap: 14px; grid-template-columns: 1fr 1fr; }
+  @media (max-width: 560px) { .row { grid-template-columns: 1fr; } }
+  label { display: block; font-weight: 700; font-size: .9rem; color: var(--coffee-2); margin-bottom: 14px; }
+  label .opt { font-weight: 400; color: var(--muted); }
+  input, select, textarea { width: 100%; margin-top: 6px; padding: 11px 12px; border: 1px solid var(--line); border-radius: 10px; background: #fff; font: 400 1rem Karla, sans-serif; color: var(--ink); }
+  input:focus, select:focus, textarea:focus { outline: 2px solid var(--brass); outline-offset: 1px; border-color: var(--brass); }
+  .check { display: flex; gap: 10px; align-items: flex-start; font-weight: 400; color: var(--muted); font-size: .92rem; }
+  .check input { width: auto; margin-top: 4px; }
+  .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+  .status { margin-top: 14px; padding: 12px 14px; border-radius: 10px; font-size: .95rem; display: none; }
+  .status.ok { display: block; background: var(--sage-soft); color: #33452e; }
+  .status.err { display: block; background: #f5e1dc; color: var(--danger); }
+  .hidden { display: none; }
+  .contact-aside p { color: var(--muted); }
+  .contact-aside .direct { background: var(--paper); border: 1px dashed var(--brass); border-radius: var(--radius); padding: 16px 18px; margin-top: 18px; }
+
+  .newsletter { background: var(--coffee); color: var(--oat); }
+  .newsletter h2 { color: var(--paper); }
+  .newsletter p { color: #e7dccd; }
+  .nl-form { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+  .nl-form input { flex: 1 1 200px; margin: 0; border: 0; }
+  .nl-form .btn { background: var(--brass); color: var(--coffee); }
+  .newsletter .status.ok { background: #4d3a2c; color: var(--paper); }
+  .newsletter .fine { font-size: .82rem; color: #cbbba6; margin-top: 10px; }
+  .newsletter .fine a { color: var(--brass-soft); }
+
+  footer { padding: 34px 0; color: var(--muted); font-size: .9rem; }
+  footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+</style>
+<script src="assets/source.js"></script>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap nav">
+    <a class="logo" href="#top">NT<span>Stays</span></a>
+    <ul>
+      <li><a href="#stays">Stays</a></li>
+      <li class="hidden" id="nav-reviews"><a href="#reviews">Reviews</a></li>
+      <li><a href="#services">For owners</a></li>
+      <li><a href="#how">How it works</a></li>
+      <li><a class="btn btn-primary btn-small" href="#contact">Contact us</a></li>
+    </ul>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <div class="wrap">
+      <p class="eyebrow">NTStays LLC</p>
+      <h1>Homes worth coming back to.<br>Properties looked after like our own.</h1>
+      <p class="lede">We host guests in our own furnished homes, for a few nights or a few months, and we help other owners
+        get their properties guest-ready and keep them running: management, staging,
+        renovation, and cleaning.</p>
+      <div class="ctas">
+        <a class="btn btn-primary" href="#stays">See our stays</a>
+        <a class="btn btn-ghost" href="#services">Services for owners</a>
+      </div>
+      <ul class="points">
+        <li><b>Premium locations</b> near Boston and Providence</li>
+        <li><b>Flexible stays</b>, from a few nights to many months</li>
+        <li><b>Attentive, owner-run service</b> for every home and guest</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="stays">
+    <div class="wrap">
+      <p class="eyebrow">Our stays</p>
+      <h2>Where you can stay</h2>
+      <p class="lede">Furnished monthly stays for traveling nurses, professionals and families between homes, plus summer
+        getaways in Cranston. Book directly with us: no platform fees, and you talk to the hosts from the first message.</p>
+      <div class="grid grid-3" id="property-grid" style="margin-top:28px"></div>
+      <div class="audiences">
+        <a class="audience" href="travel-nurses.html"><b>Travel nurses &amp; healthcare staff</b>
+          <span>Furnished homes near MetroWest, South Shore and Providence hospitals, on flexible terms for any contract length &rarr;</span></a>
+        <a class="audience" href="insurance-housing.html"><b>Insurance &amp; temporary housing</b>
+          <span>Whole furnished homes for displaced families, with direct billing for insurers and housing providers &rarr;</span></a>
+      </div>
+    </div>
+  </section>
+
+  <section id="reviews" class="hidden">
+    <div class="wrap">
+      <p class="eyebrow">Guest reviews</p>
+      <h2>What guests say</h2>
+      <p class="lede">Reviews from guests who stayed with us on Airbnb, Vrbo, and Booking.com.</p>
+      <div class="numbers" id="numbers"></div>
+      <div class="grid grid-3" id="review-grid" style="margin-top:22px"></div>
+      <p class="verify" id="verify-reviews"></p>
+    </div>
+  </section>
+
+  <section id="origins" class="hidden">
+    <div class="wrap">
+      <p class="eyebrow">Where guests come from</p>
+      <h2>Guests from across the country and around the world</h2>
+      <p class="lede" id="origins-lede"></p>
+      <div class="maps">
+        <figure class="map-card">
+          <div class="map" id="map-us" role="img"></div>
+          <figcaption><span><span class="dot"></span>Where a guest lives</span><span><span class="dot ours"></span>Our homes</span>
+            <span><span class="line"></span>Their trip to us</span></figcaption>
+        </figure>
+        <figure class="map-card">
+          <h3>And from around the world</h3>
+          <div class="map" id="map-world" role="img"></div>
+        </figure>
+        <div class="map-tip" id="map-tip" role="tooltip"></div>
+      </div>
+      <p class="map-note">From the home city guests shared on their booking profiles. Map data: Natural Earth, US Census Bureau.</p>
+    </div>
+  </section>
+
+  <section id="trust" class="trust">
+    <div class="wrap">
+      <p class="eyebrow">Book with confidence</p>
+      <h2>Real homes, real hosts</h2>
+      <p class="lede"><span id="trust-intro"></span> Booking directly means no platform fees, so here is how you can
+        check who we are before you book.</p>
+      <div class="trust-grid">
+        <div class="hosts" id="hosts"></div>
+        <ul class="proof" id="proof"></ul>
+      </div>
+      <div class="safe">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.4 8.2-8 9-4.6-.8-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg>
+        <p id="safe-pay"></p>
+      </div>
+    </div>
+  </section>
+
+  <dialog id="video-dialog" aria-label="Video tour">
+    <div class="video-frame" id="video-frame"></div>
+    <button class="btn btn-ghost btn-small" id="video-close">Close</button>
+  </dialog>
+
+  <section id="services" class="services">
+    <div class="wrap">
+      <p class="eyebrow">For property owners</p>
+      <h2>Let your home earn, without the work</h2>
+      <p class="lede">We run our own three homes every day, with nightly stays when demand is high and furnished monthly
+        stays the rest of the year. We'll do the same for yours.</p>
+
+      <h3 class="owner-h">Results from our own homes</h3>
+      <div class="owner-proof" id="owner-proof"></div>
+
+      <div class="ways">
+        <div class="way-card"><h3>Nightly stays</h3>
+          <p>Listed on Airbnb, Vrbo, Booking.com and our own site, priced for peak season and weekends.</p></div>
+        <div class="way-card"><h3>Longer stays, flexible terms</h3>
+          <p>Furnished stays of a few weeks to many months for traveling nurses, professionals, and families placed by
+            their insurance. Steady income and far fewer turnovers.</p></div>
+      </div>
+
+      <h3 class="owner-h">What we take care of</h3>
+      <div class="grid grid-4" id="service-grid"></div>
+
+      <div class="owner-cta">
+        <div><b>Tell us about your home.</b> We'll reply with what it could earn, which kind of stays fit it best, and
+          how we'd run it, plus our owner info pack.</div>
+        <button class="btn btn-primary" data-ask-service="property_management">Talk to us about your home</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="how">
+    <div class="wrap">
+      <p class="eyebrow">How it works</p>
+      <h2>Simple from the first message</h2>
+      <div class="steps">
+        <div class="step"><h3>Tell us what you need</h3><p>A stay, or help with a property. The form takes a minute.</p></div>
+        <div class="step"><h3>We reply personally</h3><p>A real reply from our team, usually within one business day.</p></div>
+        <div class="step"><h3>Book or get a plan</h3><p>Guests get dates and options. Owners get a short call and a clear proposal.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact">
+    <div class="wrap contact">
+      <div class="contact-aside">
+        <p class="eyebrow">Contact</p>
+        <h2>Ask us anything</h2>
+        <p>Questions about a stay, or ready to talk about your property? Send us a note and we'll get back to you.</p>
+        <p>Prefer email? <a id="contact-email" href="mailto:hello@ntstays.com">hello@ntstays.com</a></p>
+        <div class="direct">
+          <b>Already stayed with us?</b>
+          <p style="margin:.3em 0 0">Tick the box on the form to hear about return-guest offers and open dates. You can unsubscribe anytime.</p>
+        </div>
+      </div>
+
+      <form class="panel" id="inquiry-form" data-avail-form data-turnstile novalidate>
+        <label>What can we help with?
+          <select name="inquiry_type" id="inquiry_type" required>
+            <option value="stay">A stay at one of your homes</option>
+            <option value="property_management">Property management</option>
+            <option value="staging">Home staging</option>
+            <option value="renovation">Renovation</option>
+            <option value="cleaning">Cleaning</option>
+            <option value="other">Something else</option>
+          </select>
+        </label>
+
+        <div id="stay-fields">
+          <label>Which home?
+            <select name="property_id" id="property_id"></select>
+          </label>
+          <div class="row">
+            <label>Check-in <span class="opt">(optional)</span><input type="date" name="check_in"></label>
+            <label>Check-out <span class="opt">(optional)</span><input type="date" name="check_out"></label>
+          </div>
+          <label>Guests <span class="opt">(optional)</span><input type="number" name="guests" min="1" max="20" inputmode="numeric"></label>
+        </div>
+
+        <div id="service-fields" class="hidden">
+          <div class="row">
+            <label>Property city <span class="opt">(optional)</span><input name="service_city" autocomplete="address-level2"></label>
+            <label>Property type <span class="opt">(optional)</span>
+              <select name="property_type">
+                <option value="">Select</option>
+                <option>Single-family home</option>
+                <option>Condo or apartment</option>
+                <option>Townhouse</option>
+                <option>Multi-unit</option>
+                <option>Other</option>
+              </select>
+            </label>
+          </div>
+          <label>Timeline <span class="opt">(optional)</span>
+            <select name="timeline">
+              <option value="">Select</option>
+              <option>As soon as possible</option>
+              <option>Within 1-3 months</option>
+              <option>3+ months out</option>
+              <option>Just exploring</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="row">
+          <label>First name<input name="first_name" required autocomplete="given-name"></label>
+          <label>Last name <span class="opt">(optional)</span><input name="last_name" autocomplete="family-name"></label>
+        </div>
+        <div class="row">
+          <label>Email<input type="email" name="email" required autocomplete="email"></label>
+          <label>Phone <span class="opt">(optional)</span><input type="tel" name="phone" autocomplete="tel"></label>
+        </div>
+        <label>How did you hear about us? <span class="opt">(optional)</span>
+          <select name="heard_about">
+            <option value="">Choose one</option>
+            <option value="google">Google search</option>
+            <option value="social">Facebook, Instagram or another social site</option>
+            <option value="booking_site">Airbnb, Vrbo or Booking.com</option>
+            <option value="hospital_agency">Hospital or staffing agency</option>
+            <option value="insurance">Insurance company or adjuster</option>
+            <option value="friend">Friend or colleague</option>
+            <option value="stayed_before">I've stayed with you before</option>
+            <option value="flyer">Flyer or sign</option>
+            <option value="other">Other</option>
+          </select></label>
+        <label>Message<textarea name="message" rows="4" required placeholder="Dates, number of guests, or a few words about your property"></textarea></label>
+
+        <label class="check"><input type="checkbox" name="marketing_opt_in" value="yes">
+          <span>Send me occasional NTStays offers, open dates, and local tips. Unsubscribe anytime.</span></label>
+
+        <div class="hp" aria-hidden="true"><label>Leave this empty<input name="website" tabindex="-1" autocomplete="off"></label></div>
+
+        <ol class="book-steps" id="book-steps" aria-label="How booking works"><li>Send your dates</li><li>We confirm within one business day, with a quote</li><li>Pay by secure card link, and you're booked</li></ol>
+        <button class="btn btn-primary" type="submit" id="inquiry-submit">Send message</button>
+        <div class="status" id="inquiry-status" role="status" aria-live="polite"></div>
+        <p style="font-size:.82rem;color:var(--muted);margin:.8em 0 0">We use your details to reply to you. See our <a href="privacy.html">privacy notice</a>.</p>
+      </form>
+    </div>
+  </section>
+
+  <section class="newsletter">
+    <div class="wrap">
+      <p class="eyebrow" style="color:var(--brass-soft)">Stay in the loop</p>
+      <h2>Open dates and return-guest offers</h2>
+      <p>A short email when we have open dates or a seasonal offer. No more than a couple a month.</p>
+      <form class="nl-form" id="subscribe-form" data-turnstile novalidate>
+        <input name="first_name" placeholder="First name" autocomplete="given-name" aria-label="First name">
+        <input type="email" name="email" placeholder="Email address" required autocomplete="email" aria-label="Email address">
+        <div class="hp" aria-hidden="true"><input name="website" tabindex="-1" autocomplete="off"></div>
+        <button class="btn" type="submit">Subscribe</button>
+      </form>
+      <div class="status" id="subscribe-status" role="status" aria-live="polite"></div>
+      <p class="fine">By subscribing you agree to receive marketing emails from NTStays LLC. Unsubscribe with one click in any email. <a href="privacy.html">Privacy notice</a>.</p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>&copy; <span id="year"></span> NTStays LLC</span>
+    <span><a href="travel-nurses.html">Travel nurses</a> &middot; <a href="insurance-housing.html">Insurance housing</a> &middot;
+      <a href="mailto:hello@ntstays.com">hello@ntstays.com</a> &middot; <a href="privacy.html">Privacy</a> &middot; <a href="/team" rel="nofollow">Team</a></span>
+  </div>
+</footer>
+
+<script>
+/* =====================================================================
+   SITE CONFIG: edit this block. Everything below it reads from here.
+   ===================================================================== */
+const CONFIG = {
+  // Your n8n production webhook (see SETUP.md). Until it's set, forms show a friendly error.
+  WEBHOOK_URL: 'https://n8n.ntstays.com/webhook/ntstays-inquiry',
+  CONTACT_EMAIL: 'hello@ntstays.com',
+};
+
+// "Real homes, real hosts". Everything here is something a guest can check. Empty values are hidden.
+const TRUST = {
+  INTRO: "NTStays is a small, owner-run business. We own and look after every home ourselves.",
+  HOSTS: [
+    // photo: e.g. 'img/hosts/manager.jpg' (a real photo builds the most trust). bio: one or two sentences.
+    { name: 'Cathorine', role: 'Property manager', photo: '',
+      bio: 'I handle bookings and guest questions, answer most messages myself, and make sure every home is ready for you.' },
+  ],
+  HOSTING_SINCE: 2021,
+  AIRBNB_PROFILE: '',  // left out: the Airbnb profile shows a personal name
+  // Public Vrbo review pages; `score` is copied from the page, so update it if it changes.
+  VRBO_REVIEWS: [
+    { url: 'https://www.vrbo.com/2932516', home: 'Cranston house', score: '10/10 "Exceptional"', count: 5 },
+  ],
+  GOOGLE_REVIEWS: '',      // your Google Business Profile link, once it exists
+  BUSINESS: 'NTStays LLC, registered in Massachusetts',
+  PHONE: '',               // a number guests can call or text
+  // How guests pay, as shown in the payment-safety note. Other methods are arranged privately by email.
+  PAYMENTS: 'card through our secure Stripe checkout',
+};
+
+// "Results from our own homes" in the owners section. Public page: no revenue figures here (the emailed
+// brochure has the ranges). Numbers from the stats dashboard; keep the year on every claim.
+const OWNER_PROOF = [
+  { big: '4.77 &#9733;', text: 'from 114 verified guest reviews', note: 'Airbnb, Vrbo and Booking.com' },
+  { big: '255', text: 'stays hosted since 2021', note: 'across our three homes' },
+  { big: '+82%', text: 'average nightly rate', note: 'Cranston house, 2022 to 2024' },
+  { big: 'Full', text: 'every night of July and August', note: 'Cranston house, summer 2024' },
+];
+
+// Your 3 homes. Photos: put originals in photos/<id>/ and run `python tools/prepare_photos.py` (see SETUP.md).
+// Ratings and reviews come from data/stats.json. Leave sleeps/bedrooms/baths as null to hide them.
+const PROPERTIES = [
+  {
+    id: 'home-1',
+    name: 'Framingham Center House',
+    city: 'Framingham, MA',
+    stay: 'Flexible monthly stays',
+    sleeps: 6, bedrooms: 3, baths: 2,
+    blurb: 'A bright, fully furnished home minutes from Framingham Center and Route 9. '
+      + 'Each bedroom has a comfortable bed, a smart TV and space to work, with a full kitchen and a backyard deck. '
+      + 'Set up for traveling nurses, professionals and families between homes.',
+    tags: ['3 bedrooms', 'Work desks', 'Smart TVs', 'Full kitchen', 'Backyard deck'],
+    airbnb: '', vrbo: '',                        // optional listing URLs (we point guests to direct booking)
+  },
+  {
+    id: 'home-2',
+    name: 'Cranston House near Providence',
+    city: 'Cranston, RI',
+    stay: 'Summer getaways and monthly stays, year-round',
+    sleeps: '6–8', bedrooms: 4, baths: 2.5,
+    blurb: 'A renovated four-bedroom house about 10 minutes from downtown Providence and T.F. Green Airport. '
+      + 'Home gym, a freestanding soaking tub, big-screen TVs, and a fenced backyard with a fire pit and deck. '
+      + 'Short stays in summer, and monthly stays any time of year for families, professionals and work crews.',
+    tags: ['4 bedrooms', 'Home gym', 'Soaking tub', 'Fire pit & patio', '10 min to Providence'],
+    videos: [{ id: 'hkW6mqsAj1A', title: 'Video tour' }],
+    airbnb: '', vrbo: '',
+  },
+  {
+    id: 'home-3',
+    name: 'Abington Colonial by the Golf Course',
+    city: 'Abington, MA',
+    stay: 'Flexible monthly stays',
+    sleeps: '6–8', bedrooms: 4, baths: 2,
+    blurb: 'A colonial on a large lot across the street from a golf course, near Braintree, Weymouth and Brockton. '
+      + 'Open kitchen with an island, bright bedrooms with smart TVs, a walk-in rain shower and a big yard. '
+      + 'Furnished for professionals and for families placed by their insurance while their home is repaired.',
+    tags: ['Across from a golf course', 'Kitchen island', 'Smart TVs', 'Rain shower', 'Large yard'],
+    videos: [{ id: 'ixtKkcZ8v8Y', title: 'Video tour: private-entrance unit' }],
+    airbnb: '', vrbo: '',
+  },
+];
+
+const SERVICES = [
+  { type: 'property_management', name: 'Property management',
+    text: 'We run your rental day to day so you don\'t have to.',
+    points: ['Listing setup and pricing', 'Guest messaging and reviews', 'Turnovers and maintenance'],
+    icon: '<path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>' },
+  { type: 'staging', name: 'Home staging',
+    text: 'Furnish and style a space so it photographs well and books.',
+    points: ['Furniture and decor plan', 'Photo-ready setup', 'Guest essentials kit'],
+    icon: '<path d="M4 18v-6a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v6"/><path d="M2 18h20M6 18v2M18 18v2M7 9V6a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v3"/>' },
+  { type: 'renovation', name: 'Renovation',
+    text: 'Updates that guests notice and that hold up to regular use.',
+    points: ['Kitchens and baths', 'Paint, flooring, lighting', 'Project coordination'],
+    icon: '<path d="M14 6l4 4M3 21l7-7M13 3l8 8-3 3-8-8z"/>' },
+  { type: 'cleaning', name: 'Cleaning',
+    text: 'Reliable turnover cleaning between stays, with photo checklists.',
+    points: ['Turnover cleaning', 'Linen and restock', 'Deep cleans'],
+    icon: '<path d="M12 3v6M8 9h8l1 12H7z"/><path d="M5 21h14"/>' },
+];
+/* ===================================================================== */
+
+const $ = (s, el = document) => el.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+$('#year').textContent = new Date().getFullYear();
+$('#contact-email').textContent = CONFIG.CONTACT_EMAIL;
+$('#contact-email').href = 'mailto:' + CONFIG.CONTACT_EMAIL;
+
+// Properties. Photos come from img/photos.json (made by tools/prepare_photos.py), else from PROPERTIES.photos.
+let GALLERY = {};
+const photosOf = p => (GALLERY[p.id]?.length ? GALLERY[p.id] : (p.photos?.length ? p.photos : (p.photo ? [p.photo] : [])))
+  .map(x => typeof x === 'string' ? { src: x } : x);
+const imgTag = (p, ph, i) => `<img src="${esc(ph[i].small || ph[i].src)}"
+  ${ph[i].small ? `srcset="${esc(ph[i].small)} ${ph[i].small_w || 800}w, ${esc(ph[i].src)} ${ph[i].src_w || 1600}w" sizes="(max-width: 700px) 100vw, 380px"` : ''}
+  alt="${esc(p.name)}${ph[i].alt ? ': ' + esc(ph[i].alt) : ''}, photo ${i + 1} of ${ph.length}" loading="lazy">`;
+const photoBox = p => { const ph = photosOf(p); return ph.length ? imgTag(p, ph, 0)
+  + (ph.length > 1 ? `<button class="nav-btn prev" data-step="-1" aria-label="Previous photo">&#8249;</button>
+    <button class="nav-btn next" data-step="1" aria-label="Next photo">&#8250;</button><span class="count">1 / ${ph.length}</span>` : '')
+  : `<div class="ph">Photo coming soon</div>`; };
+$('#property-grid').innerHTML = PROPERTIES.map(p => `
+  <article class="card">
+    <div class="photo" data-gallery="${esc(p.id)}" data-i="0">${photoBox(p)}</div>
+    <div class="card-body">
+      <h3>${esc(p.name)}</h3>
+      <div class="city">${esc(p.city)}</div>
+      <div class="rating" data-rating="${esc(p.id)}"></div>
+      ${p.stay ? `<div class="stay">${esc(p.stay)}</div>` : ''}
+      <div class="facts">${[p.sleeps && `Sleeps ${p.sleeps}`, p.bedrooms && `${p.bedrooms} bd`, p.baths && `${p.baths} ba`]
+        .filter(Boolean).map(f => `<span>${esc(f)}</span>`).join('')}</div>
+      <p style="margin:0;color:var(--muted)">${esc(p.blurb)}</p>
+      <div class="tags">${p.tags.map(t => `<span class="tag">${esc(t)}</span>`).join('')}</div>
+      <div class="card-actions">
+        ${p.airbnb ? `<a class="platform" href="${esc(p.airbnb)}" target="_blank" rel="noopener">Airbnb</a>` : ''}
+        ${p.vrbo ? `<a class="platform" href="${esc(p.vrbo)}" target="_blank" rel="noopener">Vrbo</a>` : ''}
+        <button class="platform" data-availability="${esc(p.id)}" data-name="${esc(p.name)}" hidden>See availability</button>
+        ${(p.videos || []).map(v => `<button class="video-btn" data-video="${esc(v.id)}" data-title="${esc(p.name)}: ${esc(v.title)}">&#9654; ${esc(v.title)}</button>`).join('')}
+        <button class="btn btn-primary btn-small" data-ask-property="${esc(p.id)}">Request to book</button>
+      </div>
+    </div>
+  </article>`).join('');
+
+fetch('img/photos.json').then(r => r.ok ? r.json() : null).then(g => {
+  if (!g) return;
+  GALLERY = g;
+  document.querySelectorAll('.photo[data-gallery]').forEach(box => {
+    box.dataset.i = 0;
+    box.innerHTML = photoBox(PROPERTIES.find(p => p.id === box.dataset.gallery));
+  });
+}).catch(() => {});
+
+// Photo gallery: previous/next buttons on each home's cover photo
+document.addEventListener('click', e => {
+  const btn = e.target.closest('.photo [data-step]');
+  if (!btn) return;
+  const box = btn.closest('.photo'), p = PROPERTIES.find(x => x.id === box.dataset.gallery), ph = photosOf(p);
+  const i = (+box.dataset.i + +btn.dataset.step + ph.length) % ph.length;
+  box.dataset.i = i;
+  $('img', box).outerHTML = imgTag(p, ph, i);
+  $('.count', box).textContent = `${i + 1} / ${ph.length}`;
+});
+
+// Video tours: the YouTube player (privacy-enhanced mode) loads only when someone presses play.
+const videoDialog = $('#video-dialog');
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-video]');
+  if (!b) return;
+  $('#video-frame').innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(b.dataset.video)}?autoplay=1&rel=0"
+    title="${esc(b.dataset.title)}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen"></iframe>`;
+  videoDialog.showModal();
+});
+const closeVideo = () => { $('#video-frame').innerHTML = ''; videoDialog.close(); };
+$('#video-close').addEventListener('click', closeVideo);
+videoDialog.addEventListener('click', e => { if (e.target === videoDialog) closeVideo(); });
+videoDialog.addEventListener('close', () => { $('#video-frame').innerHTML = ''; });  // stops playback
+
+// Real homes, real hosts
+$('#trust-intro').textContent = TRUST.INTRO || '';
+$('#hosts').innerHTML = TRUST.HOSTS.map(h => `
+  <div class="host">
+    <div class="avatar">${h.photo ? `<img src="${esc(h.photo)}" alt="${esc(h.name)}">` : esc(h.name.slice(0, 1))}</div>
+    <div><h3>${esc(h.name)}</h3><div class="role">${esc(h.role)}</div>${h.bio ? `<p>${esc(h.bio)}</p>` : ''}</div>
+  </div>`).join('');
+function renderProof(st) {
+  const years = new Date().getFullYear() - TRUST.HOSTING_SINCE;
+  const items = [
+    TRUST.HOSTING_SINCE && [`Hosting guests since ${TRUST.HOSTING_SINCE}`,
+      st?.stays_hosted ? `${st.stays_hosted} stays over ${years} years across our homes` : `${years} years across our homes`],
+    st?.rating && [`${st.rating.avg.toFixed(2)} &#9733; from ${st.rating.count} verified guest reviews`,
+      'Written by real guests on Airbnb, Vrbo and Booking.com after their stay'],
+    TRUST.AIRBNB_PROFILE && ['Check our host profile on Airbnb',
+      `<a href="${esc(TRUST.AIRBNB_PROFILE)}" target="_blank" rel="noopener">See our Airbnb profile and every review</a>`],
+    ...(TRUST.VRBO_REVIEWS || []).map(v => [`Rated ${esc(v.score)} on Vrbo`,
+      `<a href="${esc(v.url)}" target="_blank" rel="noopener">See the ${v.count} verified reviews for our ${esc(v.home)}</a>`]),
+    TRUST.GOOGLE_REVIEWS && ['Reviewed on Google', `<a href="${esc(TRUST.GOOGLE_REVIEWS)}" target="_blank" rel="noopener">Read our Google reviews</a>`],
+    PROPERTIES.some(p => p.videos?.length) && ['Real photos and video tours', 'Every photo is of our own homes. Video tours on the cards above.'],
+    TRUST.BUSINESS && [`Operated by ${esc(TRUST.BUSINESS)}`,
+      `Email <a href="mailto:${esc(CONFIG.CONTACT_EMAIL)}">${esc(CONFIG.CONTACT_EMAIL)}</a>${TRUST.PHONE ? ` or call <a href="tel:${esc(TRUST.PHONE.replace(/[^+\d]/g, ''))}">${esc(TRUST.PHONE)}</a>` : ''}: you reach us, not a call center`],
+  ].filter(Boolean);
+  $('#proof').innerHTML = items.map(([t, s]) => `<li>${t}<span>${s}</span></li>`).join('');
+}
+renderProof(null);
+$('#safe-pay').innerHTML = `<b>Pay by ${esc(TRUST.PAYMENTS)}. Payment details only ever come from
+  ${esc(CONFIG.CONTACT_EMAIL)}, after you've confirmed your dates with us.</b>
+  We never ask for wire transfers, gift cards, or crypto, and we never change payment details by text.
+  If something looks off, check with us first at <a href="mailto:${esc(CONFIG.CONTACT_EMAIL)}">${esc(CONFIG.CONTACT_EMAIL)}</a>`
+  + `${TRUST.PHONE ? ` or ${esc(TRUST.PHONE)}` : ''}.`;
+
+$('#owner-proof').innerHTML = OWNER_PROOF.map(x =>
+  `<div class="number"><b>${x.big}</b><span>${esc(x.text)}</span>${x.note ? `<small>${esc(x.note)}</small>` : ''}</div>`).join('');
+
+// Where guests come from: real maps with one dot per city (no counts). D3 and the map outlines load from
+// jsDelivr only when the section is about to scroll into view.
+const OUR_HOMES = { 'home-1': ['Framingham, MA', 42.28, -71.42], 'home-2': ['Cranston, RI', 41.78, -71.44],
+  'home-3': ['Abington, MA', 42.10, -70.95] };
+const MAP_LIBS = ['https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js',
+  'https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js'];
+const loadScript = src => new Promise((ok, fail) => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = fail; document.head.append(s); });
+
+async function drawMaps(st) {
+  for (const src of MAP_LIBS) await loadScript(src);
+  const [us, world] = await Promise.all([
+    fetch('https://cdn.jsdelivr.net/npm/us-atlas@3.0.1/states-10m.json').then(r => r.json()),
+    fetch('https://cdn.jsdelivr.net/npm/world-atlas@2.0.2/countries-110m.json').then(r => r.json())]);
+  const places = st.origin_places || [], visited = new Set(st.origin_states || []);
+  const homes = Object.entries(OUR_HOMES).map(([id, [name, lat, lon]]) => ({ id, name: 'Our home in ' + name, lat, lon }));
+  const homeById = Object.fromEntries(homes.map(h => [h.id, h]));
+  // One route per city and home it sent guests to; if the home isn't known, the nearest of our homes.
+  const nearest = p => homes.reduce((a, h) => (Math.hypot(h.lat - p.lat, h.lon - p.lon) < Math.hypot(a.lat - p.lat, a.lon - p.lon) ? h : a));
+  const trips = places.flatMap(p => (p.to?.length ? p.to.map(id => homeById[id]).filter(Boolean) : [nearest(p)]).map(h => ({ from: p, to: h })));
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const tip = $('#map-tip'), wrap = $('.maps');
+
+  const pins = (svg, proj, list, cls, r) => svg.append('g').selectAll('circle').data(list).join('circle')
+    .attr('class', cls).attr('r', r)
+    .each(function (d) { const xy = proj([d.lon, d.lat]); if (xy) d3.select(this).attr('cx', xy[0]).attr('cy', xy[1]); else this.remove(); })
+    .on('mouseenter', function (e, d) {
+      const b = wrap.getBoundingClientRect(), c = this.getBoundingClientRect();
+      tip.textContent = d.name; tip.style.display = 'block';
+      tip.style.left = (c.left + c.width / 2 - b.left) + 'px'; tip.style.top = (c.top - b.top) + 'px';
+    })
+    .on('mouseleave', () => { tip.style.display = 'none'; });
+  // Routes draw in from the guest's city to our home, a few at a time, like departures on a board.
+  const animate = sel => {
+    if (still) return;
+    const paths = sel.nodes();
+    paths.forEach((p, i) => {
+      const len = p.getTotalLength();
+      p.style.strokeDasharray = `${len} ${len}`;
+      p.style.strokeDashoffset = len;
+      p.style.transitionDelay = `${150 + i * 45}ms`;
+    });
+    paths[0]?.getBoundingClientRect();  // apply the start state before the transition
+    requestAnimationFrame(() => paths.forEach(p => { p.classList.add('draw'); p.style.strokeDashoffset = 0; }));
+  };
+
+  // United States: arcs bent like flight paths on a map
+  const states = topojson.feature(us, us.objects.states);
+  const pUS = d3.geoAlbersUsa().fitSize([960, 580], states);
+  const svgUS = d3.select('#map-us').append('svg').attr('viewBox', '0 0 960 580');
+  svgUS.append('g').selectAll('path').data(states.features).join('path')
+    .attr('class', d => 'land' + (visited.has(d.properties.name) ? ' home' : '')).attr('d', d3.geoPath(pUS));
+  const usTrips = trips.filter(t => /, [A-Z]{2}$/.test(t.from.name));
+  const arc = t => {
+    const a = pUS([t.from.lon, t.from.lat]), b = pUS([t.to.lon, t.to.lat]);
+    if (!a || !b) return null;
+    const dx = b[0] - a[0], dy = b[1] - a[1], dist = Math.hypot(dx, dy);
+    if (dist < 4) return null;
+    const bend = Math.min(dist * 0.28, 140), mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2;
+    const nx = -dy / dist, ny = dx / dist, up = ny > 0 ? -1 : 1;  // bow the curve northward, like great-circle routes
+    return `M${a[0]},${a[1]} Q${mx + nx * bend * up},${my + ny * bend * up} ${b[0]},${b[1]}`;
+  };
+  animate(svgUS.append('g').selectAll('path').data(usTrips.filter(arc)).join('path').attr('class', 'route').attr('d', arc)
+    .sort((x, y) => (y.from.lon - x.from.lon)));
+  pins(svgUS, pUS, places.filter(p => /, [A-Z]{2}$/.test(p.name)), 'pin', 6);
+  pins(svgUS, pUS, homes, 'ours', 8);
+  $('#map-us').setAttribute('aria-label', `Map of routes to our homes from ${usTrips.length ? new Set(usTrips.map(t => t.from.name)).size : 0} US cities, including `
+    + places.filter(p => /, [A-Z]{2}$/.test(p.name)).slice(0, 12).map(p => p.name).join(', '));
+
+  // World: great-circle routes, the way long flights look
+  const countries = topojson.feature(world, world.objects.countries);
+  countries.features = countries.features.filter(f => f.id !== '010');  // no Antarctica
+  const pW = d3.geoNaturalEarth1().fitSize([960, 430], countries);
+  const svgW = d3.select('#map-world').append('svg').attr('viewBox', '0 0 960 430');
+  svgW.append('g').selectAll('path').data(countries.features).join('path').attr('class', 'land').attr('d', d3.geoPath(pW));
+  animate(svgW.append('g').selectAll('path').data(trips).join('path').attr('class', 'route')
+    .attr('d', t => d3.geoPath(pW)({ type: 'LineString', coordinates: [[t.from.lon, t.from.lat], [t.to.lon, t.to.lat]] }))
+    .sort((x, y) => Math.abs(y.from.lon - y.to.lon) - Math.abs(x.from.lon - x.to.lon)));
+  pins(svgW, pW, places, 'pin', 5);
+  pins(svgW, pW, homes, 'ours', 6);
+  $('#map-world').setAttribute('aria-label', 'World map of routes to our homes, including from '
+    + places.filter(p => !/, [A-Z]{2}$/.test(p.name)).map(p => p.name).join(', '));
+}
+
+function renderOrigins(st) {
+  const places = st.origin_places || [];
+  if (!places.length) return;
+  $('#origins-lede').textContent = 'Every line is a guest who traveled to one of our homes: traveling nurses, families, '
+    + 'business travelers and summer visitors, from across the United States and from abroad.';
+  $('#origins').classList.remove('hidden');
+  const io = new IntersectionObserver(es => {
+    if (!es.some(e => e.isIntersecting)) return;
+    io.disconnect();
+    drawMaps(st).catch(() => { $('#origins').classList.add('hidden'); });
+  }, { rootMargin: '200px' });
+  io.observe($('#origins'));
+}
+
+// Ratings, reviews and where guests come from: data/stats.json, made by stats/build_stats.py from the
+// platform exports. Until that file exists, the reviews section stays hidden.
+fetch('data/stats.json').then(r => r.ok ? r.json() : null).then(st => {
+  if (!st) return;
+  renderProof(st);
+  renderOrigins(st);
+  for (const [id, v] of Object.entries(st.properties || {})) {
+    const el = document.querySelector(`[data-rating="${CSS.escape(id)}"]`);
+    if (el && v.reviews) el.innerHTML = `&#9733; ${v.rating.toFixed(2)} <span>&middot; ${v.reviews} review${v.reviews === 1 ? '' : 's'}</span>`;
+  }
+  const nums = [];
+  if (st.rating) nums.push([st.rating.avg.toFixed(2) + ' &#9733;', `average from ${st.rating.count} guest reviews`]);
+  if (st.stays_hosted) nums.push([st.stays_hosted, 'stays hosted']);
+  if (st.occupancy_12m) nums.push([Math.round(st.occupancy_12m * 100) + '%', 'of nights booked, last 12 months']);
+  const reviews = st.reviews || [];
+  if (!nums.length && !reviews.length) return;
+  $('#numbers').innerHTML = nums.map(([b, t]) => `<div class="number"><b>${b}</b><span>${t}</span></div>`).join('');
+  const homeName = id => (PROPERTIES.find(p => p.id === id) || {}).name || '';
+  $('#review-grid').innerHTML = reviews.map(r => `
+    <article class="card"><div class="card-body quote">
+      <div class="stars" aria-label="${esc(r.rating)} out of 5 stars">${'&#9733;'.repeat(Math.round(r.rating))}</div>
+      <p>&ldquo;${esc(r.text)}&rdquo;</p>
+      <div class="who"><b>${esc(r.name)}</b>${r.origin ? ', ' + esc(r.origin) : ''}<br>${esc(homeName(r.property))}${r.when ? ' &middot; ' + esc(r.when) : ''}${r.platform ? ' &middot; via ' + esc(r.platform) : ''}</div>
+    </div></article>`).join('');
+  const verify = [
+    TRUST.AIRBNB_PROFILE && `<a href="${esc(TRUST.AIRBNB_PROFILE)}" target="_blank" rel="noopener">all our reviews on our Airbnb host profile &rarr;</a>`,
+    ...(TRUST.VRBO_REVIEWS || []).map(v => `<a href="${esc(v.url)}" target="_blank" rel="noopener">${esc(v.home)} reviews on Vrbo &rarr;</a>`),
+  ].filter(Boolean);
+  if (verify.length) $('#verify-reviews').innerHTML = `Want to check these? Read ${verify.join(' &middot; ')}`;
+  $('#reviews').classList.remove('hidden');
+  $('#nav-reviews').classList.remove('hidden');
+}).catch(() => {});
+
+// Services
+$('#service-grid').innerHTML = SERVICES.map(s => `
+  <article class="card service">
+    <div class="card-body">
+      <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${s.icon}</svg></div>
+      <h3>${esc(s.name)}</h3>
+      <p>${esc(s.text)}</p>
+      <ul>${s.points.map(x => `<li>${esc(x)}</li>`).join('')}</ul>
+      <div class="card-actions"><button class="btn btn-ghost btn-small" data-ask-service="${s.type}">Get a quote</button></div>
+    </div>
+  </article>`).join('');
+
+// Form: property list + stay/service field switching
+$('#property_id').innerHTML = PROPERTIES.map(p => `<option value="${esc(p.id)}">${esc(p.name)} (${esc(p.city)})</option>`).join('')
+  + '<option value="any">Not sure yet</option>';
+const typeSel = $('#inquiry_type');
+function syncFields() {
+  const stay = typeSel.value === 'stay';
+  const service = ['property_management', 'staging', 'renovation', 'cleaning'].includes(typeSel.value);
+  $('#stay-fields').classList.toggle('hidden', !stay);
+  $('#service-fields').classList.toggle('hidden', !service);
+  $('#book-steps').classList.toggle('hidden', !stay);  // how booking works: only for stays
+  $('#inquiry-submit').textContent = stay ? 'Request to book' : 'Send message';
+}
+typeSel.addEventListener('change', syncFields);
+syncFields();
+
+document.addEventListener('click', e => {
+  const prop = e.target.closest('[data-ask-property]');
+  const svc = e.target.closest('[data-ask-service]');
+  if (!prop && !svc) return;
+  typeSel.value = prop ? 'stay' : svc.dataset.askService;
+  if (prop) $('#property_id').value = prop.dataset.askProperty;
+  syncFields();
+  $('#contact').scrollIntoView({ behavior: 'smooth' });
+  setTimeout(() => $('input[name="first_name"]', $('#inquiry-form')).focus({ preventScroll: true }), 500);
+});
+
+// Submit helper
+async function post(payload) {
+  const res = await fetch(CONFIG.WEBHOOK_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ...payload, source: window.ntSource ? window.ntSource.get() : null,
+      page: location.href, submitted_at: new Date().toISOString() }),
+  });
+  let body = {};
+  try { body = await res.json(); } catch (_) {}
+  if (!res.ok) throw Object.assign(new Error('request failed'), { body });
+  return body;
+}
+function show(el, kind, msg) { el.className = 'status ' + kind; el.textContent = msg; }
+const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+
+$('#inquiry-form').addEventListener('submit', async e => {
+  e.preventDefault();
+  const f = e.target, st = $('#inquiry-status'), btn = $('#inquiry-submit');
+  const d = Object.fromEntries(new FormData(f));
+  delete d['cf-turnstile-response'];
+  d.marketing_opt_in = f.marketing_opt_in.checked;
+  if (!d.first_name?.trim() || !EMAIL_RE.test(d.email || '') || !d.message?.trim()) {
+    return show(st, 'err', 'Please add your first name, a valid email, and a short message.');
+  }
+  if (d.inquiry_type !== 'stay') { delete d.property_id; delete d.check_in; delete d.check_out; delete d.guests; }
+  btn.disabled = true; btn.textContent = 'Sending...';
+  try {
+    await post({ form_type: 'inquiry', ...d, turnstile: window.ntTurnstile ? window.ntTurnstile.token(f) : '' });
+    show(st, 'ok', `Thanks, ${d.first_name.trim()}! We got your message and will reply to ${d.email} soon.`);
+    f.reset(); syncFields();
+  } catch (err) {
+    const why = err.body?.errors?.join(', ');
+    show(st, 'err', why ? `Please check: ${why}.` : `Sorry, something went wrong. Please email us at ${CONFIG.CONTACT_EMAIL}.`);
+  } finally {
+    btn.disabled = false; syncFields();
+    if (window.ntTurnstile) window.ntTurnstile.reset(f);
+  }
+});
+
+$('#subscribe-form').addEventListener('submit', async e => {
+  e.preventDefault();
+  const f = e.target, st = $('#subscribe-status');
+  const d = Object.fromEntries(new FormData(f));
+  delete d['cf-turnstile-response'];
+  if (!EMAIL_RE.test(d.email || '')) return show(st, 'err', 'Please enter a valid email address.');
+  try {
+    await post({ form_type: 'subscribe', marketing_opt_in: true, ...d, turnstile: window.ntTurnstile ? window.ntTurnstile.token(f) : '' });
+    show(st, 'ok', "You're on the list. Thanks for subscribing!");
+    f.reset();
+  } catch (err) {
+    const why = err.body?.errors?.join(', ');
+    show(st, 'err', why ? `Please check: ${why}.` : `Sorry, that didn't go through. Please try again or email ${CONFIG.CONTACT_EMAIL}.`);
+  } finally {
+    if (window.ntTurnstile) window.ntTurnstile.reset(f);
+  }
+});
+</script>
+<script src="assets/availability.js"></script>
+<script src="assets/turnstile.js"></script>
+<script src="assets/chat.js"></script>
+</body>
+</html>

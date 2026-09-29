@@ -1,0 +1,239 @@
+{
+  "home-1": [
+    {
+      "alt": "Living room",
+      "src": "img/home-1/01-living-room.jpg",
+      "src_w": 1600,
+      "small": "img/home-1/01-living-room-800.jpg",
+      "small_w": 800
+    },
+    {
+      "alt": "Bright bedroom with reading bench",
+      "src": "img/home-1/02-bedroom-2.jpg",
+      "src_w": 1600,
+      "small": "img/home-1/02-bedroom-2-800.jpg",
+      "small_w": 800
+    },
+    {
+      "alt": "Kitchen and dining table",
+      "src": "img/home-1/03-dining-room.jpg",
+      "src_w": 1600,
+      "small": "img/home-1/03-dining-room-800.jpg",
+      "small_w": 800
+    },
+    {
+      "alt": "Bedroom with desk and smart TV",
+      "src": "img/home-1/04-bedroom-1.jpg",
+      "src_w": 1600,
+      "small": "img/home-1/04-bedroom-1-800.jpg",
+      "small_w": 800
+    },
+    {
+      "alt": "Backyard deck with outdoor dining",
+      "src": "img/home-1/05-backyard.jpg",
+      "src_w": 1600,
+      "small": "img/home-1/05-backyard-800.jpg",
+      "small_w": 800
+    },
+    {
+      "alt": "Entry hall",
+      "src": "img/home-1/06-main-hall.jpg",
+      "src_w": 1600,
+      "small": "img/home-1/06-main-hall-800.jpg",
+      "small_w": 800
+    },
+    {
+      "alt": "Breakfast nook",
+      "src": "img/home-1/07-d52c512f.jpg",
+      "src_w": 1600,
+      "small": "img/home-1/07-d52c512f-800.jpg",
+      "small_w": 800
+    }
+  ],
+  "home-2": [
+    {
+      "alt": "Living room with big-screen TV",
+      "src": "img/home-2/01-living-room.jpg",
+      "src_w": 1600,
+      "small": "img/home-2/01-living-room-800.jpg",
+      "small_w": 800
+    },
+    {
+      "alt": "Open kitchen and dining room",
+      "src": "img/home-2/02-dining-room.jpg",
+      "src_w": 1600,
+      "small": "img/home-2/02-dining-room-800.jpg",
+      "small_w": 800
+    },
+    {
+      "alt": "Backyard with fire pit and patio",
+      "src": "img/home-2/03-backyard-2.jpg",
+      "src_w": 1600,
+      "small": "img/home-2/03-backyard-2-800.jpg",
+      "small_w": 800
+    },
+    {
+      "alt": "Main bedroom",
+      "src": "img/home-2/04-main-bed-room-3.jpg",
+      "src_w": 1600,
+      "small": "img/home-2/04-main-bed-room-3-800.jpg",
+      "small_w": 800
+    },
+    {
+      "alt": "Freestanding soaking tub",
+      "src": "img/home-2/05-main-bath-room-with-bathtub.jpg",
+      "src_w": 1280,
+      "small": "img/home-2/05-main-bath-room-with-bathtub-800.jpg",
+      "small_w": 800
+    },
+    {
+      "alt": "Fully equipped kitchen",
+      "src": "img/home-2/06-kitchen.jpg",
+      "src_w": 1024,
+      "small": "img/home-2/06-kitchen-800.jpg",
+      "small_w": 800
+    },
+    {
+      "alt": "Bedroom with sofa and vanity",
+      "src": "img/home-2/07-bedroom-3-3.jpg",
+      "src_w": 1600,
+      "small": "img/home-2/07-bedroom-3-3-800.jpg",
+      "small_w": 800
+    },
+    {
+      "alt": "Top-floor bedroom",
+      "src": "img/home-2/08-bedroom-2-2.jpg",
+      "src_w": 1600,
+      "small": "img/home-2/08-bedroom-2-2-800.jpg",
+      "small_w": 800
+    },
+    {
+      "alt": "Top-floor suite with sitting area and desk",
+      "src": "img/home-2/09-main-bed-room.jpg",
+      "src_w": 1600,
+      "small": "img/home-2/09-main-bed-room-800.jpg",
+      "small_w": 800
+    },
+    {
+      "alt": "Bedroom opening onto the deck",
+      "src": "img/home-2/10-bedroom-4.jpg",
+      "src_w": 1600,
+      "small": "img/home-2/10-bedroom-4-800.jpg",
+      "small_w": 800
+    },
+    {
+      "alt": "Home gym",
+      "src": "img/home-2/11-gym-equipment.jpg",
+      "src_w": 1600,
+      "small": "img/home-2/11-gym-equipment-800.jpg",
+      "small_w": 800
+    },
+    {
+      "alt": "Private deck",
+      "src": "img/home-2/12-patio.jpg",
+      "src_w": 1600,
+      "small": "img/home-2/12-patio-800.jpg",
+      "small_w": 800
+    },
+    {
+      "alt": "Deck lights at night",
+      "src": "img/home-2/13-deck.jpg",
+      "src_w": 1600,
+      "small": "img/home-2/13-deck-800.jpg",
+      "small_w": 800
+    },
+    {
+      "alt": "Big fenced backyard",
+      "src": "img/home-2/14-backyard.jpg",
+      "src_w": 1018,
+      "small": "img/home-2/14-backyard-800.jpg",
+      "small_w": 800
+    }
+  ],
+  "home-3": [
+    {
+      "alt": "Colonial home on a large lot",
+      "src": "img/home-3/01-front.jpg",
+      "src_w": 1600,
+      "small": "img/home-3/01-front-800.jpg",
+      "small_w": 800
+    },
+    {
+      "alt": "Open kitchen and dining area",
+      "src": "img/home-3/02-dining-room.jpg",
+      "src_w": 1600,
+      "small": "img/home-3/02-dining-room-800.jpg",
+      "small_w": 800
+    },
+    {
+      "alt": "Golf course across the street",
+      "src": "img/home-3/03-golf-course-in-front.jpg",
+      "src_w": 1179,
+      "small": "img/home-3/03-golf-course-in-front-800.jpg",
+      "small_w": 800
+    },
+    {
+      "alt": "Bedroom with sitting chair",
+      "src": "img/home-3/04-bedroom-6.jpg",
+      "src_w": 1600,
+      "small": "img/home-3/04-bedroom-6-800.jpg",
+      "small_w": 800
+    },
+    {
+      "alt": "Kitchen island",
+      "src": "img/home-3/05-dining-room-4.jpg",
+      "src_w": 1600,
+      "small": "img/home-3/05-dining-room-4-800.jpg",
+      "small_w": 800
+    },
+    {
+      "alt": "Bedroom with smart TV",
+      "src": "img/home-3/06-bedroom-2.jpg",
+      "src_w": 1600,
+      "small": "img/home-3/06-bedroom-2-800.jpg",
+      "small_w": 800
+    },
+    {
+      "alt": "Large bedroom with desk and fireplace",
+      "src": "img/home-3/07-bedroom-4.jpg",
+      "src_w": 1600,
+      "small": "img/home-3/07-bedroom-4-800.jpg",
+      "small_w": 800
+    },
+    {
+      "alt": "Bedroom with workspace",
+      "src": "img/home-3/08-bedroom-3.jpg",
+      "src_w": 1600,
+      "small": "img/home-3/08-bedroom-3-800.jpg",
+      "small_w": 800
+    },
+    {
+      "alt": "Walk-in rain shower",
+      "src": "img/home-3/09-bathroom-2.jpg",
+      "src_w": 1200,
+      "small": "img/home-3/09-bathroom-2-800.jpg",
+      "small_w": 600
+    },
+    {
+      "alt": "Single bedroom",
+      "src": "img/home-3/10-bedroom-5.jpg",
+      "src_w": 1600,
+      "small": "img/home-3/10-bedroom-5-800.jpg",
+      "small_w": 800
+    },
+    {
+      "alt": "Bathroom",
+      "src": "img/home-3/11-bathroom-1.jpg",
+      "src_w": 1600,
+      "small": "img/home-3/11-bathroom-1-800.jpg",
+      "small_w": 800
+    },
+    {
+      "alt": "Backyard",
+      "src": "img/home-3/12-back.jpg",
+      "src_w": 1179,
+      "small": "img/home-3/12-back-800.jpg",
+      "small_w": 800
+    }
+  ]
+}

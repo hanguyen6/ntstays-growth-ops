@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>NTStays: log numbers</title>
+<!-- Sign-in only (Cloudflare Access + worker/index.js). Entries go through /team/api/entries to the n8n "team data"
+     workflow and its data table. Bookings here are the ones the platform exports don't have. -->
+<style>
+  :root {
+    color-scheme: light;
+    --page: #f6f1e7; --surface: #fcfcfb; --line: #e4dbcc; --text: #2b211b; --text-2: #52514e; --muted: #736b64;
+    --accent: #b08a3e; --ok-bg: #e3efe0; --ok: #2f5b28; --err-bg: #f8e1dc; --err: #8a2c1c; --btn: #3b2a20; --btn-text: #fffdf8;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      color-scheme: dark;
+      --page: #141312; --surface: #1a1a19; --line: #34322f; --text: #f3efe8; --text-2: #c3c2b7; --muted: #9a978d;
+      --accent: #d9b56a; --ok-bg: #1f3320; --ok: #b9dcb1; --err-bg: #3a1f1a; --err: #f0b7aa; --btn: #e9dcc0; --btn-text: #1a1a19;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --page: #141312; --surface: #1a1a19; --line: #34322f; --text: #f3efe8; --text-2: #c3c2b7; --muted: #9a978d;
+    --accent: #d9b56a; --ok-bg: #1f3320; --ok: #b9dcb1; --err-bg: #3a1f1a; --err: #f0b7aa; --btn: #e9dcc0; --btn-text: #1a1a19;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--page); color: var(--text); font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 24px 16px 64px; }
+  h1 { font: 650 1.6rem Georgia, serif; margin: 0; }
+  h2 { font: 650 1.15rem Georgia, serif; margin: 0 0 4px; }
+  .sub { color: var(--muted); margin: 4px 0 0; font-size: .9rem; }
+  nav { display: flex; gap: 14px; font-size: .9rem; margin-top: 8px; }
+  nav a { color: var(--text-2); }
+  .tabs { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; overflow: hidden; background: var(--surface); margin-top: 18px; }
+  .tabs button { border: 0; background: transparent; color: var(--text-2); padding: 8px 14px; font: inherit; font-size: .9rem; cursor: pointer; }
+  .tabs button[aria-selected="true"] { background: var(--text); color: var(--surface); font-weight: 600; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px; margin-top: 14px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 12px; }
+  .full { grid-column: 1 / -1; }
+  label { display: block; font-weight: 600; font-size: .88rem; }
+  label small { font-weight: 400; color: var(--muted); }
+  input, select, textarea { width: 100%; margin-top: 4px; padding: 9px 10px; border: 1px solid var(--line); border-radius: 9px; font: inherit;
+    background: var(--page); color: var(--text); }
+  textarea { resize: vertical; }
+  button.primary { margin-top: 16px; border: 0; border-radius: 999px; background: var(--btn); color: var(--btn-text); padding: 10px 20px;
+    font: 700 .95rem system-ui, sans-serif; cursor: pointer; }
+  button.primary:disabled { opacity: .6; cursor: default; }
+  .status { margin-top: 12px; padding: 9px 12px; border-radius: 9px; font-size: .9rem; display: none; }
+  .status.ok { display: block; background: var(--ok-bg); color: var(--ok); }
+  .status.err { display: block; background: var(--err-bg); color: var(--err); }
+  .hint { font-size: .85rem; color: var(--text-2); margin: 6px 0 0; }
+  ul.recent { list-style: none; margin: 8px 0 0; padding: 0; }
+  ul.recent li { display: flex; justify-content: space-between; gap: 12px; align-items: center; padding: 9px 0; border-top: 1px solid var(--line); font-size: .9rem; }
+  ul.recent li:first-child { border-top: 0; }
+  ul.recent .meta { color: var(--muted); font-size: .8rem; }
+  ul.recent .gone { text-decoration: line-through; color: var(--muted); }
+  ul.recent button { border: 1px solid var(--line); background: transparent; color: var(--text-2); border-radius: 999px; padding: 4px 10px; font: inherit; font-size: .8rem; cursor: pointer; }
+  [hidden] { display: none !important; }
+  @media (max-width: 560px) { .grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Log numbers</h1>
+  <p class="sub" id="who">For bookings and channel numbers the platforms don't send us.</p>
+  <nav><a href="/team">Team home</a> <a href="marketing">Marketing dashboard</a></nav>
+
+  <div class="tabs" role="tablist">
+    <button type="button" role="tab" id="tab-booking" aria-selected="true" aria-controls="panel-booking">New booking</button>
+    <button type="button" role="tab" id="tab-ff" aria-selected="false" aria-controls="panel-ff">Furnished Finder numbers</button>
+    <button type="button" role="tab" id="tab-ab" aria-selected="false" aria-controls="panel-ab">Airbnb conversion</button>
+    <button type="button" role="tab" id="tab-vr" aria-selected="false" aria-controls="panel-vr">Vrbo ranking</button>
+  </div>
+
+  <section class="card" id="panel-booking" role="tabpanel" aria-labelledby="tab-booking">
+    <h2>A lease or stay was booked</h2>
+    <p class="hint">For bookings from Furnished Finder, our website, referrals, repeat guests or insurance and housing companies.
+      Airbnb, Vrbo and Booking.com stays come from their exports, so don't add those here.</p>
+    <form id="booking-form" novalidate>
+      <div class="grid">
+        <label>Where it came from
+          <select name="channel" required>
+            <option value="">Choose one</option>
+            <option value="furnished_finder">Furnished Finder</option>
+            <option value="website">Our website (form or chat)</option>
+            <option value="referral">Referral or word of mouth</option>
+            <option value="repeat_guest">Repeat guest</option>
+            <option value="insurance_company">Insurance or housing company</option>
+            <option value="other">Other</option>
+          </select></label>
+        <label>Home
+          <select name="property_id" required>
+            <option value="">Choose one</option>
+            <option value="home-1">Framingham</option>
+            <option value="home-2">Cranston</option>
+            <option value="home-3">Abington</option>
+          </select></label>
+        <label>Move-in<input type="date" name="move_in" required></label>
+        <label>Move-out<input type="date" name="move_out" required></label>
+        <label>Guest type
+          <select name="lead_type" required>
+            <option value="travel_nurse">Travel nurse</option>
+            <option value="insurance">Insurance housing (family)</option>
+            <option value="professional">Professional</option>
+            <option value="family">Family</option>
+            <option value="other">Other</option>
+          </select></label>
+        <label>Signed on <small>(optional; empty = move-in date)</small><input type="date" name="signed_on"></label>
+        <label>Monthly rent <small>(optional, USD; not shown on the dashboard)</small>
+          <input name="monthly_rent" inputmode="numeric" placeholder="3200"></label>
+        <label class="full">Guest's email or phone <small>(optional, to find them again; not shown on the dashboard)</small>
+          <input name="contact_email" autocomplete="off" placeholder="name@example.com or (508) 555-0142"></label>
+        <label class="full">Note <small>(optional)</small><textarea name="note" rows="2" maxlength="300"></textarea></label>
+      </div>
+      <button class="primary" type="submit">Save booking</button>
+      <div class="status" role="status"></div>
+    </form>
+  </section>
+
+  <section class="card" id="panel-ff" role="tabpanel" aria-labelledby="tab-ff" hidden>
+    <h2>Furnished Finder listing numbers</h2>
+    <p class="hint">Once a month, on about the same day, for each of the three listings: Furnished Finder → Dashboard →
+      <b>Listing Performance</b> (it shows one listing at a time). Pick the home, then copy every number as shown. "Activity in the last 90 days" covers 90 days; the others are totals since the listing started, so the
+      dashboard works out each month's new inquiries from the difference. Leave a box empty if it isn't shown.</p>
+    <form id="ff-form" novalidate>
+      <div class="grid">
+        <label>Listing (home)
+          <select name="property_id" required>
+            <option value="">Choose one</option>
+            <option value="home-1">Framingham</option>
+            <option value="home-2">Cranston</option>
+            <option value="home-3">Abington</option>
+          </select></label>
+        <label>Date you copied them<input type="date" name="as_of" required></label>
+        <label>Booking inquiries<input name="booking_inquiries" inputmode="numeric"></label>
+        <label>Direct messages<input name="direct_messages" inputmode="numeric"></label>
+        <label>Phone number reveals<input name="phone_reveals" inputmode="numeric"></label>
+        <span></span>
+        <label>Matched leads <small>(tenant leads)</small><input name="matched_leads" inputmode="numeric"></label>
+        <label>Unmatched leads<input name="unmatched_leads" inputmode="numeric"></label>
+        <label>Impressions <small>(last 90 days)</small><input name="impressions" inputmode="numeric"></label>
+        <label>Listing views <small>(last 90 days)</small><input name="listing_views" inputmode="numeric"></label>
+        <label>Favorites <small>(last 90 days)</small><input name="favorites" inputmode="numeric"></label>
+        <label>Shares <small>(last 90 days)</small><input name="shares" inputmode="numeric"></label>
+      </div>
+      <button class="primary" type="submit">Save numbers</button>
+      <div class="status" role="status"></div>
+    </form>
+  </section>
+
+  <section class="card" id="panel-ab" role="tabpanel" aria-labelledby="tab-ab" hidden>
+    <h2>Airbnb booking conversion</h2>
+    <p class="hint">Airbnb → Performance → Conversion → <b>Booking conversion</b>. Keep "All listings" (or pick one home's
+      listings there and here, for a closer look), set the dates to one whole month (e.g. Sep 1 to Sep 30), and copy the
+      four rates at the top. For the comparison, set "Compare" to
+      "Similar listings" and copy their overall rate. You can go back and add past months too. Logging a month again
+      updates only the boxes you fill in; empty boxes keep what was there.</p>
+    <form id="ab-form" novalidate>
+      <div class="grid">
+        <label>Month<input type="month" name="month" required></label>
+        <label>Listings
+          <select name="property_id">
+            <option value="all">All listings</option>
+            <option value="home-1">Framingham only</option>
+            <option value="home-2">Cranston only</option>
+            <option value="home-3">Abington only</option>
+          </select></label>
+        <label>Average overall conversion rate <small>(%)</small><input name="overall_conversion" inputmode="decimal" placeholder="e.g. 0.29"></label>
+        <label>First-page search impression rate <small>(%)</small><input name="first_page_rate" inputmode="decimal" placeholder="e.g. 55.1"></label>
+        <label>Average search-to-listing conversion <small>(%)</small><input name="search_to_listing" inputmode="decimal" placeholder="e.g. 18.79"></label>
+        <label>Average listing-to-booking conversion <small>(%)</small><input name="listing_to_booking" inputmode="decimal" placeholder="e.g. 1.56"></label>
+        <label>Similar listings: overall conversion <small>(%, optional)</small><input name="similar_overall" inputmode="decimal"></label>
+      </div>
+      <button class="primary" type="submit">Save rates</button>
+      <div class="status" role="status"></div>
+    </form>
+  </section>
+
+  <section class="card" id="panel-vr" role="tabpanel" aria-labelledby="tab-vr" hidden>
+    <h2>Vrbo ranking metrics</h2>
+    <p class="hint">Once a month, for each property on Vrbo: pick the property at the top of Vrbo's host dashboard, then
+      <b>Ranking metrics</b>. Copy the three numbers under the chart (they cover the last 30 days). Logging a home again in
+      the same month updates it.</p>
+    <form id="vr-form" novalidate>
+      <div class="grid">
+        <label>Property (home)
+          <select name="property_id" required>
+            <option value="">Choose one</option>
+            <option value="home-1">Framingham</option>
+            <option value="home-2">Cranston</option>
+            <option value="home-3">Abington</option>
+          </select></label>
+        <label>Date you copied them<input type="date" name="as_of" required></label>
+        <label>Search impressions<input name="impressions" inputmode="numeric" placeholder="e.g. 471"></label>
+        <label>Property views<input name="views" inputmode="numeric" placeholder="e.g. 76"></label>
+        <label>Bookings<input name="bookings" inputmode="numeric" placeholder="e.g. 1"></label>
+      </div>
+      <button class="primary" type="submit">Save numbers</button>
+      <div class="status" role="status"></div>
+    </form>
+  </section>
+
+  <section class="card">
+    <h2>Add several at once</h2>
+    <p class="hint">For catching up: paste rows copied from a spreadsheet (or typed with commas), one entry per line, columns in
+      the order shown. A header line is skipped. Each row is saved like the forms above; any row that can't be saved is listed.</p>
+    <form id="bulk-form" novalidate>
+      <label>What you're adding
+        <select name="kind">
+          <option value="airbnb_stats">Airbnb conversion, one month per row</option>
+          <option value="booking">Bookings, one per row</option>
+          <option value="ff_stats">Furnished Finder numbers, one listing per row</option>
+          <option value="vrbo_stats">Vrbo ranking metrics, one property per row</option>
+        </select></label>
+      <p class="hint" id="bulk-cols"></p>
+      <label>Rows<textarea name="rows" rows="7" spellcheck="false" style="font-family: ui-monospace, Consolas, monospace; font-size: .85rem"></textarea></label>
+      <button class="primary" type="submit">Save all rows</button>
+      <div class="status" role="status"></div>
+    </form>
+  </section>
+
+  <section class="card">
+    <h2>Recent entries</h2>
+    <p class="hint">Made a mistake? Remove the entry and add it again. Removed entries stay listed, crossed out.</p>
+    <ul class="recent" id="recent"><li class="meta">Loading…</li></ul>
+  </section>
+</div>
+
+<script>
+const API = 'api/entries';
+const CHANNEL = { furnished_finder: 'Furnished Finder', website: 'Website', referral: 'Referral', repeat_guest: 'Repeat guest',
+  insurance_company: 'Insurance or housing company', other: 'Other' };
+const HOME = { 'home-1': 'Framingham', 'home-2': 'Cranston', 'home-3': 'Abington' };
+const $ = s => document.querySelector(s);
+const el = (tag, attrs = {}, text) => { const e = document.createElement(tag); for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v); if (text != null) e.textContent = text; return e; };
+const day = d => new Date(d + 'T12:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+async function call(method, body) {
+  const res = await fetch(API, { method, headers: { 'content-type': 'application/json' }, body: body ? JSON.stringify(body) : undefined });
+  let data = {};
+  try { data = await res.json(); } catch (e) {}
+  if (!res.ok) throw new Error((data.errors || []).join(', ') || (res.status === 403 ? 'please sign in again (reload the page)' : 'something went wrong'));
+  return data;
+}
+
+// Tabs
+document.querySelectorAll('[role="tab"]').forEach(tab => tab.addEventListener('click', () => {
+  document.querySelectorAll('[role="tab"]').forEach(t => {
+    const on = t === tab; t.setAttribute('aria-selected', String(on));
+    document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
+  });
+}));
+if (location.hash === '#ff') $('#tab-ff').click();
+if (location.hash === '#airbnb') $('#tab-ab').click();
+if (location.hash === '#vrbo') $('#tab-vr').click();
+$('#vr-form [name="as_of"]').value = new Date().toISOString().slice(0, 10);
+$('#ff-form [name="as_of"]').value = new Date().toISOString().slice(0, 10);
+const lastMonth = () => { const d = new Date(); d.setDate(1); d.setMonth(d.getMonth() - 1); return d.toISOString().slice(0, 7); };
+$('#ab-form [name="month"]').value = lastMonth();
+
+function wire(form, kind, done) {
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const st = form.querySelector('.status'), btn = form.querySelector('button[type="submit"]');
+    const d = Object.fromEntries(new FormData(form));
+    btn.disabled = true; st.className = 'status';
+    try {
+      await call('POST', { kind, ...d });
+      st.className = 'status ok'; st.textContent = done(d);
+      const keepHome = kind === 'ff_stats' || kind === 'vrbo_stats' ? form.property_id.value : null;
+      form.reset();
+      if (kind === 'ff_stats' || kind === 'vrbo_stats') form.as_of.value = new Date().toISOString().slice(0, 10);
+      if (keepHome) {  // on to the next listing, same date
+        const order = ['home-1', 'home-2', 'home-3'];
+        form.property_id.value = order[order.indexOf(keepHome) + 1] || '';
+        form.as_of.value = d.as_of;
+      }
+      if (kind === 'airbnb_stats') form.month.value = lastMonth();
+      loadRecent();
+    } catch (err) {
+      st.className = 'status err'; st.textContent = 'Please check: ' + err.message + '.';
+    } finally { btn.disabled = false; }
+  });
+}
+wire($('#booking-form'), 'booking', d => `Saved: ${CHANNEL[d.channel] || d.channel}, ${HOME[d.property_id] || d.property_id}, ${day(d.move_in)} to ${day(d.move_out)}.`);
+wire($('#ff-form'), 'ff_stats', d => `Saved Furnished Finder numbers for ${HOME[d.property_id] || d.property_id}, ${day(d.as_of)}. Next listing?`);
+const monthName = m => new Date(m + '-15T12:00').toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+wire($('#vr-form'), 'vrbo_stats', d => `Saved Vrbo numbers for ${HOME[d.property_id] || d.property_id}, ${day(d.as_of)}.`);
+wire($('#ab-form'), 'airbnb_stats', d => `Saved Airbnb conversion for ${monthName(d.month)}${d.property_id && d.property_id !== 'all' ? ', ' + HOME[d.property_id] + ' only' : ''}.`);
+
+// ---- Add several at once: columns per kind, friendly names accepted (Abington, Furnished Finder, travel nurse, 9/1/2026)
+const BULK = {
+  airbnb_stats: { cols: ['month', 'overall_conversion', 'first_page_rate', 'search_to_listing', 'listing_to_booking', 'similar_overall', 'property_id'],
+    help: 'month, overall conversion %, first-page impression %, search-to-listing %, listing-to-booking %, similar listings % (optional), listings (optional: all or a home). Example: 2025-10, 0.29, 55.1, 18.79, 1.56, 0.32' },
+  booking: { cols: ['channel', 'property_id', 'move_in', 'move_out', 'lead_type', 'signed_on', 'contact_email', 'monthly_rent', 'note'],
+    help: 'where it came from, home, move-in, move-out, guest type, signed on (optional; empty = move-in), email or phone (optional), monthly rent (optional), note (optional). Example: Furnished Finder, Cranston, 2/1/2026, 6/30/2026, insurance' },
+  vrbo_stats: { cols: ['property_id', 'as_of', 'impressions', 'views', 'bookings'],
+    help: 'home, date, search impressions, property views, bookings (the last 30 days). Example: Cranston, 9/28/2026, 471, 76, 1' },
+  ff_stats: { cols: ['property_id', 'as_of', 'booking_inquiries', 'direct_messages', 'phone_reveals', 'matched_leads', 'unmatched_leads', 'impressions', 'listing_views', 'favorites', 'shares'],
+    help: 'home, date, booking inquiries, direct messages, phone number reveals, matched leads, unmatched leads, impressions, listing views, favorites, shares. Example: Cranston, 2026-09-28, 47, 34, 42, 117, 625, 1143, 159, 6, 3' },
+};
+const norm = v => (v || '').toString().trim().toLowerCase().replace(/[\s-]+/g, ' ');
+const NAMES = {
+  property_id: { framingham: 'home-1', cranston: 'home-2', abington: 'home-3', 'all listings': 'all', all: 'all' },
+  channel: { 'furnished finder': 'furnished_finder', ff: 'furnished_finder', website: 'website', 'our website': 'website', referral: 'referral',
+    'word of mouth': 'referral', 'repeat guest': 'repeat_guest', repeat: 'repeat_guest', insurance: 'insurance_company',
+    'insurance company': 'insurance_company', 'housing company': 'insurance_company', 'insurance or housing company': 'insurance_company', other: 'other' },
+  lead_type: { 'travel nurse': 'travel_nurse', nurse: 'travel_nurse', insurance: 'insurance', 'insurance housing': 'insurance', family: 'family',
+    professional: 'professional', other: 'other' },
+};
+function bulkValue(col, v) {
+  const t = (v || '').trim().replace(/^"(.*)"$/, '$1').trim();  // spreadsheets sometimes quote cells
+  if (NAMES[col]) return NAMES[col][norm(t)] || t.toLowerCase().replace(/ /g, '_');
+  if (col === 'move_in' || col === 'move_out' || col === 'as_of' || col === 'signed_on') {
+    const m = t.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);  // 9/1/2026 -> 2026-09-01
+    return m ? `${m[3]}-${m[1].padStart(2, '0')}-${m[2].padStart(2, '0')}` : t;
+  }
+  if (col === 'month') {
+    const m = t.match(/^(\d{1,2})\/(\d{4})$/) || t.match(/^([A-Za-z]{3,9})\.?\s+(\d{4})$/);  // 9/2025 or Sep 2025
+    if (m && /^\d/.test(m[1])) return `${m[2]}-${m[1].padStart(2, '0')}`;
+    if (m) { const d = new Date(`${m[1]} 1, ${m[2]}`); if (!Number.isNaN(d.getTime())) return `${m[2]}-${String(d.getMonth() + 1).padStart(2, '0')}`; }
+    return t;
+  }
+  return t.replace(/%$/, '');
+}
+const bulkForm = $('#bulk-form');
+const showCols = () => { $('#bulk-cols').textContent = 'Columns: ' + BULK[bulkForm.kind.value].help; };
+bulkForm.kind.addEventListener('change', showCols); showCols();
+bulkForm.addEventListener('submit', async e => {
+  e.preventDefault();
+  const kind = bulkForm.kind.value, st = bulkForm.querySelector('.status'), btn = bulkForm.querySelector('button[type="submit"]');
+  const lines = bulkForm.rows.value.split(/\r?\n/).map((l, i) => [i + 1, l]).filter(([, l]) => l.trim());
+  const rows = lines.filter(([, l]) => !/^\s*(month|channel|home|listing)\b/i.test(l));  // skip a header line
+  if (!rows.length) { st.className = 'status err'; st.textContent = 'Paste at least one row.'; return; }
+  btn.disabled = true; st.className = 'status ok'; st.textContent = `Saving ${rows.length} rows…`;
+  const failed = []; let saved = 0;
+  for (const [n, line] of rows) {
+    const cells = line.includes('\t') ? line.split('\t') : line.split(',');
+    const body = { kind };
+    BULK[kind].cols.forEach((c, i) => { if (cells[i] !== undefined && cells[i].trim() !== '') body[c] = bulkValue(c, cells[i]); });
+    try { await call('POST', body); saved++; } catch (err) { failed.push(`line ${n}: ${err.message}`); }
+  }
+  btn.disabled = false;
+  st.className = failed.length ? 'status err' : 'status ok';
+  st.textContent = `Saved ${saved} of ${rows.length} rows.` + (failed.length ? ' Not saved: ' + failed.join('; ') + '.' : '');
+  if (!failed.length) bulkForm.rows.value = '';
+  loadRecent();
+});
+
+async function loadRecent() {
+  const list = $('#recent');
+  try {
+    const data = await call('GET');
+    if (data.you) $('#who').textContent = `Signed in as ${data.you}. For bookings and channel numbers the platforms don't send us.`;
+    list.replaceChildren();
+    if (!data.recent.length) { list.append(el('li', { class: 'meta' }, 'Nothing logged yet.')); return; }
+    for (const r of data.recent) {
+      const li = el('li'), left = el('div');
+      const what = r.kind === 'booking'
+        ? `${CHANNEL[r.booking.channel] || r.booking.channel} · ${HOME[r.booking.property_id] || r.booking.property_id} · ${day(r.booking.move_in)} to ${day(r.booking.move_out)}`
+        : r.kind === 'airbnb_stats' ? `Airbnb conversion, ${monthName(r.month)}${r.property_id && r.property_id !== 'all' ? ' · ' + (HOME[r.property_id] || r.property_id) : ' · all listings'}`
+        : r.kind === 'vrbo_stats' ? `Vrbo ranking · ${HOME[r.property_id] || r.property_id} · ${day(r.as_of)}`
+        : `Furnished Finder numbers · ${HOME[r.property_id] || 'listing?'} · ${day(r.as_of)}`;
+      left.append(el('div', r.removed ? { class: 'gone' } : {}, what),
+        el('div', { class: 'meta' }, `#${r.id} · ${r.entered_by} · ${new Date(r.entered_at).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })}${r.removed ? ' · removed' : ''}`));
+      li.append(left);
+      if (!r.removed) {
+        const b = el('button', { type: 'button' }, 'Remove');
+        b.addEventListener('click', async () => {
+          if (!confirm(`Remove entry #${r.id}?\n${what}`)) return;
+          b.disabled = true;
+          try { await call('POST', { kind: 'void', id: r.id }); loadRecent(); } catch (err) { alert('Could not remove it: ' + err.message); b.disabled = false; }
+        });
+        li.append(b);
+      }
+      list.append(li);
+    }
+  } catch (err) {
+    list.replaceChildren(el('li', { class: 'meta' }, 'Could not load entries: ' + err.message + '.'));
+  }
+}
+loadRecent();
+</script>
+</body>
+</html>

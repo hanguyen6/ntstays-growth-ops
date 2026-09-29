@@ -1,0 +1,23 @@
+# Runs every test suite on push: the n8n workflow code, the sign-in guard and the stats builder.
+name: Tests
+on: [push, pull_request, workflow_dispatch]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - uses: actions/setup-node@v4
+        with: { node-version: "20" }
+      - name: Workflow files match build_workflow.py
+        run: |
+          python n8n/build_workflow.py
+          git diff --exit-code --stat -- n8n/workflow
+      - name: n8n workflow tests
+        working-directory: n8n
+        run: for t in scripts/test_*.js; do echo "== $t"; node "$t"; done
+      - name: Sign-in guard tests
+        run: node worker/test_worker.mjs
+      - name: Stats builder tests
+        run: pip install openpyxl xlrd && python stats/test_build_stats.py

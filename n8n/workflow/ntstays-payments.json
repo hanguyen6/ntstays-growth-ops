@@ -1,0 +1,540 @@
+{
+  "name": "NTStays: payments (Stripe) and direct-bookings calendar",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ntstays-stripe",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "name": "Stripe payment notice",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        300
+      ],
+      "id": "4e54c1ee-35c4-576c-a48f-f7468b78ea83",
+      "webhookId": "f29df114-e6ee-5bef-8355-b657cfeb70f0"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Only completed, paid checkouts matter. Everything else gets the automatic 200 and stops here.\nconst e = $input.first().json.body || {};\nconst s = (e.data && e.data.object) || {};\nif (e.type !== 'checkout.session.completed' || s.payment_status !== 'paid' || !s.payment_intent) return [];\nreturn [{ json: { payment_intent: s.payment_intent, event_id: e.id || '' } }];"
+      },
+      "name": "Read Stripe event",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        220,
+        300
+      ],
+      "id": "fbd88c99-0354-5f1f-a0cc-ea54d1c3669a"
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ ($env.STRIPE_BASE_URL || 'https://api.stripe.com') + '/v1/payment_intents/' + $json.payment_intent }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.STRIPE_SECRET_KEY }}"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "name": "Stripe: get payment",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        440,
+        300
+      ],
+      "id": "77d13e0c-1451-5b41-9052-829c65b96d8c",
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000
+    },
+    {
+      "parameters": {
+        "jsCode": "// The payment as Stripe reports it (fetched by id, not taken from the notice), turned into the confirmations.\nconst pi = $input.first().json;\nconst m = pi.metadata || {};\nconst store = $getWorkflowStaticData('global');\nstore.seen = store.seen || [];\nif (pi.status !== 'succeeded' || m.ntstays !== 'booking' || store.seen.includes(pi.id)) return [];  // not ours, or already done\nstore.seen = [...store.seen.slice(-300), pi.id];\nconst HOME_NAMES = { 'home-1': 'Framingham Center House', 'home-2': 'Cranston House', 'home-3': 'Abington Colonial' };\nconst esc = x => (x ?? '').toString().replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');\nconst fmt = iso => iso ? new Date(iso + 'T12:00:00Z').toLocaleDateString('en-US', { weekday: 'short', month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' }) : '';\nconst amount = ((pi.amount_received || pi.amount || 0) / 100).toLocaleString('en-US', { style: 'currency', currency: (pi.currency || 'usd').toUpperCase() });\nconst home = HOME_NAMES[m.home] || 'your NTStays home';\nconst dates = m.check_in && m.check_out ? `${fmt(m.check_in)} to ${fmt(m.check_out)}` : '';\nconst ownerName = $env.OWNER_NAME || 'NTStays';\nconst rows = [['Home', home], ['Dates', dates || 'as agreed'], ['Guests', m.guests], ['Paid', `${amount} (${m.description || 'stay'})`]]\n  .filter(([, v]) => v).map(([k, v]) => `<tr><td style=\"padding:3px 14px 3px 0;color:#6d6158\">${esc(k)}</td><td><b>${esc(v)}</b></td></tr>`).join('');\nconst guestText = `Hi ${m.first_name || 'there'},\\n\\nThank you: we've received your payment of ${amount} and your stay is confirmed.\\n\\n`\n  + `Home: ${home}\\n${dates ? `Dates: ${dates}\\n` : ''}${m.guests ? `Guests: ${m.guests}\\n` : ''}\\n`\n  + `We'll send your check-in details before you arrive. If anything changes, just reply to this email.\\n\\n`\n  + `Warm regards,\\n${ownerName} and the NTStays team`;\nconst guestHtml = `<div style=\"font-family:Arial,sans-serif;font-size:15px;color:#2b211b;max-width:600px\">\n  <p>Hi ${esc(m.first_name || 'there')},</p><p>Thank you: we've received your payment and <b>your stay is confirmed</b>.</p>\n  <table style=\"font-size:15px;margin:10px 0 14px\">${rows}</table>\n  <p>We'll send your check-in details before you arrive. If anything changes, just reply to this email.</p>\n  <p>Warm regards,<br>${esc(ownerName)} and the NTStays team</p></div>`;\nreturn [{ json: {\n  has_contact: Boolean(m.contact_id), contact_id: m.contact_id,\n  guest_email: { sender: { name: `${ownerName} at NTStays`, email: $env.FROM_EMAIL }, to: [{ email: m.email, name: m.first_name || '' }],\n    replyTo: { email: $env.REPLY_TO_EMAIL || $env.FROM_EMAIL, name: `${ownerName} at NTStays` },\n    subject: `Your stay is confirmed: ${home}${m.check_in ? `, ${fmt(m.check_in)}` : ''}`, textContent: guestText, htmlContent: guestHtml,\n    tags: ['ntstays-booking-confirmed'] },\n  owner_email: { sender: { name: 'NTStays payments', email: $env.FROM_EMAIL }, to: [{ email: $env.OWNER_EMAIL, name: ownerName }],\n    replyTo: { email: m.email, name: m.first_name || '' },\n    subject: `[NTStays] Payment received: ${amount} from ${m.first_name || m.email} (${home})`,\n    htmlContent: `<div style=\"font-family:Arial,sans-serif;font-size:15px;color:#2b211b;max-width:640px\">\n      <h2 style=\"margin:0 0 8px;color:#3b2a20\">Payment received: ${esc(amount)}</h2>\n      <table style=\"font-size:14px\">${rows}<tr><td style=\"padding:3px 14px 3px 0;color:#6d6158\">Guest</td><td>${esc(m.first_name)} &lt;${esc(m.email)}&gt;</td></tr></table>\n      <p>${esc(m.first_name || 'The guest')} got a confirmation email. These dates now show in your direct-bookings calendar feed,\n      so Airbnb and Vrbo block them at their next sync (if you've imported the feed there).</p>\n      <p style=\"font-size:12px;color:#6d6158\">Stripe payment ${esc(pi.id)}</p></div>`,\n    tags: ['ntstays-payment-owner'] },\n  note: { properties: { hs_timestamp: new Date().toISOString(), hs_note_body:\n    `<p><b>Payment received:</b> ${esc(amount)} for ${esc(home)}${dates ? `, ${esc(dates)}` : ''} (Stripe ${esc(pi.id)}). Stay confirmed.</p>` },\n    associations: [{ to: { id: m.contact_id }, types: [{ associationCategory: 'HUBSPOT_DEFINED', associationTypeId: 202 }] }] },\n} }];"
+      },
+      "name": "Build confirmation",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        660,
+        300
+      ],
+      "id": "6f9724bc-6fb4-5ae6-a157-a983dab41bbf"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.BREVO_BASE_URL }}/v3/smtp/email",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "api-key",
+              "value": "={{ $env.BREVO_API_KEY }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($('Build confirmation').first().json.guest_email) }}",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "name": "Email guest confirmation",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        880,
+        300
+      ],
+      "id": "779e4c72-148d-59f6-8c73-c428082cab9e",
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.BREVO_BASE_URL }}/v3/smtp/email",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "api-key",
+              "value": "={{ $env.BREVO_API_KEY }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($('Build confirmation').first().json.owner_email) }}",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "name": "Email owner payment",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1100,
+        300
+      ],
+      "id": "125d7422-8e7e-5552-8766-2e0d6fe41c53",
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "99b18995-b379-5a91-84da-3e749784c301",
+              "leftValue": "={{ $('Build confirmation').first().json.has_contact }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "name": "In HubSpot?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1320,
+        300
+      ],
+      "id": "de524cca-e767-5fac-a7b8-22472e7df259"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.HUBSPOT_BASE_URL }}/crm/v3/objects/notes",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.HUBSPOT_TOKEN }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($('Build confirmation').first().json.note) }}",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "name": "HubSpot: log payment",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1540,
+        220
+      ],
+      "id": "677ee769-18c6-59cb-b4ca-2d6703127dc9",
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{ $env.HUBSPOT_BASE_URL }}/crm/v3/objects/contacts/{{ $('Build confirmation').first().json.contact_id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.HUBSPOT_TOKEN }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ properties: { lifecyclestage: 'customer', hs_lead_status: 'CONNECTED' } }) }}",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "name": "HubSpot: mark customer",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1760,
+        220
+      ],
+      "id": "bb38e64e-42b1-5ed5-8c69-6dd350e859b8",
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000
+    },
+    {
+      "parameters": {
+        "httpMethod": "GET",
+        "path": "ntstays-direct-calendar",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "name": "Direct calendar requested",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        700
+      ],
+      "id": "a4c88e9c-ea10-5f8c-8380-b000f7ad5d46",
+      "webhookId": "c28250d9-80a8-5dbb-a407-5fc68e69c773"
+    },
+    {
+      "parameters": {
+        "jsCode": "const q = $input.first().json.query || {};\nconst home = ['home-1', 'home-2', 'home-3'].includes(q.home) ? q.home : '';\nreturn [{ json: { home, ask_stripe: Boolean(home && $env.STRIPE_SECRET_KEY) } }];"
+      },
+      "name": "Prepare feed",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        220,
+        700
+      ],
+      "id": "3e4c9eb4-9906-5b44-8e3e-1ddd0a805d8a"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "abb0f9a5-796e-5f6b-ba90-fed8844ee0f6",
+              "leftValue": "={{ $json.ask_stripe }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "name": "Stripe set up?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        440,
+        700
+      ],
+      "id": "38d94542-181a-57dc-af14-6351434aebb4"
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ ($env.STRIPE_BASE_URL || 'https://api.stripe.com') + '/v1/payment_intents/search?limit=100&query=' + encodeURIComponent(\"metadata['ntstays']:'booking' AND status:'succeeded'\") }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.STRIPE_SECRET_KEY }}"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "name": "Stripe: paid bookings",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        660,
+        620
+      ],
+      "id": "ca8aff0e-6f39-5f34-a665-e6bcda2f2389",
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// iCal feed of paid direct bookings for one home. Dates only: no names, emails or amounts.\nconst home = $('Prepare feed').first().json.home;\nconst res = $input.first().json;\nconst intents = Array.isArray(res.data) ? res.data : [];\nconst ymd = s => (s || '').replace(/-/g, '');\nconst stamp = new Date().toISOString().replace(/[-:]/g, '').replace(/\\.\\d+Z$/, 'Z');\nconst events = intents\n  .filter(pi => pi.status === 'succeeded' && pi.metadata && pi.metadata.home === home\n    && /^\\d{4}-\\d{2}-\\d{2}$/.test(pi.metadata.check_in || '') && /^\\d{4}-\\d{2}-\\d{2}$/.test(pi.metadata.check_out || '')\n    && pi.metadata.check_out > pi.metadata.check_in)\n  .map(pi => ['BEGIN:VEVENT', `UID:${pi.id}@ntstays.com`, `DTSTAMP:${stamp}`, `DTSTART;VALUE=DATE:${ymd(pi.metadata.check_in)}`,\n    `DTEND;VALUE=DATE:${ymd(pi.metadata.check_out)}`, 'SUMMARY:NTStays direct booking', 'END:VEVENT'].join('\\r\\n'));\nconst ics = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//NTStays//Direct bookings//EN', 'CALSCALE:GREGORIAN',\n  ...events, 'END:VCALENDAR', ''].join('\\r\\n');\nreturn [{ json: { ics } }];"
+      },
+      "name": "Build iCal feed",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        880,
+        700
+      ],
+      "id": "4c4a02dd-e721-5034-ae4e-8f60ce34b975"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.ics }}",
+        "options": {
+          "responseCode": 200,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "text/calendar; charset=utf-8"
+              },
+              {
+                "name": "Cache-Control",
+                "value": "public, max-age=900"
+              }
+            ]
+          }
+        }
+      },
+      "name": "Send iCal feed",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1100,
+        700
+      ],
+      "id": "6d99dba3-70b3-5db1-839c-2cc9f85e6262"
+    }
+  ],
+  "connections": {
+    "Stripe payment notice": {
+      "main": [
+        [
+          {
+            "node": "Read Stripe event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Stripe event": {
+      "main": [
+        [
+          {
+            "node": "Stripe: get payment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Stripe: get payment": {
+      "main": [
+        [
+          {
+            "node": "Build confirmation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build confirmation": {
+      "main": [
+        [
+          {
+            "node": "Email guest confirmation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email guest confirmation": {
+      "main": [
+        [
+          {
+            "node": "Email owner payment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email owner payment": {
+      "main": [
+        [
+          {
+            "node": "In HubSpot?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "In HubSpot?": {
+      "main": [
+        [
+          {
+            "node": "HubSpot: log payment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HubSpot: log payment": {
+      "main": [
+        [
+          {
+            "node": "HubSpot: mark customer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Direct calendar requested": {
+      "main": [
+        [
+          {
+            "node": "Prepare feed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare feed": {
+      "main": [
+        [
+          {
+            "node": "Stripe set up?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Stripe set up?": {
+      "main": [
+        [
+          {
+            "node": "Stripe: paid bookings",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build iCal feed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Stripe: paid bookings": {
+      "main": [
+        [
+          {
+            "node": "Build iCal feed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build iCal feed": {
+      "main": [
+        [
+          {
+            "node": "Send iCal feed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "id": "ntstaysPayments01",
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "America/New_York",
+    "errorWorkflow": "ntstaysErrorAlert01",
+    "saveDataSuccessExecution": "all"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "tags": []
+}

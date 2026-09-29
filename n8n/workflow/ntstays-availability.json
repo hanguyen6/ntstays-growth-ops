@@ -1,0 +1,270 @@
+{
+  "name": "NTStays: availability (calendar sync)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "GET",
+        "path": "ntstays-availability",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "https://ntstays.com,https://www.ntstays.com,http://localhost:8080"
+        }
+      },
+      "name": "Availability requested",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        300
+      ],
+      "id": "5a8747b1-979d-5786-881c-af790179fe8c",
+      "webhookId": "1bca6af0-0f46-5443-8d20-11d3c31c4fa9"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Serve the cached availability if it's fresh; otherwise list the calendar feeds to fetch.\nconst store = $getWorkflowStaticData('global');\nconst maxAge = (Number($env.AVAILABILITY_CACHE_MINUTES) || 30) * 60000;\nconst fresh = Boolean(store.cache) && Date.now() - store.cache.at < maxAge;\nconst feeds = [];\nfor (const home of ['home-1', 'home-2', 'home-3']) {\n  const urls = ($env['ICAL_' + home.replace('-', '_').toUpperCase()] || '').split(/[\\s,]+/).filter(u => /^https?:\\/\\//.test(u));\n  for (const url of urls) feeds.push({ home, url });\n}\nreturn [{ json: { use_cache: fresh || feeds.length === 0,\n  body: store.cache ? store.cache.body : { updated: null, homes: {}, stale: [] }, feeds } }];"
+      },
+      "name": "Check cache",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        220,
+        300
+      ],
+      "id": "d1fa3a59-bd82-5ef2-981f-e726dca2e417"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "55e68375-9b06-5f44-ad48-538987e2f59c",
+              "leftValue": "={{ $json.use_cache }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "name": "Cache fresh?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        440,
+        300
+      ],
+      "id": "cda2d2d9-89de-5323-8f16-f974ec2b357e"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json.body) }}",
+        "options": {
+          "responseCode": 200,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Cache-Control",
+                "value": "public, max-age=300"
+              }
+            ]
+          }
+        }
+      },
+      "name": "Send cached dates",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        660,
+        200
+      ],
+      "id": "546f9761-a2f7-56b6-980a-241257b96bdd"
+    },
+    {
+      "parameters": {
+        "jsCode": "return $input.first().json.feeds.map(f => ({ json: f }));"
+      },
+      "name": "List calendar feeds",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        660,
+        420
+      ],
+      "id": "febfb82e-b16d-504f-a4ae-e93d9197ac64"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "NTStays-calendar/1.0"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 20000,
+          "response": {
+            "response": {
+              "responseFormat": "text",
+              "outputPropertyName": "ics"
+            }
+          }
+        }
+      },
+      "name": "Fetch calendar",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        880,
+        420
+      ],
+      "id": "c3a2691f-2d62-554f-afa2-c89363afc162",
+      "onError": "continueRegularOutput",
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000
+    },
+    {
+      "parameters": {
+        "jsCode": "// Busy date ranges per home, from the calendar feeds. Only dates leave this step: summaries, descriptions and\n// reservation details are dropped here.\nconst feeds = $('List calendar feeds').all().map(i => i.json);\nconst store = $getWorkflowStaticData('global');\nconst old = (store.cache && store.cache.body.homes) || {};\nconst ignoreBlocks = ($env.ICAL_IGNORE_BLOCKS || '').split(/[\\s,]+/).filter(Boolean);\nconst DAY = 86400000;\nconst now = new Date();\nconst start = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()) - DAY);\nconst horizon = new Date(start.getTime() + 548 * DAY);  // about 18 months ahead\nconst iso = d => d.toISOString().slice(0, 10);\nconst toDate = v => { const m = (v || '').match(/(\\d{4})(\\d{2})(\\d{2})/); return m ? new Date(Date.UTC(+m[1], +m[2] - 1, +m[3])) : null; };\nfunction events(ics) {\n  const lines = ics.replace(/\\r\\n?/g, '\\n').replace(/\\n[ \\t]/g, '').split('\\n');  // unfold long lines\n  const out = []; let ev = null;\n  for (const line of lines) {\n    if (line.trim() === 'BEGIN:VEVENT') ev = {};\n    else if (line.trim() === 'END:VEVENT') { if (ev) out.push(ev); ev = null; }\n    else if (ev) { const i = line.indexOf(':'); if (i > 0) ev[line.slice(0, i).split(';')[0].toUpperCase()] = line.slice(i + 1).trim(); }\n  }\n  return out;\n}\nconst ranges = {}, failed = new Set(), ok = new Set();\n$input.all().forEach((item, i) => {\n  const f = feeds[i];\n  if (!f) return;\n  const ics = item.json.ics;\n  if (item.json.error || typeof ics !== 'string' || !ics.includes('BEGIN:VCALENDAR')) { failed.add(f.home); return; }\n  ok.add(f.home);\n  for (const e of events(ics)) {\n    if ((e.STATUS || '').toUpperCase() === 'CANCELLED') continue;\n    if (ignoreBlocks.includes(f.home) && /not available|blocked|closed/i.test(e.SUMMARY || '')) continue;\n    const a = toDate(e.DTSTART);\n    if (!a) continue;\n    let b = toDate(e.DTEND);\n    if (!b || b <= a) b = new Date(a.getTime() + DAY);\n    if (b <= start || a >= horizon) continue;\n    (ranges[f.home] = ranges[f.home] || []).push([a < start ? start : a, b > horizon ? horizon : b]);\n  }\n});\nconst homes = {};\nfor (const home of new Set(feeds.map(f => f.home))) {\n  if (failed.has(home)) { homes[home] = old[home] || []; continue; }  // a feed failed: keep that home's last good dates\n  const merged = [];\n  for (const [a, b] of (ranges[home] || []).sort((x, y) => x[0] - y[0])) {\n    const last = merged[merged.length - 1];\n    if (last && a <= last[1]) { if (b > last[1]) last[1] = b; } else merged.push([a, b]);\n  }\n  homes[home] = merged.map(([a, b]) => [iso(a), iso(b)]);  // [first booked night, check-out day), like the platforms\n}\nconst body = { updated: new Date().toISOString(), homes, stale: [...failed] };\nif (ok.size) store.cache = { at: Date.now(), body };\nreturn [{ json: { body } }];"
+      },
+      "name": "Merge busy dates",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1100,
+        420
+      ],
+      "id": "39b412a5-8c7e-5d4d-b009-b0fe82e81875"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json.body) }}",
+        "options": {
+          "responseCode": 200,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Cache-Control",
+                "value": "public, max-age=300"
+              }
+            ]
+          }
+        }
+      },
+      "name": "Send fresh dates",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1320,
+        420
+      ],
+      "id": "ad950e2c-7a41-545f-95dd-e0d5f141a9d3"
+    }
+  ],
+  "connections": {
+    "Availability requested": {
+      "main": [
+        [
+          {
+            "node": "Check cache",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check cache": {
+      "main": [
+        [
+          {
+            "node": "Cache fresh?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cache fresh?": {
+      "main": [
+        [
+          {
+            "node": "Send cached dates",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "List calendar feeds",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "List calendar feeds": {
+      "main": [
+        [
+          {
+            "node": "Fetch calendar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch calendar": {
+      "main": [
+        [
+          {
+            "node": "Merge busy dates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge busy dates": {
+      "main": [
+        [
+          {
+            "node": "Send fresh dates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "id": "ntstaysAvailability01",
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "America/New_York",
+    "errorWorkflow": "ntstaysErrorAlert01",
+    "saveDataSuccessExecution": "none"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "tags": []
+}

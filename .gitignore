@@ -1,0 +1,3 @@
+# Original photos: large, and phone photos contain GPS location. Only the cleaned copies in site/img/ are committed.
+photos/
+__pycache__/

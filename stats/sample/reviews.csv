@@ -1,0 +1,7 @@
+property,platform,date,rating,display_name,origin,text,feature
+home-1,Airbnb,2026-08-18,5,Jordan S.,"Austin, TX","Spotless, quiet, and the lake view at sunrise was worth the trip. Check-in was easy and the hosts answered within minutes.",yes
+home-2,Booking.com,2026-07-02,5,Emma,United Kingdom,"Perfect base for exploring downtown. Great bed, fast Wi-Fi, and a kitchen with everything we needed.",yes
+home-3,Vrbo,2026-06-21,5,Priya P.,"Chicago, IL",Room for our whole family and then some. The kids loved the backyard. We are already planning next summer.,yes
+home-1,Airbnb,2026-05-10,4,Casey,"Denver, CO","Lovely home. The driveway is steep, so take it slow in winter.",no
+home-2,Airbnb,2026-04-03,5,Riley B.,"Seattle, WA",Exactly as pictured and very clean.,yes
+home-3,Vrbo,2026-03-15,3,Sam,"Boston, MA","Nice house, but the hot tub was out of service during our stay.",no
