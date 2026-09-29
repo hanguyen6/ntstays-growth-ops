@@ -10,6 +10,12 @@
   let state = { messages: [], session: '', sig: '' };
   try { state = { ...state, ...JSON.parse(sessionStorage.getItem(STORE) || '{}') }; } catch (_) {}
   const save = () => { try { sessionStorage.setItem(STORE, JSON.stringify(state)); } catch (_) {} };
+  // A signed chat lasts 4 hours (the number after the dot is its expiry). After that, keep the conversation but
+  // drop the session, so the next message passes the spam check again and gets a new one.
+  const dropExpired = () => {
+    if (state.session && Number(state.session.split('.')[1] || 0) * 1000 < Date.now() + 60000) { state.session = ''; state.sig = ''; }
+  };
+  dropExpired();
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
   const css = document.createElement('style');
@@ -138,6 +144,7 @@
     typing.className = 'ntc-typing'; typing.textContent = 'Typing…';
     log.append(typing); log.scrollTop = log.scrollHeight;
     let tokenSent = false;
+    dropExpired();
     try {
       const turnstile = await waitForToken();
       tokenSent = Boolean(turnstile);
@@ -160,6 +167,8 @@
       state.messages.pop();  // let them try again
       bubble('note', err.message || 'Sorry, something went wrong. Please email hello@ntstays.com.');
       if (/reload the page to start/i.test(err.message || '')) { state = { messages: [], session: '', sig: '' }; }
+      // The server didn't accept our session (e.g. it expired): the next Send runs the spam check again.
+      else if (/spam check/i.test(err.message || '') && state.session) { state.session = ''; state.sig = ''; startTurnstile(); }
     } finally {
       save();
       send.disabled = false;
