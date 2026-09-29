@@ -62,6 +62,8 @@
   .answer .a { font: 750 1.7rem/1.15 var(--f-display); margin-bottom: 10px; }
   .answer p { margin: 0; color: var(--ink-2); }
 
+  .maps { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; align-items: start; }
+  .maps > div { min-width: 0; }
   .map { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px; overflow-x: auto; }
   .map pre.mermaid { margin: 0; background: transparent; text-align: center; }
 
@@ -142,30 +144,37 @@
   <section>
     <div class="wide">
       <h2 class="col" style="margin-inline:auto">How it works</h2>
+      <div class="maps">
+      <div><p class="label" style="margin:14px 0 8px">Lead handling</p>
       <div class="map">
 <pre class="mermaid">
-flowchart LR
-  V[Visitor] --> F[Forms and chat<br/>campaign source recorded]
-  F --> T{{"Turnstile spam check"}}
-  T --> W["n8n: website inquiries<br/>validate · score · draft"]
-  W --> C["Claude API<br/>structured JSON"]
+flowchart TB
+  V[Visitor] --> F["Forms and chat<br/>campaign source recorded"]
+  F --> W["n8n: website inquiries<br/>spam check · validate"]
+  W --> C["Claude API<br/>score · draft · JSON"]
   C --> G["Guardrails in code<br/>no prices · no 'you're booked'"]
   G --> H[HubSpot contact + note]
   G --> A[["Owner approval form"]]
-  A -->|Send| E[Reply email + Stripe payment link]
+  A -->|Send| E["Reply email<br/>+ Stripe payment link"]
   A -->|Don't send| L[Logged, nothing sent]
-  E --> P["n8n: payments · follow-ups · calendar sync"]
+</pre>
+      </div></div>
+      <div><p class="label" style="margin:14px 0 8px">Measurement and the monthly report</p>
+      <div class="map">
+<pre class="mermaid">
+flowchart TB
   X[Platform exports] --> S[Stats builder]
-  M["Log numbers page<br/>Furnished Finder · Vrbo · Airbnb"] --> D[(n8n data table<br/>append-only)]
-  S --> Q[Marketing dashboard<br/>sign-in only]
+  M["Log numbers page<br/>Furnished Finder · Vrbo · Airbnb"] --> D[("n8n data table<br/>append-only")]
+  S --> Q["Marketing dashboard<br/>sign-in only"]
   D --> Q
-  D --> R["n8n: monthly report<br/>facts in code · Claude writes"]
-  S --> R
-  R --> K{{"Number check<br/>every figure in the data?"}}
-  K -->|pass| A2[["Owner approval<br/>edits re-checked"]]
-  K -->|fail| B[Blocked: owner gets the reasons]
+  S --> R["n8n: monthly report<br/>facts in code · Claude writes"]
+  D --> R
+  R --> K{{"Every number<br/>in the data?"}}
+  K -->|yes| A2[["Owner approval<br/>edits re-checked"]]
+  K -->|no| B[Blocked: owner gets the reasons]
   A2 --> T[Report emailed to the team]
 </pre>
+      </div></div>
       </div>
     </div>
   </section>
@@ -274,5 +283,13 @@ flowchart LR
   </footer>
 </main>
 
+<!-- GitHub Pages doesn't draw diagrams by itself (claude.ai does): load the diagram library. -->
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11.4.1/dist/mermaid.esm.min.mjs';
+  const dark = document.documentElement.dataset.theme === 'dark' ||
+    (!document.documentElement.dataset.theme && matchMedia('(prefers-color-scheme: dark)').matches);
+  mermaid.initialize({ startOnLoad: false, theme: dark ? 'dark' : 'neutral', securityLevel: 'strict', flowchart: { htmlLabels: true } });
+  await mermaid.run({ querySelector: 'pre.mermaid' });
+</script>
 </body>
 </html>
