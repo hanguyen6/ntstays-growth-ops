@@ -172,7 +172,7 @@
       <dd><b>Revenue share</b> = a channel's booking value ÷ all booking value in the time range, counted by the nights in each
         month. <b>Fee %</b> = what the channel costs ÷ the booking value it brought: platform fees for Airbnb, Vrbo and
         Booking.com (from their exports), Furnished Finder's yearly listing fee spread evenly over the months (a third per
-        home), and 0% for direct bookings (card processing fees aren't counted). The monthly line shows changes such as
+        home). Direct bookings have no platform fee, so they're left out of Fee %. The monthly line shows changes such as
         Airbnb moving hosts from its 3% split fee to the 15.5% host-only fee. Furnished Finder and direct leases count only
         when their monthly rent is logged. Amounts are never shown.</dd>
       <dt>Monthly report runs</dt>
@@ -612,11 +612,12 @@ function renderValue() {
   shown.forEach(([c]) => { const m = el('div', { class: 'mini' }); m.append(el('b', {}, pct(tot[c].value, all)), el('span', {}, c)); minis.append(m); });
   minis.style.gridTemplateColumns = 'repeat(auto-fit, minmax(96px, 1fr))';
 
-  // Fee % by channel: horizontal bars, labeled.
+  // Fee % by channel: horizontal bars, labeled. Direct has no platform fee, so it isn't listed.
+  const feeShown = shown.filter(([c]) => c !== 'Direct');
   right.append(el('div', { class: 'num-label' }, 'Fee %: what each channel costs per $ of booking value'));
   const cw = el('div', { class: 'chart' }); right.append(cw);
-  const FW = widthOf(cw), rowH = 20, gap = 10, LW = 130, FH = shown.length * (rowH + gap);
-  const fees = shown.map(([c, v]) => [c, v, tot[c].value ? tot[c].fees / tot[c].value : null]);
+  const FW = widthOf(cw), rowH = 20, gap = 10, LW = 130, FH = Math.max(feeShown.length, 1) * (rowH + gap);
+  const fees = feeShown.map(([c, v]) => [c, v, tot[c].value ? tot[c].fees / tot[c].value : null]);
   const maxF = Math.max(0.05, ...fees.map(f => f[2] || 0)), scale = (FW - LW - 60) / maxF;
   const fs = svgEl('svg', { viewBox: `0 0 ${FW} ${FH}`, role: 'img', 'aria-label': 'Fee percentage by channel' });
   fees.forEach(([c, v, f], i) => {
