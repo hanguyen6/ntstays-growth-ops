@@ -4,9 +4,9 @@ A production marketing and revenue-operations system for a three-home furnished-
 **Claude Code**, **n8n** and the **Claude API**. It captures and attributes leads, triages them with AI under human
 approval, and gives the marketing manager one place to see which channel actually converts.
 
-- **Case study** (what it does, what broke, what I learned): [`docs/index.html`](docs/index.html), also served by GitHub Pages
+- **Case study** (what it does, what broke, what I learned): [hanguyen6.github.io/ntstays-growth-ops](https://hanguyen6.github.io/ntstays-growth-ops/)
+- **Dashboard demo** (made-up numbers, runs in the browser): [hanguyen6.github.io/ntstays-growth-ops/demo](https://hanguyen6.github.io/ntstays-growth-ops/demo/)
 - **Live site:** [ntstays.com](https://ntstays.com)
-- **Dashboard demo** (made-up numbers, runs in the browser): [`docs/demo/`](docs/demo/)
 
 > **The most boring marketing workflow you could automate end-to-end this week?**
 > The monthly channel report. Pull each platform's numbers, reconcile them, chart them, write the summary, send it.
