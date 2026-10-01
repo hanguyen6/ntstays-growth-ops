@@ -83,8 +83,8 @@
     h1 {
       margin: 18px 0 16px;
       max-width: 900px;
-      font-size: clamp(30px, 3.6vw, 40px);
-      line-height: 1.05;
+      font-size: clamp(32px, 4vw, 46px);
+      line-height: 1.08;
       letter-spacing: -.035em;
       font-weight: 820;
       color: var(--navy);
@@ -92,7 +92,7 @@
     .hero-copy {
       max-width: 900px;
       margin: 0;
-      font-size: 16px;
+      font-size: 19px;
       line-height: 1.55;
       color: var(--muted);
     }
@@ -115,6 +115,11 @@
     .hero-links a { padding: 9px 14px; border-radius: 10px; border: 1px solid var(--line); background: #fff; font-size: 14px;
       font-weight: 750; text-decoration: none; color: var(--navy); }
     .hero-links a:first-child { background: var(--navy); border-color: var(--navy); color: #fff; }
+    .answer { margin-top: 26px; padding: 22px 24px; border-radius: 16px; background: #fff; border: 1px solid var(--line);
+      border-left: 5px solid var(--blue); box-shadow: 0 8px 24px rgba(25,44,74,.05); max-width: 900px; }
+    .answer .q { font-size: 14px; font-weight: 800; letter-spacing: .02em; color: var(--muted); }
+    .answer .a { margin: 6px 0 10px; font-size: 24px; font-weight: 800; letter-spacing: -.02em; color: var(--navy); }
+    .answer p { margin: 0; font-size: 16px; color: var(--ink); }
     .stack-label {
       font-size: 11px;
       font-weight: 900;
@@ -139,7 +144,7 @@
     h2 {
       margin: 0 0 10px;
       color: var(--navy);
-      font-size: clamp(21px, 2.2vw, 26px);
+      font-size: clamp(24px, 2.6vw, 30px);
       line-height: 1.18;
       letter-spacing: -.025em;
       font-weight: 800;
@@ -148,14 +153,14 @@
     h3 {
       margin: 0 0 9px;
       color: var(--navy);
-      font-size: 17px;
+      font-size: 19px;
       line-height: 1.3;
       letter-spacing: -.01em;
       font-weight: 780;
     }
     .section-dark h3 { color: #fff; }
     p { margin: 0 0 16px; }
-    .lead { font-size: 16px; color: var(--muted); }
+    .lead { font-size: 18px; color: var(--muted); }
     .section-dark .lead { color: #dce8f7; }
     .business-question { font-weight: 850; color: var(--navy); }
 
@@ -183,7 +188,7 @@
 
     .solution-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 16px; }
     .solution-card {
-      min-height: 190px;
+      min-height: 0;
       padding: 24px;
       border-radius: 16px;
       background: #fff;
@@ -191,12 +196,12 @@
       border: 1px solid rgba(255,255,255,.35);
     }
     .solution-card .mini {
-      margin-bottom: 40px;
-      color: #2758f1;
-      font-size: 11px;
-      font-weight: 900;
-      letter-spacing: .12em;
-      text-transform: uppercase;
+      margin-bottom: 10px;
+      color: var(--navy);
+      font-size: 19px;
+      font-weight: 780;
+      line-height: 1.3;
+      letter-spacing: -.01em;
     }
     .solution-card p { margin: 0; color: #42536b; }
 
@@ -212,12 +217,12 @@
     th {
       background: #f6f8fb;
       color: #56657a;
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 900;
       letter-spacing: .04em;
       text-transform: uppercase;
     }
-    td { font-size: 14px; }
+    td { font-size: 15px; }
     tbody tr:last-child td { border-bottom: 0; }
     td strong { color: var(--navy); }
     .status-live { color: var(--teal); font-weight: 850; white-space: nowrap; }
@@ -301,7 +306,7 @@
       border-radius: 13px;
       background: #f7f9fc;
       color: var(--muted);
-      font-size: 14px;
+      font-size: 15px;
     }
     .evidence-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
     figure {
@@ -314,8 +319,8 @@
     }
     figure a { display: block; background: #f3f6fa; }
     figure img { display: block; width: 100%; height: auto; }
-    figcaption { padding: 16px 18px 18px; color: var(--muted); font-size: 14px; }
-    figcaption strong { display: block; margin-bottom: 5px; color: var(--navy); }
+    figcaption { padding: 16px 18px 18px; color: var(--muted); font-size: 15px; }
+    figcaption strong { display: block; margin-bottom: 5px; color: var(--navy); font-size: 17px; }
 
     .footer { padding: 42px 0 64px; color: var(--muted); font-size: 13px; }
     .footer strong { color: var(--navy); }
@@ -331,7 +336,6 @@
       section { padding: 50px 0; }
       .grid-3, .solution-grid { grid-template-columns: 1fr; }
       .solution-card { min-height: 0; }
-      .solution-card .mini { margin-bottom: 24px; }
       .opportunities-columns { columns: 1; }
     }
     @media print {
@@ -343,9 +347,12 @@
     }
   
     @media (max-width: 720px) {
-      h1 { font-size: 30px; line-height: 1.08; }
-      h2 { font-size: 22px; }
-      h3 { font-size: 16px; }
+      h1 { font-size: 32px; line-height: 1.1; }
+      .hero-copy { font-size: 17px; }
+      h2 { font-size: 24px; }
+      .lead { font-size: 17px; }
+      h3, .solution-card .mini { font-size: 18px; }
+      .answer .a { font-size: 20px; }
       .hero { padding: 46px 0 32px; }
       section { padding: 44px 0; }
     }
@@ -375,6 +382,11 @@
 <div class="stack-row">
 <span class="stack-label">Technical stack</span>
 <span>Claude API · n8n · HubSpot · Stripe · Cloudflare Access · GitHub Actions · Python</span>
+</div>
+<div class="answer" id="boring">
+<div class="q">What's the most boring marketing workflow you could automate end-to-end this week?</div>
+<div class="a">The monthly channel report.</div>
+<p>Pull each platform's numbers, reconcile them, chart them, write the summary, send it. At NTStays it now runs end to end: on the 1st of each month an n8n workflow computes the numbers in code, Claude writes the summary, a check blocks any draft with a number that isn't in the data, and the owner approves before it goes out. Built, tested end to end in n8n and deployed; the first scheduled run is October 1, 2026.</p>
 </div>
 <div class="hero-links"><a href="https://ntstays.com" rel="noopener" target="_blank">Live site</a><a href="https://github.com/hanguyen6/ntstays-growth-ops" rel="noopener" target="_blank">Source code on GitHub</a></div>
 </div>
