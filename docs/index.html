@@ -116,10 +116,14 @@
       font-weight: 750; text-decoration: none; color: var(--navy); }
     .hero-links a:first-child { background: var(--navy); border-color: var(--navy); color: #fff; }
     .answer { margin-top: 26px; padding: 22px 24px; border-radius: 16px; background: #fff; border: 1px solid var(--line);
-      border-left: 5px solid var(--blue); box-shadow: 0 8px 24px rgba(25,44,74,.05); max-width: 900px; }
+      border-left: 5px solid var(--blue); box-shadow: 0 8px 24px rgba(25,44,74,.05); }
     .answer .q { font-size: 14px; font-weight: 800; letter-spacing: .02em; color: var(--muted); }
     .answer .a { margin: 6px 0 10px; font-size: 24px; font-weight: 800; letter-spacing: -.02em; color: var(--navy); }
     .answer p { margin: 0; font-size: 16px; color: var(--ink); }
+    .problem-panel { padding: 26px 28px; border: 1px solid var(--line); border-left: 5px solid var(--amber);
+      border-radius: var(--radius); background: var(--amber-soft); box-shadow: var(--shadow); }
+    .problem-panel h2 { margin-bottom: 12px; }
+    .problem-panel .lead { margin: 0; color: var(--ink); }
     .stack-label {
       font-size: 11px;
       font-weight: 900;
@@ -386,7 +390,7 @@
 <div class="answer" id="boring">
 <div class="q">What's the most boring marketing workflow you could automate end-to-end this week?</div>
 <div class="a">The monthly channel report.</div>
-<p>Pull each platform's numbers, reconcile them, chart them, write the summary, send it. At NTStays it now runs end to end: on the 1st of each month an n8n workflow computes the numbers in code, Claude writes the summary, a check blocks any draft with a number that isn't in the data, and the owner approves before it goes out. Built, tested end to end in n8n and deployed; the first scheduled run is October 1, 2026.</p>
+<p>Pull each platform's numbers, reconcile them, chart them, write the summary, send it. At NTStays it now runs end to end: on the 1st of each month an n8n workflow computes the numbers in code, Claude writes the summary, a check blocks any draft with a number that isn't in the data, and the owner approves before it goes out. Its first scheduled run, on October 1, 2026, showed why the check matters: it caught a number the AI had calculated on its own and held the draft back.</p>
 </div>
 <div class="hero-links"><a href="https://ntstays.com" rel="noopener" target="_blank">Live site</a><a href="https://github.com/hanguyen6/ntstays-growth-ops" rel="noopener" target="_blank">Source code on GitHub</a></div>
 </div>
@@ -394,7 +398,7 @@
 <main>
 <section id="problem">
 <div class="container">
-<div class="section-head">
+<div class="problem-panel">
 
 <h2>Business Problem</h2>
 <p class="lead">NTStays receives inquiries and bookings from multiple channels, each with different data semantics. Customer inquiries were handled manually, source attribution was inconsistent, and platform reporting mixed monthly, rolling-window and lifetime metrics. The operating question was simple but hard to answer reliably: <span class="business-question">which channel is actually producing valuable business, at what cost?</span></p>
