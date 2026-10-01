@@ -1,7 +1,6 @@
 {
- "generated": "2026-09-29",
+ "generated": "2026-10-01",
  "months": [
-  "2025-10",
   "2025-11",
   "2025-12",
   "2026-01",
@@ -12,7 +11,8 @@
   "2026-06",
   "2026-07",
   "2026-08",
-  "2026-09"
+  "2026-09",
+  "2026-10"
  ],
  "lead_types": {
   "travel_nurse": "Travel nurses",
@@ -29,34 +29,6 @@
   "rows": []
  },
  "money": [
-  {
-   "month": "2025-10",
-   "channel": "Airbnb",
-   "property": "home-1",
-   "value": 1257.76,
-   "fees": 37.73
-  },
-  {
-   "month": "2025-10",
-   "channel": "Airbnb",
-   "property": "home-2",
-   "value": 2379.32,
-   "fees": 71.38
-  },
-  {
-   "month": "2025-10",
-   "channel": "Airbnb",
-   "property": "home-3",
-   "value": 1237.91,
-   "fees": 37.13
-  },
-  {
-   "month": "2025-10",
-   "channel": "Booking.com",
-   "property": "home-1",
-   "value": 1221.07,
-   "fees": 183.16
-  },
   {
    "month": "2025-11",
    "channel": "Airbnb",
@@ -280,39 +252,39 @@
    "property": "home-3",
    "value": 3169.81,
    "fees": 95.1
+  },
+  {
+   "month": "2026-10",
+   "channel": "Airbnb",
+   "property": "home-1",
+   "value": 1818.57,
+   "fees": 54.56
+  },
+  {
+   "month": "2026-10",
+   "channel": "Airbnb",
+   "property": "home-2",
+   "value": 1031.06,
+   "fees": 30.93
+  },
+  {
+   "month": "2026-10",
+   "channel": "Airbnb",
+   "property": "home-3",
+   "value": 2288.55,
+   "fees": 68.65
+  },
+  {
+   "month": "2026-10",
+   "channel": "Direct",
+   "property": "home-3",
+   "value": 960.0,
+   "fees": 0.0
   }
  ],
  "channels": {
   "has_direct": true,
   "rows": [
-   {
-    "month": "2025-10",
-    "channel": "Airbnb",
-    "property": "home-1",
-    "nights": 5,
-    "stays": 2
-   },
-   {
-    "month": "2025-10",
-    "channel": "Airbnb",
-    "property": "home-2",
-    "nights": 14,
-    "stays": 3
-   },
-   {
-    "month": "2025-10",
-    "channel": "Airbnb",
-    "property": "home-3",
-    "nights": 4,
-    "stays": 2
-   },
-   {
-    "month": "2025-10",
-    "channel": "Booking.com",
-    "property": "home-1",
-    "nights": 5,
-    "stays": 2
-   },
    {
     "month": "2025-11",
     "channel": "Airbnb",
@@ -536,6 +508,34 @@
     "property": "home-3",
     "nights": 11,
     "stays": 3
+   },
+   {
+    "month": "2026-10",
+    "channel": "Airbnb",
+    "property": "home-1",
+    "nights": 9,
+    "stays": 1
+   },
+   {
+    "month": "2026-10",
+    "channel": "Airbnb",
+    "property": "home-2",
+    "nights": 6,
+    "stays": 2
+   },
+   {
+    "month": "2026-10",
+    "channel": "Airbnb",
+    "property": "home-3",
+    "nights": 8,
+    "stays": 2
+   },
+   {
+    "month": "2026-10",
+    "channel": "Direct",
+    "property": "home-3",
+    "nights": 3,
+    "stays": 1
    }
   ]
  },

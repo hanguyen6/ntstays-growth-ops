@@ -135,6 +135,33 @@ def main():
     check("each outcome is logged (sent, then blocked edit)", [r.get("status") for r in reports][:2] == ["edit_blocked", "sent"], reports[:2])
     check("report runs stay out of Recent entries", not any(r.get("kind") in ("ai_call", "report") for r in body.get("recent", [])))
 
+    # Run 3: the first draft calculates a number (14.4); Claude rewrites it once and the rewrite passes.
+    req("POST", f"{MOCK}/_reset", {"report_mode": "bad_once"})
+    run_report("2026-09")
+    s = wait_for(lambda s: tagged(s, "ntstays-report-review") or tagged(s, "ntstays-report-blocked"))
+    rr = s.get("report_requests", [])
+    check("a failed first draft is rewritten once, with the draft and the bad number", len(rr) == 2 and len(rr[1]["messages"]) == 3
+          and "14.4" in rr[1]["messages"][2]["content"], [len(r["messages"]) for r in rr])
+    review = tagged(s, "ntstays-report-review")
+    check("the rewrite passes and goes to the owner for review (no blocked email)", len(review) == 1 and not tagged(s, "ntstays-report-blocked")
+          and "14.4" not in review[0]["htmlContent"], [e["subject"] for e in s["emails"]])
+    time.sleep(2)
+    calls = team("GET")[1].get("ai_calls", [])
+    check("both model calls are logged, the rewrite as attempt 2", [c.get("attempt") for c in calls[:2]] == [2, 1], calls[:2])
+
+    # Run 4: the rewrite is still wrong: blocked, and the email shows the draft with the number highlighted.
+    req("POST", f"{MOCK}/_reset", {"report_mode": "bad_always"})
+    run_report("2026-09")
+    s = wait_for(lambda s: tagged(s, "ntstays-report-blocked") or tagged(s, "ntstays-report-review"))
+    blocked = tagged(s, "ntstays-report-blocked")
+    check("a rewrite that still fails is blocked: two model calls, no third", len(blocked) == 1 and len(s.get("report_requests", [])) == 2
+          and not tagged(s, "ntstays-report-review"))
+    check("the blocked email shows the draft with 14.4 highlighted", bool(blocked) and re.search(r"<mark[^>]*>14\.4</mark>", blocked[0]["htmlContent"])
+          and "rewrote it once" in blocked[0]["htmlContent"])
+    time.sleep(2)
+    reports = team("GET")[1].get("reports", [])
+    check("the block is logged with 2 attempts", reports and reports[0].get("status") == "blocked" and reports[0].get("attempts") == 2, reports[:1])
+
 
 if __name__ == "__main__":
     main()

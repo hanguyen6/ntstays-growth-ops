@@ -49,13 +49,17 @@ def fake_chat(messages: list) -> dict:
     return {"reply": "Happy to help. The Cranston house looks open in February.", "lead": lead}
 
 
-def fake_report(content: str) -> dict:
-    """Stand-in for the monthly report: a draft that uses only numbers from the facts it was given."""
-    facts = json.loads(content.split("FACTS:", 1)[1])
+def fake_report(messages: list, mode: str = "good") -> dict:
+    """Stand-in for the monthly report: a draft that uses only numbers from the facts it was given.
+    mode "bad_once": the first draft has a calculated number (14.4), the rewrite is clean; "bad_always": both are bad."""
+    facts = json.loads(messages[0]["content"].split("FACTS:", 1)[1])
+    rewrite = len(messages) > 1
     ab = facts.get("airbnb") or {}
     lines = [{"name": "Airbnb", "text": f"Overall conversion was {ab['overall_conversion']}." if ab.get("overall_conversion")
               else "Airbnb numbers weren't logged."}]
-    return {"subject": f"NTStays channel report: {facts['month']}", "headline": f"Channel report for {facts['month']}",
+    bad = mode == "bad_always" or (mode == "bad_once" and not rewrite)
+    headline = "Furnished Finder share up 14.4 points" if bad else f"Channel report for {facts['month']}"
+    return {"subject": f"NTStays channel report: {facts['month']}", "headline": headline,
             "channels": lines, "watch": [f"Log or refresh: {m}" for m in facts.get("missing", [])[:3]],
             "next_actions": ["Log next month's platform numbers"]}
 
@@ -225,7 +229,8 @@ class Handler(BaseHTTPRequestHandler):
         if self.path == "/_reset":
             with STATE_LOCK:
                 STATE.update({"contacts": {}, "notes": [], "tasks": [], "emails": [], "claude_calls": 0, "requests": [],
-                              "stripe": {"prices": {}, "links": {}, "intents": {}}})
+                              "stripe": {"prices": {}, "links": {}, "intents": {}},
+                              "report_mode": body.get("report_mode", "good"), "report_requests": []})
             return self._json(200, {"ok": True})
         if self.path == "/_stripe/backdate":
             # Test hook: pretend a payment link was sent `days` ago.
@@ -259,7 +264,8 @@ class Handler(BaseHTTPRequestHandler):
                 if not body.get("model") or not body.get("messages"):
                     return self._json(400, {"type": "error", "error": {"message": "model and messages required"}})
                 if body.get("output_config") and "monthly channel report" in str(body.get("system", "")):
-                    text = json.dumps(fake_report(body["messages"][-1]["content"]))
+                    STATE.setdefault("report_requests", []).append(body)
+                    text = json.dumps(fake_report(body["messages"], STATE.get("report_mode", "good")))
                     return self._json(200, {
                         "id": "msg_mock_report", "type": "message", "role": "assistant", "model": body["model"],
                         "content": [{"type": "text", "text": text}], "stop_reason": "end_turn",

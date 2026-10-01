@@ -598,8 +598,10 @@ On the 1st of each month at 8:00 the workflow "NTStays: monthly channel report" 
 (logged Airbnb rates, Vrbo and Furnished Finder numbers, leases, and the export-based stays and fees), has Claude write
 a short summary, and **blocks the draft unless every number in it appears in the computed data** (no dollar amounts,
 missing inputs named). You get the draft and the numbers table by email with a **Review & send** form; you can edit the
-text, and an edit is checked again before it goes to `REPORT_RECIPIENTS` (default: `OWNER_EMAIL`). A blocked draft
-emails you the reasons and the numbers instead. Every model call (tokens, cost, time, checks) and every outcome is logged
+text, and an edit is checked again before it goes to `REPORT_RECIPIENTS` (default: `OWNER_EMAIL`). If the first draft
+fails the check (say, a number Claude calculated itself), Claude gets its draft back with the exact problems and rewrites
+it once; the rewrite is checked the same way. Only if the rewrite fails too do you get a "blocked" email: the reasons,
+the draft with the failing numbers highlighted, and the numbers table. Every model call (tokens, cost, time, checks) and every outcome is logged
 in the `ntstays_team_log` table and shown under **Monthly report runs** on the marketing dashboard.
 
 - Needs: the data table and `TEAM_API_KEY` from the Log numbers setup; optional `REPORT_RECIPIENTS`, `REPORT_MODEL`.

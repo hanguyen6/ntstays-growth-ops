@@ -105,6 +105,36 @@ check('an edit that changes a number is blocked, and the owner is told', d.statu
 check('Don\'t send: nothing goes out, logged', decide({ Decision: "Don't send" }).status === 'not_sent');
 check('recipients default to the owner', decide({ Decision: 'Send to the team', Report: emails.plain }, env).team_email.to[0].email === 'owner@example.com');
 
+// ---- one rewrite when the draft fails, then the same check
+const bad = checkRun(draft({ headline: 'Furnished Finder share up 14.4 points' }));
+check('a failed first draft asks for one rewrite; a passing one or a refusal does not', bad.retry && bad.attempt === 1
+  && !checkRun(draft()).retry && !checkRun(draft(), { stop_reason: 'refusal' }).retry, bad);
+const retryReq = new Function('$', code('Build the retry request'))(
+  n => ({ first: () => ({ json: n === 'Check the report' ? bad : req }) }))[0].json;
+const msgs = retryReq.claude_request.messages;
+check('the rewrite request carries the draft and names the bad number', retryReq.attempt === 2 && msgs.length === 3
+  && msgs[1].role === 'assistant' && msgs[1].content.includes('14.4') && msgs[2].role === 'user' && msgs[2].content.includes('14.4')
+  && retryReq.claude_request.output_config.format.type === 'json_schema' && retryReq.allowed.includes('0.68%'), msgs);
+const rewriteCheck = (report) => new Function('$input', '$', code('Check the rewrite'))(
+  { first: () => ({ json: { content: [{ type: 'text', text: JSON.stringify(report) }], stop_reason: 'end_turn', usage: { input_tokens: 1900, output_tokens: 380 } } }) },
+  n => ({ first: () => ({ json: n === 'Build the retry request' ? retryReq : null }) }))[0].json;
+const fixed = rewriteCheck(draft());
+check('a good rewrite passes, is attempt 2, and never asks for another rewrite', fixed.passed && fixed.attempt === 2 && !fixed.retry, fixed);
+const stillBad = rewriteCheck(draft({ headline: 'Furnished Finder share up 14.4 points' }));
+check('a bad rewrite is blocked, with no third try', !stillBad.passed && !stillBad.retry && stillBad.first_try.bad_numbers[0] === '14.4', stillBad);
+const emailsFor = (first, rewrite) => new Function('$', '$env', '$execution', code('Build the report emails'))(
+  n => n === 'Check the rewrite' ? { isExecuted: Boolean(rewrite), first: () => ({ json: rewrite }) } : { isExecuted: true, first: () => ({ json: first }) },
+  env, { resumeFormUrl: 'https://n8n.example/form/abc' })[0].json;
+check('after a good rewrite, the owner reviews the rewrite', emailsFor(bad, fixed).passed && emailsFor(bad, fixed).attempt === 2);
+const blockedHtml = emailsFor(bad, stillBad).blocked_email.htmlContent;
+check('the blocked email shows the draft with the bad number highlighted and says it was rewritten once',
+  /<mark[^>]*>14\.4<\/mark>/.test(blockedHtml) && blockedHtml.includes('rewrote it once') && !/<mark[^>]*>0\.68%/.test(blockedHtml), blockedHtml.slice(0, 400));
+check('the rewrite is logged as its own AI call', JSON.parse(new Function('$', code('Rewrite audit row'))(
+  () => ({ first: () => ({ json: fixed }) }))[0].json.data).attempt === 2);
+check('wiring: failed first draft → rewrite → same emails; otherwise straight to the emails',
+  wf.connections['Rewrite once?'].main[0][0].node === 'Build the retry request' && wf.connections['Rewrite once?'].main[1][0].node === 'Build the report emails'
+  && wf.connections['Log the rewrite call'].main[0][0].node === 'Build the report emails');
+
 // ---- wiring and the team summary
 check('runs on the 1st of each month at 8:00 New York time', node('On the 1st of the month').parameters.rule.interval[0].expression === '0 8 1 * *'
   && wf.settings.timezone === 'America/New_York');

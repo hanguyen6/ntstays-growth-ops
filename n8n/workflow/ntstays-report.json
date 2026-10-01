@@ -86,7 +86,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Last month's numbers, computed here in code; the AI never calculates. Export-based numbers are built in from\n// site/team/marketing-data.json when the stats are refreshed; logged numbers come from the team data workflow.\n// Percentages only for money (revenue share, fee %), never amounts.\nconst EXPORT = {\"months\": [\"2025-10\", \"2025-11\", \"2025-12\", \"2026-01\", \"2026-02\", \"2026-03\", \"2026-04\", \"2026-05\", \"2026-06\", \"2026-07\", \"2026-08\", \"2026-09\"], \"generated\": \"2026-09-29\", \"channels\": {\"has_direct\": true, \"rows\": [{\"month\": \"2025-10\", \"channel\": \"Airbnb\", \"property\": \"home-1\", \"nights\": 5, \"stays\": 2}, {\"month\": \"2025-10\", \"channel\": \"Airbnb\", \"property\": \"home-2\", \"nights\": 14, \"stays\": 3}, {\"month\": \"2025-10\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"nights\": 4, \"stays\": 2}, {\"month\": \"2025-10\", \"channel\": \"Booking.com\", \"property\": \"home-1\", \"nights\": 5, \"stays\": 2}, {\"month\": \"2025-11\", \"channel\": \"Airbnb\", \"property\": \"home-1\", \"nights\": 3, \"stays\": 1}, {\"month\": \"2025-11\", \"channel\": \"Airbnb\", \"property\": \"home-2\", \"nights\": 3, \"stays\": 1}, {\"month\": \"2025-11\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"nights\": 9, \"stays\": 3}, {\"month\": \"2025-12\", \"channel\": \"Airbnb\", \"property\": \"home-1\", \"nights\": 8, \"stays\": 3}, {\"month\": \"2025-12\", \"channel\": \"Airbnb\", \"property\": \"home-2\", \"nights\": 6, \"stays\": 2}, {\"month\": \"2025-12\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"nights\": 13, \"stays\": 3}, {\"month\": \"2026-01\", \"channel\": \"Airbnb\", \"property\": \"home-1\", \"nights\": 7, \"stays\": 3}, {\"month\": \"2026-01\", \"channel\": \"Airbnb\", \"property\": \"home-2\", \"nights\": 5, \"stays\": 2}, {\"month\": \"2026-01\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"nights\": 8, \"stays\": 3}, {\"month\": \"2026-02\", \"channel\": \"Airbnb\", \"property\": \"home-1\", \"nights\": 2, \"stays\": 1}, {\"month\": \"2026-02\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"nights\": 6, \"stays\": 2}, {\"month\": \"2026-03\", \"channel\": \"Airbnb\", \"property\": \"home-1\", \"nights\": 2, \"stays\": 1}, {\"month\": \"2026-03\", \"channel\": \"Airbnb\", \"property\": \"home-2\", \"nights\": 7, \"stays\": 1}, {\"month\": \"2026-03\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"nights\": 2, \"stays\": 1}, {\"month\": \"2026-04\", \"channel\": \"Airbnb\", \"property\": \"home-1\", \"nights\": 3, \"stays\": 1}, {\"month\": \"2026-04\", \"channel\": \"Airbnb\", \"property\": \"home-2\", \"nights\": 5, \"stays\": 2}, {\"month\": \"2026-04\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"nights\": 12, \"stays\": 2}, {\"month\": \"2026-05\", \"channel\": \"Airbnb\", \"property\": \"home-2\", \"nights\": 10, \"stays\": 2}, {\"month\": \"2026-05\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"nights\": 10, \"stays\": 3}, {\"month\": \"2026-06\", \"channel\": \"Airbnb\", \"property\": \"home-1\", \"nights\": 2, \"stays\": 1}, {\"month\": \"2026-06\", \"channel\": \"Airbnb\", \"property\": \"home-2\", \"nights\": 3, \"stays\": 1}, {\"month\": \"2026-06\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"nights\": 6, \"stays\": 2}, {\"month\": \"2026-06\", \"channel\": \"Direct\", \"property\": \"home-1\", \"nights\": 4, \"stays\": 1}, {\"month\": \"2026-07\", \"channel\": \"Airbnb\", \"property\": \"home-1\", \"nights\": 8, \"stays\": 2}, {\"month\": \"2026-07\", \"channel\": \"Airbnb\", \"property\": \"home-2\", \"nights\": 8, \"stays\": 2}, {\"month\": \"2026-07\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"nights\": 12, \"stays\": 2}, {\"month\": \"2026-08\", \"channel\": \"Airbnb\", \"property\": \"home-1\", \"nights\": 7, \"stays\": 1}, {\"month\": \"2026-08\", \"channel\": \"Airbnb\", \"property\": \"home-2\", \"nights\": 7, \"stays\": 1}, {\"month\": \"2026-08\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"nights\": 10, \"stays\": 3}, {\"month\": \"2026-09\", \"channel\": \"Airbnb\", \"property\": \"home-1\", \"nights\": 11, \"stays\": 3}, {\"month\": \"2026-09\", \"channel\": \"Airbnb\", \"property\": \"home-2\", \"nights\": 10, \"stays\": 4}, {\"month\": \"2026-09\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"nights\": 11, \"stays\": 3}]}, \"money\": [{\"month\": \"2025-10\", \"channel\": \"Airbnb\", \"property\": \"home-1\", \"value\": 1257.76, \"fees\": 37.73}, {\"month\": \"2025-10\", \"channel\": \"Airbnb\", \"property\": \"home-2\", \"value\": 2379.32, \"fees\": 71.38}, {\"month\": \"2025-10\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"value\": 1237.91, \"fees\": 37.13}, {\"month\": \"2025-10\", \"channel\": \"Booking.com\", \"property\": \"home-1\", \"value\": 1221.07, \"fees\": 183.16}, {\"month\": \"2025-11\", \"channel\": \"Airbnb\", \"property\": \"home-1\", \"value\": 700.13, \"fees\": 21.0}, {\"month\": \"2025-11\", \"channel\": \"Airbnb\", \"property\": \"home-2\", \"value\": 498.1, \"fees\": 14.94}, {\"month\": \"2025-11\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"value\": 2597.19, \"fees\": 77.92}, {\"month\": \"2025-12\", \"channel\": \"Airbnb\", \"property\": \"home-1\", \"value\": 1895.36, \"fees\": 56.86}, {\"month\": \"2025-12\", \"channel\": \"Airbnb\", \"property\": \"home-2\", \"value\": 998.87, \"fees\": 29.96}, {\"month\": \"2025-12\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"value\": 3515.92, \"fees\": 105.47}, {\"month\": \"2026-01\", \"channel\": \"Airbnb\", \"property\": \"home-1\", \"value\": 1620.25, \"fees\": 48.61}, {\"month\": \"2026-01\", \"channel\": \"Airbnb\", \"property\": \"home-2\", \"value\": 992.76, \"fees\": 29.79}, {\"month\": \"2026-01\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"value\": 2581.44, \"fees\": 77.44}, {\"month\": \"2026-02\", \"channel\": \"Airbnb\", \"property\": \"home-1\", \"value\": 504.34, \"fees\": 15.13}, {\"month\": \"2026-02\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"value\": 1867.53, \"fees\": 56.02}, {\"month\": \"2026-03\", \"channel\": \"Airbnb\", \"property\": \"home-1\", \"value\": 456.37, \"fees\": 13.69}, {\"month\": \"2026-03\", \"channel\": \"Airbnb\", \"property\": \"home-2\", \"value\": 1255.04, \"fees\": 37.65}, {\"month\": \"2026-03\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"value\": 661.06, \"fees\": 19.83}, {\"month\": \"2026-04\", \"channel\": \"Airbnb\", \"property\": \"home-1\", \"value\": 706.15, \"fees\": 21.18}, {\"month\": \"2026-04\", \"channel\": \"Airbnb\", \"property\": \"home-2\", \"value\": 859.18, \"fees\": 25.77}, {\"month\": \"2026-04\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"value\": 3616.89, \"fees\": 108.51}, {\"month\": \"2026-05\", \"channel\": \"Airbnb\", \"property\": \"home-2\", \"value\": 1611.62, \"fees\": 48.34}, {\"month\": \"2026-05\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"value\": 2828.58, \"fees\": 84.86}, {\"month\": \"2026-06\", \"channel\": \"Airbnb\", \"property\": \"home-1\", \"value\": 463.91, \"fees\": 13.92}, {\"month\": \"2026-06\", \"channel\": \"Airbnb\", \"property\": \"home-2\", \"value\": 557.14, \"fees\": 16.71}, {\"month\": \"2026-06\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"value\": 1823.76, \"fees\": 54.71}, {\"month\": \"2026-06\", \"channel\": \"Direct\", \"property\": \"home-1\", \"value\": 820.0, \"fees\": 0.0}, {\"month\": \"2026-07\", \"channel\": \"Airbnb\", \"property\": \"home-1\", \"value\": 1685.47, \"fees\": 50.56}, {\"month\": \"2026-07\", \"channel\": \"Airbnb\", \"property\": \"home-2\", \"value\": 1341.34, \"fees\": 40.25}, {\"month\": \"2026-07\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"value\": 3476.65, \"fees\": 104.3}, {\"month\": \"2026-08\", \"channel\": \"Airbnb\", \"property\": \"home-1\", \"value\": 1466.09, \"fees\": 43.98}, {\"month\": \"2026-08\", \"channel\": \"Airbnb\", \"property\": \"home-2\", \"value\": 1112.51, \"fees\": 33.38}, {\"month\": \"2026-08\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"value\": 2811.79, \"fees\": 84.36}, {\"month\": \"2026-09\", \"channel\": \"Airbnb\", \"property\": \"home-1\", \"value\": 2427.45, \"fees\": 72.82}, {\"month\": \"2026-09\", \"channel\": \"Airbnb\", \"property\": \"home-2\", \"value\": 1751.85, \"fees\": 52.56}, {\"month\": \"2026-09\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"value\": 3169.81, \"fees\": 95.1}], \"airbnb_perf\": [], \"costs\": {}};\nconst LIVE = $input.first().json;\nconst { month, prev } = $('Start report').first().json;\nconst HOMES = { 'home-1': 'Framingham', 'home-2': 'Cranston', 'home-3': 'Abington' };\nconst sum = (a, k) => a.reduce((t, r) => t + (Number(r[k]) || 0), 0);\nconst pct = (a, b) => b ? `${(a / b * 100).toFixed(1)}%` : null;\nconst rate = v => v == null ? null : `${+v}%`;\nconst monthName = mm => new Date(mm + '-15T12:00:00Z').toLocaleString('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' });\nconst lastDay = mm => { const [y, m] = mm.split('-').map(Number); return new Date(Date.UTC(y, m, 0)).toISOString().slice(0, 10); };\nconst nightsIn = (a, b, mm) => { let n = 0; for (let d = Date.parse(a + 'T12:00Z'), e = Date.parse(b + 'T12:00Z'); d < e; d += 864e5)\n  if (new Date(d).toISOString().slice(0, 7) === mm) n++; return n; };\nconst missing = [];\n\n// Exports freshness\nif (!(EXPORT.months || []).includes(month) || (EXPORT.generated || '') < lastDay(month))\n  missing.push(`Airbnb, Vrbo and Booking.com exports were last refreshed ${EXPORT.generated || 'never'}, so their ${monthName(month)} stays may be incomplete`);\n\n// Airbnb: the month's booking conversion rates (all listings), bookings made from the monthly reports\nconst abRow = mm => (LIVE.airbnb || []).find(r => r.month === mm && (r.property_id || 'all') === 'all') || null;\nconst abM = abRow(month), abP = abRow(prev);\nconst abBooked = mm => sum((EXPORT.airbnb_perf || []).filter(r => r.month === mm), 'bookings');\nconst airbnb = abM ? {\n  overall_conversion: rate(abM.overall_conversion), similar_listings: rate(abM.similar_overall),\n  first_page_rate: rate(abM.first_page_rate), search_to_listing: rate(abM.search_to_listing),\n  listing_to_booking: rate(abM.listing_to_booking), bookings_made: abBooked(month),\n  previous_month: abP ? { overall_conversion: rate(abP.overall_conversion), listing_to_booking: rate(abP.listing_to_booking) } : null,\n} : null;\nif (!abM) missing.push(`Airbnb conversion rates for ${monthName(month)} aren't logged`);\n\n// Vrbo: last-30-day counts per property, one entry per home a month\nconst vr = mm => (LIVE.vrbo || []).filter(r => r.month === mm);\nconst vM = vr(month), vP = vr(prev);\nfor (const pid of [...new Set((LIVE.vrbo || []).map(r => r.property_id))])\n  if (!vM.some(r => r.property_id === pid)) missing.push(`Vrbo numbers for ${HOMES[pid] || pid} for ${monthName(month)} aren't logged`);\nconst vrbo = vM.length ? {\n  properties: vM.map(r => HOMES[r.property_id] || r.property_id).join(', '),\n  search_impressions: sum(vM, 'impressions'), property_views: sum(vM, 'views'), bookings: sum(vM, 'bookings'),\n  viewed: pct(sum(vM, 'views'), sum(vM, 'impressions')), booked: pct(sum(vM, 'bookings'), sum(vM, 'views')),\n  previous_month: vP.length ? { property_views: sum(vP, 'views'), bookings: sum(vP, 'bookings') } : null,\n} : null;\n\n// Furnished Finder: panel entries per listing; totals since joining become the month's new counts by difference\nconst byListing = {};\nfor (const s of LIVE.furnished_finder || []) if (s.property_id) (byListing[s.property_id] = byListing[s.property_id] || []).push(s);\nconst ffRows = [];\nfor (const [pid, list] of Object.entries(byListing)) {\n  list.sort((a, b) => a.as_of.localeCompare(b.as_of));\n  const inM = list.filter(s => s.as_of.slice(0, 7) === month).pop();\n  if (!inM) { missing.push(`Furnished Finder numbers for ${HOMES[pid] || pid} weren't logged in ${monthName(month)}`); continue; }\n  const before = list.filter(s => s.as_of < inM.as_of).pop();\n  const diff = k => before && inM[k] != null && before[k] != null && inM[k] >= before[k] ? inM[k] - before[k] : null;\n  ffRows.push({ impressions: inM.impressions, views: inM.listing_views, inq: diff('booking_inquiries'),\n    msg: diff('direct_messages'), rev: diff('phone_reveals'), first: !before });\n}\nconst add = k => ffRows.some(x => x[k] != null) ? ffRows.reduce((t, x) => t + (x[k] || 0), 0) : null;\nconst ffLeases = (LIVE.bookings || []).filter(b => b.channel === 'furnished_finder' && (b.signed || b.move_in || '').slice(0, 7) === month).length;\nconst furnished_finder = ffRows.length ? {\n  listings_logged: ffRows.length, impressions_last_90_days: add('impressions'), listing_views_last_90_days: add('views'),\n  new_booking_inquiries: add('inq'), new_direct_messages: add('msg'), new_phone_reveals: add('rev'), leases_signed: ffLeases,\n  inquiry_to_lease: add('inq') ? pct(ffLeases, add('inq')) : null,\n  note: ffRows.every(x => x.first) ? 'first month logged: new inquiry counts start with next month\\'s entry' : null,\n} : (ffLeases ? { leases_signed: ffLeases } : null);\n\n// Bookings by channel: stays by check-in (move-in) month and nights in the month\nconst ch = {};\nconst addCh = (c, k, n) => { if (!n) return; ch[c] = ch[c] || { stays: 0, nights: 0 }; ch[c][k] += n; };\nfor (const r of (EXPORT.channels || {}).rows || []) if (r.month === month) { addCh(r.channel, 'stays', r.stays); addCh(r.channel, 'nights', r.nights); }\nfor (const b of LIVE.bookings || []) {\n  const c = b.channel === 'furnished_finder' ? 'Furnished Finder' : 'Direct';\n  if ((b.move_in || '').slice(0, 7) === month) addCh(c, 'stays', 1);\n  addCh(c, 'nights', nightsIn(b.move_in, b.move_out, month));\n}\nconst bookings_by_channel = Object.entries(ch).sort((a, b) => b[1].nights - a[1].nights).map(([channel, v]) => ({ channel, stays: v.stays, nights: v.nights }));\n\n// Channel value: revenue share and fee %, from booking value (exports, logged rent) and fees (platform fees, Furnished Finder's fee)\nconst val = {};\nconst addV = (c, v, f) => { val[c] = val[c] || { value: 0, fees: 0 }; val[c].value += v; val[c].fees += f; };\nfor (const r of EXPORT.money || []) if (r.month === month) addV(r.channel, r.value, r.fees);\nfor (const b of LIVE.bookings || []) if (b.monthly_rent) addV(b.channel === 'furnished_finder' ? 'Furnished Finder' : 'Direct',\n  nightsIn(b.move_in, b.move_out, month) * b.monthly_rent * 12 / 365, 0);\nconst fee = (EXPORT.costs || {})['furnished-finder'];\nif (fee && val['Furnished Finder']) val['Furnished Finder'].fees += fee / 12;\nconst totalValue = Object.values(val).reduce((t, v) => t + v.value, 0);\nconst channel_value = Object.entries(val).filter(([, v]) => v.value > 0).sort((a, b) => b[1].value - a[1].value)\n  .map(([channel, v]) => ({ channel, revenue_share: pct(v.value, totalValue), fee: pct(v.fees, v.value) }));\n\nconst facts = { month: monthName(month), airbnb, vrbo, furnished_finder, bookings_by_channel, channel_value, missing };\n// Every number the report may use: the ones in the facts, as written there (also without the % sign).\nconst allowed = [...new Set((JSON.stringify(facts).match(/\\d[\\d,]*(?:\\.\\d+)?%?/g) || [])\n  .flatMap(n => { const x = n.replace(/,/g, ''); return [x, x.replace(/%$/, '')]; }))];\nreturn [{ json: { month, prev, facts, allowed } }];"
+        "jsCode": "// Last month's numbers, computed here in code; the AI never calculates. Export-based numbers are built in from\n// site/team/marketing-data.json when the stats are refreshed; logged numbers come from the team data workflow.\n// Percentages only for money (revenue share, fee %), never amounts.\nconst EXPORT = {\"months\": [\"2025-11\", \"2025-12\", \"2026-01\", \"2026-02\", \"2026-03\", \"2026-04\", \"2026-05\", \"2026-06\", \"2026-07\", \"2026-08\", \"2026-09\", \"2026-10\"], \"generated\": \"2026-10-01\", \"channels\": {\"has_direct\": true, \"rows\": [{\"month\": \"2025-11\", \"channel\": \"Airbnb\", \"property\": \"home-1\", \"nights\": 3, \"stays\": 1}, {\"month\": \"2025-11\", \"channel\": \"Airbnb\", \"property\": \"home-2\", \"nights\": 3, \"stays\": 1}, {\"month\": \"2025-11\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"nights\": 9, \"stays\": 3}, {\"month\": \"2025-12\", \"channel\": \"Airbnb\", \"property\": \"home-1\", \"nights\": 8, \"stays\": 3}, {\"month\": \"2025-12\", \"channel\": \"Airbnb\", \"property\": \"home-2\", \"nights\": 6, \"stays\": 2}, {\"month\": \"2025-12\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"nights\": 13, \"stays\": 3}, {\"month\": \"2026-01\", \"channel\": \"Airbnb\", \"property\": \"home-1\", \"nights\": 7, \"stays\": 3}, {\"month\": \"2026-01\", \"channel\": \"Airbnb\", \"property\": \"home-2\", \"nights\": 5, \"stays\": 2}, {\"month\": \"2026-01\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"nights\": 8, \"stays\": 3}, {\"month\": \"2026-02\", \"channel\": \"Airbnb\", \"property\": \"home-1\", \"nights\": 2, \"stays\": 1}, {\"month\": \"2026-02\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"nights\": 6, \"stays\": 2}, {\"month\": \"2026-03\", \"channel\": \"Airbnb\", \"property\": \"home-1\", \"nights\": 2, \"stays\": 1}, {\"month\": \"2026-03\", \"channel\": \"Airbnb\", \"property\": \"home-2\", \"nights\": 7, \"stays\": 1}, {\"month\": \"2026-03\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"nights\": 2, \"stays\": 1}, {\"month\": \"2026-04\", \"channel\": \"Airbnb\", \"property\": \"home-1\", \"nights\": 3, \"stays\": 1}, {\"month\": \"2026-04\", \"channel\": \"Airbnb\", \"property\": \"home-2\", \"nights\": 5, \"stays\": 2}, {\"month\": \"2026-04\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"nights\": 12, \"stays\": 2}, {\"month\": \"2026-05\", \"channel\": \"Airbnb\", \"property\": \"home-2\", \"nights\": 10, \"stays\": 2}, {\"month\": \"2026-05\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"nights\": 10, \"stays\": 3}, {\"month\": \"2026-06\", \"channel\": \"Airbnb\", \"property\": \"home-1\", \"nights\": 2, \"stays\": 1}, {\"month\": \"2026-06\", \"channel\": \"Airbnb\", \"property\": \"home-2\", \"nights\": 3, \"stays\": 1}, {\"month\": \"2026-06\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"nights\": 6, \"stays\": 2}, {\"month\": \"2026-06\", \"channel\": \"Direct\", \"property\": \"home-1\", \"nights\": 4, \"stays\": 1}, {\"month\": \"2026-07\", \"channel\": \"Airbnb\", \"property\": \"home-1\", \"nights\": 8, \"stays\": 2}, {\"month\": \"2026-07\", \"channel\": \"Airbnb\", \"property\": \"home-2\", \"nights\": 8, \"stays\": 2}, {\"month\": \"2026-07\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"nights\": 12, \"stays\": 2}, {\"month\": \"2026-08\", \"channel\": \"Airbnb\", \"property\": \"home-1\", \"nights\": 7, \"stays\": 1}, {\"month\": \"2026-08\", \"channel\": \"Airbnb\", \"property\": \"home-2\", \"nights\": 7, \"stays\": 1}, {\"month\": \"2026-08\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"nights\": 10, \"stays\": 3}, {\"month\": \"2026-09\", \"channel\": \"Airbnb\", \"property\": \"home-1\", \"nights\": 11, \"stays\": 3}, {\"month\": \"2026-09\", \"channel\": \"Airbnb\", \"property\": \"home-2\", \"nights\": 10, \"stays\": 4}, {\"month\": \"2026-09\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"nights\": 11, \"stays\": 3}, {\"month\": \"2026-10\", \"channel\": \"Airbnb\", \"property\": \"home-1\", \"nights\": 9, \"stays\": 1}, {\"month\": \"2026-10\", \"channel\": \"Airbnb\", \"property\": \"home-2\", \"nights\": 6, \"stays\": 2}, {\"month\": \"2026-10\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"nights\": 8, \"stays\": 2}, {\"month\": \"2026-10\", \"channel\": \"Direct\", \"property\": \"home-3\", \"nights\": 3, \"stays\": 1}]}, \"money\": [{\"month\": \"2025-11\", \"channel\": \"Airbnb\", \"property\": \"home-1\", \"value\": 700.13, \"fees\": 21.0}, {\"month\": \"2025-11\", \"channel\": \"Airbnb\", \"property\": \"home-2\", \"value\": 498.1, \"fees\": 14.94}, {\"month\": \"2025-11\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"value\": 2597.19, \"fees\": 77.92}, {\"month\": \"2025-12\", \"channel\": \"Airbnb\", \"property\": \"home-1\", \"value\": 1895.36, \"fees\": 56.86}, {\"month\": \"2025-12\", \"channel\": \"Airbnb\", \"property\": \"home-2\", \"value\": 998.87, \"fees\": 29.96}, {\"month\": \"2025-12\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"value\": 3515.92, \"fees\": 105.47}, {\"month\": \"2026-01\", \"channel\": \"Airbnb\", \"property\": \"home-1\", \"value\": 1620.25, \"fees\": 48.61}, {\"month\": \"2026-01\", \"channel\": \"Airbnb\", \"property\": \"home-2\", \"value\": 992.76, \"fees\": 29.79}, {\"month\": \"2026-01\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"value\": 2581.44, \"fees\": 77.44}, {\"month\": \"2026-02\", \"channel\": \"Airbnb\", \"property\": \"home-1\", \"value\": 504.34, \"fees\": 15.13}, {\"month\": \"2026-02\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"value\": 1867.53, \"fees\": 56.02}, {\"month\": \"2026-03\", \"channel\": \"Airbnb\", \"property\": \"home-1\", \"value\": 456.37, \"fees\": 13.69}, {\"month\": \"2026-03\", \"channel\": \"Airbnb\", \"property\": \"home-2\", \"value\": 1255.04, \"fees\": 37.65}, {\"month\": \"2026-03\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"value\": 661.06, \"fees\": 19.83}, {\"month\": \"2026-04\", \"channel\": \"Airbnb\", \"property\": \"home-1\", \"value\": 706.15, \"fees\": 21.18}, {\"month\": \"2026-04\", \"channel\": \"Airbnb\", \"property\": \"home-2\", \"value\": 859.18, \"fees\": 25.77}, {\"month\": \"2026-04\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"value\": 3616.89, \"fees\": 108.51}, {\"month\": \"2026-05\", \"channel\": \"Airbnb\", \"property\": \"home-2\", \"value\": 1611.62, \"fees\": 48.34}, {\"month\": \"2026-05\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"value\": 2828.58, \"fees\": 84.86}, {\"month\": \"2026-06\", \"channel\": \"Airbnb\", \"property\": \"home-1\", \"value\": 463.91, \"fees\": 13.92}, {\"month\": \"2026-06\", \"channel\": \"Airbnb\", \"property\": \"home-2\", \"value\": 557.14, \"fees\": 16.71}, {\"month\": \"2026-06\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"value\": 1823.76, \"fees\": 54.71}, {\"month\": \"2026-06\", \"channel\": \"Direct\", \"property\": \"home-1\", \"value\": 820.0, \"fees\": 0.0}, {\"month\": \"2026-07\", \"channel\": \"Airbnb\", \"property\": \"home-1\", \"value\": 1685.47, \"fees\": 50.56}, {\"month\": \"2026-07\", \"channel\": \"Airbnb\", \"property\": \"home-2\", \"value\": 1341.34, \"fees\": 40.25}, {\"month\": \"2026-07\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"value\": 3476.65, \"fees\": 104.3}, {\"month\": \"2026-08\", \"channel\": \"Airbnb\", \"property\": \"home-1\", \"value\": 1466.09, \"fees\": 43.98}, {\"month\": \"2026-08\", \"channel\": \"Airbnb\", \"property\": \"home-2\", \"value\": 1112.51, \"fees\": 33.38}, {\"month\": \"2026-08\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"value\": 2811.79, \"fees\": 84.36}, {\"month\": \"2026-09\", \"channel\": \"Airbnb\", \"property\": \"home-1\", \"value\": 2427.45, \"fees\": 72.82}, {\"month\": \"2026-09\", \"channel\": \"Airbnb\", \"property\": \"home-2\", \"value\": 1751.85, \"fees\": 52.56}, {\"month\": \"2026-09\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"value\": 3169.81, \"fees\": 95.1}, {\"month\": \"2026-10\", \"channel\": \"Airbnb\", \"property\": \"home-1\", \"value\": 1818.57, \"fees\": 54.56}, {\"month\": \"2026-10\", \"channel\": \"Airbnb\", \"property\": \"home-2\", \"value\": 1031.06, \"fees\": 30.93}, {\"month\": \"2026-10\", \"channel\": \"Airbnb\", \"property\": \"home-3\", \"value\": 2288.55, \"fees\": 68.65}, {\"month\": \"2026-10\", \"channel\": \"Direct\", \"property\": \"home-3\", \"value\": 960.0, \"fees\": 0.0}], \"airbnb_perf\": [], \"costs\": {}};\nconst LIVE = $input.first().json;\nconst { month, prev } = $('Start report').first().json;\nconst HOMES = { 'home-1': 'Framingham', 'home-2': 'Cranston', 'home-3': 'Abington' };\nconst sum = (a, k) => a.reduce((t, r) => t + (Number(r[k]) || 0), 0);\nconst pct = (a, b) => b ? `${(a / b * 100).toFixed(1)}%` : null;\nconst rate = v => v == null ? null : `${+v}%`;\nconst monthName = mm => new Date(mm + '-15T12:00:00Z').toLocaleString('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' });\nconst lastDay = mm => { const [y, m] = mm.split('-').map(Number); return new Date(Date.UTC(y, m, 0)).toISOString().slice(0, 10); };\nconst nightsIn = (a, b, mm) => { let n = 0; for (let d = Date.parse(a + 'T12:00Z'), e = Date.parse(b + 'T12:00Z'); d < e; d += 864e5)\n  if (new Date(d).toISOString().slice(0, 7) === mm) n++; return n; };\nconst missing = [];\n\n// Exports freshness\nif (!(EXPORT.months || []).includes(month) || (EXPORT.generated || '') < lastDay(month))\n  missing.push(`Airbnb, Vrbo and Booking.com exports were last refreshed ${EXPORT.generated || 'never'}, so their ${monthName(month)} stays may be incomplete`);\n\n// Airbnb: the month's booking conversion rates (all listings), bookings made from the monthly reports\nconst abRow = mm => (LIVE.airbnb || []).find(r => r.month === mm && (r.property_id || 'all') === 'all') || null;\nconst abM = abRow(month), abP = abRow(prev);\nconst abBooked = mm => sum((EXPORT.airbnb_perf || []).filter(r => r.month === mm), 'bookings');\nconst airbnb = abM ? {\n  overall_conversion: rate(abM.overall_conversion), similar_listings: rate(abM.similar_overall),\n  first_page_rate: rate(abM.first_page_rate), search_to_listing: rate(abM.search_to_listing),\n  listing_to_booking: rate(abM.listing_to_booking), bookings_made: abBooked(month),\n  previous_month: abP ? { overall_conversion: rate(abP.overall_conversion), listing_to_booking: rate(abP.listing_to_booking) } : null,\n} : null;\nif (!abM) missing.push(`Airbnb conversion rates for ${monthName(month)} aren't logged`);\n\n// Vrbo: last-30-day counts per property, one entry per home a month\nconst vr = mm => (LIVE.vrbo || []).filter(r => r.month === mm);\nconst vM = vr(month), vP = vr(prev);\nfor (const pid of [...new Set((LIVE.vrbo || []).map(r => r.property_id))])\n  if (!vM.some(r => r.property_id === pid)) missing.push(`Vrbo numbers for ${HOMES[pid] || pid} for ${monthName(month)} aren't logged`);\nconst vrbo = vM.length ? {\n  properties: vM.map(r => HOMES[r.property_id] || r.property_id).join(', '),\n  search_impressions: sum(vM, 'impressions'), property_views: sum(vM, 'views'), bookings: sum(vM, 'bookings'),\n  viewed: pct(sum(vM, 'views'), sum(vM, 'impressions')), booked: pct(sum(vM, 'bookings'), sum(vM, 'views')),\n  previous_month: vP.length ? { property_views: sum(vP, 'views'), bookings: sum(vP, 'bookings') } : null,\n} : null;\n\n// Furnished Finder: panel entries per listing; totals since joining become the month's new counts by difference\nconst byListing = {};\nfor (const s of LIVE.furnished_finder || []) if (s.property_id) (byListing[s.property_id] = byListing[s.property_id] || []).push(s);\nconst ffRows = [];\nfor (const [pid, list] of Object.entries(byListing)) {\n  list.sort((a, b) => a.as_of.localeCompare(b.as_of));\n  const inM = list.filter(s => s.as_of.slice(0, 7) === month).pop();\n  if (!inM) { missing.push(`Furnished Finder numbers for ${HOMES[pid] || pid} weren't logged in ${monthName(month)}`); continue; }\n  const before = list.filter(s => s.as_of < inM.as_of).pop();\n  const diff = k => before && inM[k] != null && before[k] != null && inM[k] >= before[k] ? inM[k] - before[k] : null;\n  ffRows.push({ impressions: inM.impressions, views: inM.listing_views, inq: diff('booking_inquiries'),\n    msg: diff('direct_messages'), rev: diff('phone_reveals'), first: !before });\n}\nconst add = k => ffRows.some(x => x[k] != null) ? ffRows.reduce((t, x) => t + (x[k] || 0), 0) : null;\nconst ffLeases = (LIVE.bookings || []).filter(b => b.channel === 'furnished_finder' && (b.signed || b.move_in || '').slice(0, 7) === month).length;\nconst furnished_finder = ffRows.length ? {\n  listings_logged: ffRows.length, impressions_last_90_days: add('impressions'), listing_views_last_90_days: add('views'),\n  new_booking_inquiries: add('inq'), new_direct_messages: add('msg'), new_phone_reveals: add('rev'), leases_signed: ffLeases,\n  inquiry_to_lease: add('inq') ? pct(ffLeases, add('inq')) : null,\n  note: ffRows.every(x => x.first) ? 'first month logged: new inquiry counts start with next month\\'s entry' : null,\n} : (ffLeases ? { leases_signed: ffLeases } : null);\n\n// Bookings by channel: stays by check-in (move-in) month and nights in the month\nconst ch = {};\nconst addCh = (c, k, n) => { if (!n) return; ch[c] = ch[c] || { stays: 0, nights: 0 }; ch[c][k] += n; };\nfor (const r of (EXPORT.channels || {}).rows || []) if (r.month === month) { addCh(r.channel, 'stays', r.stays); addCh(r.channel, 'nights', r.nights); }\nfor (const b of LIVE.bookings || []) {\n  const c = b.channel === 'furnished_finder' ? 'Furnished Finder' : 'Direct';\n  if ((b.move_in || '').slice(0, 7) === month) addCh(c, 'stays', 1);\n  addCh(c, 'nights', nightsIn(b.move_in, b.move_out, month));\n}\nconst bookings_by_channel = Object.entries(ch).sort((a, b) => b[1].nights - a[1].nights).map(([channel, v]) => ({ channel, stays: v.stays, nights: v.nights }));\n\n// Channel value: revenue share and fee %, from booking value (exports, logged rent) and fees (platform fees, Furnished Finder's fee)\nconst val = {};\nconst addV = (c, v, f) => { val[c] = val[c] || { value: 0, fees: 0 }; val[c].value += v; val[c].fees += f; };\nfor (const r of EXPORT.money || []) if (r.month === month) addV(r.channel, r.value, r.fees);\nfor (const b of LIVE.bookings || []) if (b.monthly_rent) addV(b.channel === 'furnished_finder' ? 'Furnished Finder' : 'Direct',\n  nightsIn(b.move_in, b.move_out, month) * b.monthly_rent * 12 / 365, 0);\nconst fee = (EXPORT.costs || {})['furnished-finder'];\nif (fee && val['Furnished Finder']) val['Furnished Finder'].fees += fee / 12;\nconst totalValue = Object.values(val).reduce((t, v) => t + v.value, 0);\nconst channel_value = Object.entries(val).filter(([, v]) => v.value > 0).sort((a, b) => b[1].value - a[1].value)\n  .map(([channel, v]) => ({ channel, revenue_share: pct(v.value, totalValue), fee: pct(v.fees, v.value) }));\n\nconst facts = { month: monthName(month), airbnb, vrbo, furnished_finder, bookings_by_channel, channel_value, missing };\n// Every number the report may use: the ones in the facts, as written there (also without the % sign).\nconst allowed = [...new Set((JSON.stringify(facts).match(/\\d[\\d,]*(?:\\.\\d+)?%?/g) || [])\n  .flatMap(n => { const x = n.replace(/,/g, ''); return [x, x.replace(/%$/, '')]; }))];\nreturn [{ json: { month, prev, facts, allowed } }];"
       },
       "name": "Compute the month",
       "type": "n8n-nodes-base.code",
@@ -148,7 +148,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Faithfulness check: every number in the draft must be one of the computed facts; no dollar amounts; missing inputs\n// mentioned. A draft that fails is blocked: the owner gets the reasons, and nothing is sent.\nconst res = $input.first().json, prep = $('Build the Claude request').first().json;\nconst PRICES = { haiku: [1, 5], 'sonnet-5': [2, 10], sonnet: [3, 15], 'opus-5-5': [4, 20], opus: [5, 25] };  // USD per million tokens\nconst problems = [], badNumbers = [];\nlet r = null;\nconst text = (res.content || []).filter(c => c.type === 'text').map(c => c.text).join('');\nif (res.stop_reason === 'refusal') problems.push('the model declined to write it');\ntry { r = JSON.parse(text); } catch (e) { problems.push('the draft was not valid JSON'); }\nconst allowed = new Set(prep.allowed);\nconst parts = r ? [r.subject, r.headline, ...(r.channels || []).map(c => c.text), ...(r.watch || []), ...(r.next_actions || [])] : [];\nfor (const s of parts) {\n  for (const raw of (String(s).match(/\\d[\\d,]*(?:\\.\\d+)?%?/g) || [])) {\n    const n = raw.replace(/,/g, '');\n    if (allowed.has(n) || (/^\\d+$/.test(n) && Number(n) <= 12) || /^(19|20)\\d\\d$/.test(n)) continue;\n    if (!badNumbers.includes(n)) badNumbers.push(n);\n  }\n  if (/\\$\\s?\\d/.test(String(s))) problems.push('a dollar amount');\n}\nif (badNumbers.length) problems.push(`numbers not in the data: ${badNumbers.join(', ')}`);\nconst missingNamed = (prep.facts.missing || []).length === 0 || /log|refresh|export/i.test([...(r?.watch || []), ...(r?.next_actions || [])].join(' '));\nif (r && !missingNamed) problems.push('missing inputs are not mentioned');\nconst u = res.usage || {}, model = String(prep.claude_request.model || '');\nconst price = Object.entries(PRICES).find(([k]) => model.includes(k));\nconst cost = price ? +(((u.input_tokens || 0) * price[1][0] + (u.output_tokens || 0) * price[1][1]) / 1e6).toFixed(5) : null;\nconst plain = r ? [r.headline, '', ...(r.channels || []).map(c => `${c.name}: ${c.text}`), '',\n  'To watch:', ...(r.watch || []).map(x => '- ' + x), '', 'Next actions:', ...(r.next_actions || []).map(x => '- ' + x)].join('\\n') : '';\nreturn [{ json: { month: prep.month, facts: prep.facts, allowed: prep.allowed, report: r, plain, subject: r?.subject || `NTStays channel report: ${prep.facts.month}`,\n  passed: problems.length === 0, problems, bad_numbers: badNumbers,\n  call: { model, input_tokens: u.input_tokens || 0, output_tokens: u.output_tokens || 0, cost_usd: cost,\n    seconds: +((Date.now() - prep.started) / 1000).toFixed(1) } } }];"
+        "jsCode": "// Faithfulness check: every number in the draft must be one of the computed facts; no dollar amounts; missing inputs\n// mentioned. A draft that fails is blocked: the owner gets the reasons, and nothing is sent.\nconst res = $input.first().json, prep = $('Build the Claude request').first().json;\nconst PRICES = { haiku: [1, 5], 'sonnet-5': [2, 10], sonnet: [3, 15], 'opus-5-5': [4, 20], opus: [5, 25] };  // USD per million tokens\nconst problems = [], badNumbers = [];\nlet r = null;\nconst text = (res.content || []).filter(c => c.type === 'text').map(c => c.text).join('');\nif (res.stop_reason === 'refusal') problems.push('the model declined to write it');\ntry { r = JSON.parse(text); } catch (e) { problems.push('the draft was not valid JSON'); }\nconst allowed = new Set(prep.allowed);\nconst parts = r ? [r.subject, r.headline, ...(r.channels || []).map(c => c.text), ...(r.watch || []), ...(r.next_actions || [])] : [];\nfor (const s of parts) {\n  for (const raw of (String(s).match(/\\d[\\d,]*(?:\\.\\d+)?%?/g) || [])) {\n    const n = raw.replace(/,/g, '');\n    if (allowed.has(n) || (/^\\d+$/.test(n) && Number(n) <= 12) || /^(19|20)\\d\\d$/.test(n)) continue;\n    if (!badNumbers.includes(n)) badNumbers.push(n);\n  }\n  if (/\\$\\s?\\d/.test(String(s))) problems.push('a dollar amount');\n}\nif (badNumbers.length) problems.push(`numbers not in the data: ${badNumbers.join(', ')}`);\nconst missingNamed = (prep.facts.missing || []).length === 0 || /log|refresh|export/i.test([...(r?.watch || []), ...(r?.next_actions || [])].join(' '));\nif (r && !missingNamed) problems.push('missing inputs are not mentioned');\nconst u = res.usage || {}, model = String(prep.claude_request.model || '');\nconst price = Object.entries(PRICES).find(([k]) => model.includes(k));\nconst cost = price ? +(((u.input_tokens || 0) * price[1][0] + (u.output_tokens || 0) * price[1][1]) / 1e6).toFixed(5) : null;\nconst plain = r ? [r.headline, '', ...(r.channels || []).map(c => `${c.name}: ${c.text}`), '',\n  'To watch:', ...(r.watch || []).map(x => '- ' + x), '', 'Next actions:', ...(r.next_actions || []).map(x => '- ' + x)].join('\\n') : '';\nconst attempt = prep.attempt || 1;\nreturn [{ json: { month: prep.month, facts: prep.facts, allowed: prep.allowed, report: r, plain, subject: r?.subject || `NTStays channel report: ${prep.facts.month}`,\n  passed: problems.length === 0, problems, bad_numbers: badNumbers, attempt, draft_text: text,\n  retry: problems.length > 0 && attempt === 1 && res.stop_reason !== 'refusal', first_try: prep.first_try || null,\n  call: { model, input_tokens: u.input_tokens || 0, output_tokens: u.output_tokens || 0, cost_usd: cost,\n    seconds: +((Date.now() - prep.started) / 1000).toFixed(1) } } }];"
       },
       "name": "Check the report",
       "type": "n8n-nodes-base.code",
@@ -161,7 +161,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// One audit row per model call: tokens, cost, time, and whether the draft passed its checks.\nconst c = $('Check the report').first().json;\nreturn [{ json: { kind: 'ai_call', entered_by: 'monthly-report', entered_at: new Date().toISOString(),\n  data: JSON.stringify({ workflow: 'monthly report', month: c.month, ...c.call, passed: c.passed, problems: c.problems }) } }];"
+        "jsCode": "// One audit row per model call: tokens, cost, time, and whether the draft passed its checks.\nconst c = $('Check the report').first().json;\nreturn [{ json: { kind: 'ai_call', entered_by: 'monthly-report', entered_at: new Date().toISOString(),\n  data: JSON.stringify({ workflow: 'monthly report', month: c.month, attempt: c.attempt, ...c.call, passed: c.passed, problems: c.problems }) } }];"
       },
       "name": "AI call audit row",
       "type": "n8n-nodes-base.code",
@@ -200,13 +200,148 @@
     },
     {
       "parameters": {
-        "jsCode": "// The emails. The numbers table comes from the computed facts, never from the AI, so it is always exact.\nconst c = $('Check the report').first().json;\nconst esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');\nconst f = c.facts, rows = [];\nconst row = (k, v) => { if (v !== null && v !== undefined && v !== '') rows.push(`<tr><td style=\"padding:3px 14px 3px 0;color:#6d6158\">${esc(k)}</td><td>${esc(v)}</td></tr>`); };\nif (f.airbnb) { row('Airbnb overall conversion', f.airbnb.overall_conversion); row('Airbnb similar listings', f.airbnb.similar_listings);\n  row('Airbnb search \u2192 listing', f.airbnb.search_to_listing); row('Airbnb listing \u2192 booking', f.airbnb.listing_to_booking); row('Airbnb bookings made', f.airbnb.bookings_made); }\nif (f.vrbo) { row('Vrbo impressions \u2192 views \u2192 bookings', `${f.vrbo.search_impressions} \u2192 ${f.vrbo.property_views} \u2192 ${f.vrbo.bookings}`); }\nif (f.furnished_finder) { row('Furnished Finder new booking inquiries', f.furnished_finder.new_booking_inquiries);\n  row('Furnished Finder leases signed', f.furnished_finder.leases_signed); row('Furnished Finder inquiry \u2192 lease', f.furnished_finder.inquiry_to_lease); }\nfor (const b of f.bookings_by_channel) row(`${b.channel}: stays, nights`, `${b.stays}, ${b.nights}`);\nfor (const v of f.channel_value) row(`${v.channel}: revenue share, fee`, `${v.revenue_share}, ${v.fee}`);\nconst table = `<table style=\"font-size:14px;margin:12px 0\">${rows.join('')}</table>`;\nconst body = r => !r ? '' : `<p style=\"font-size:17px;font-weight:bold;margin:0 0 10px\">${esc(r.headline)}</p>` +\n  r.channels.map(x => `<p style=\"margin:0 0 10px\"><b>${esc(x.name)}.</b> ${esc(x.text)}</p>`).join('') +\n  (r.watch.length ? `<p style=\"margin:12px 0 4px\"><b>To watch</b></p><ul>${r.watch.map(x => `<li>${esc(x)}</li>`).join('')}</ul>` : '') +\n  (r.next_actions.length ? `<p style=\"margin:12px 0 4px\"><b>Next actions</b></p><ul>${r.next_actions.map(x => `<li>${esc(x)}</li>`).join('')}</ul>` : '');\nconst wrap = inner => `<div style=\"font-family:Arial,sans-serif;font-size:15px;color:#2b211b;max-width:640px\">${inner}</div>`;\nconst to = [{ email: $env.OWNER_EMAIL, name: $env.OWNER_NAME || 'NTStays' }];\nconst sender = { name: 'NTStays reports', email: $env.FROM_EMAIL };\nconst approval = { sender, to, subject: `[NTStays] Review the ${f.month} channel report`, tags: ['ntstays-report-review'],\n  htmlContent: wrap(`<p style=\"color:#6d6158\">Draft written by Claude and checked: every number in it matches the data.\n    Review it, edit if you like, and choose Send.</p>${body(c.report)}<p><b>The numbers</b> (computed, not written by AI)</p>${table}\n    <p><a href=\"${$execution.resumeFormUrl}\" style=\"display:inline-block;background:#3b2a20;color:#fffdf8;padding:10px 18px;border-radius:999px;text-decoration:none;font-weight:bold\">Review &amp; send</a></p>\n    <p style=\"font-size:12px;color:#6d6158\">${esc(c.call.model)} \u00b7 ${c.call.input_tokens} + ${c.call.output_tokens} tokens \u00b7 ${c.call.seconds} s. Nothing is sent until you choose Send; the link expires in 5 days.</p>`) };\nconst blocked = { sender, to, subject: `[NTStays] The ${f.month} channel report was blocked`, tags: ['ntstays-report-blocked'],\n  htmlContent: wrap(`<p><b>The AI draft failed its checks, so nothing was sent.</b></p><ul>${c.problems.map(p => `<li>${esc(p)}</li>`).join('')}</ul>\n    <p>The numbers for ${esc(f.month)} (computed, not written by AI):</p>${table}\n    <p style=\"font-size:13px;color:#6d6158\">Run it again from n8n, or send these numbers yourself.</p>`) };\nreturn [{ json: { ...c, table, approval_email: approval, blocked_email: blocked } }];"
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "354305bd-efca-5df8-af08-17d8de551c61",
+              "leftValue": "={{ $('Check the report').first().json.retry }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "name": "Rewrite once?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1980,
+        300
+      ],
+      "id": "a9212897-67e9-5a37-b91b-e7c4c01828b4"
+    },
+    {
+      "parameters": {
+        "jsCode": "// One rewrite: Claude sees its draft and exactly which checks it failed. The rewrite is checked the same way.\nconst c = $('Check the report').first().json, prep = $('Build the Claude request').first().json;\nconst fix = [`Your draft failed these checks: ${c.problems.join('; ')}.`];\nif (c.bad_numbers.length) fix.push(`These numbers are not in FACTS: ${c.bad_numbers.join(', ')}. They were probably calculated. `\n  + 'Remove them; if a comparison matters, describe it in words or use only numbers exactly as they appear in FACTS.');\nfix.push('Rewrite the whole report, following every rule.');\nconst req = prep.claude_request;\nreturn [{ json: { ...prep, attempt: 2, started: Date.now(), first_try: { problems: c.problems, bad_numbers: c.bad_numbers },\n  claude_request: { ...req, messages: [...req.messages, { role: 'assistant', content: c.draft_text || '(no draft)' },\n    { role: 'user', content: fix.join('\\n') }] } } }];"
+      },
+      "name": "Build the retry request",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2200,
+        140
+      ],
+      "id": "edad07bb-9106-5d08-af59-5cb7b6cd375e"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.ANTHROPIC_BASE_URL }}/v1/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "={{ $env.ANTHROPIC_API_KEY }}"
+            },
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.claude_request) }}",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "name": "Claude: rewrite the report",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2420,
+        140
+      ],
+      "id": "3209e647-6caf-5c57-b01d-05a99ebcb55c",
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000
+    },
+    {
+      "parameters": {
+        "jsCode": "// Faithfulness check: every number in the draft must be one of the computed facts; no dollar amounts; missing inputs\n// mentioned. A draft that fails is blocked: the owner gets the reasons, and nothing is sent.\nconst res = $input.first().json, prep = $('Build the retry request').first().json;\nconst PRICES = { haiku: [1, 5], 'sonnet-5': [2, 10], sonnet: [3, 15], 'opus-5-5': [4, 20], opus: [5, 25] };  // USD per million tokens\nconst problems = [], badNumbers = [];\nlet r = null;\nconst text = (res.content || []).filter(c => c.type === 'text').map(c => c.text).join('');\nif (res.stop_reason === 'refusal') problems.push('the model declined to write it');\ntry { r = JSON.parse(text); } catch (e) { problems.push('the draft was not valid JSON'); }\nconst allowed = new Set(prep.allowed);\nconst parts = r ? [r.subject, r.headline, ...(r.channels || []).map(c => c.text), ...(r.watch || []), ...(r.next_actions || [])] : [];\nfor (const s of parts) {\n  for (const raw of (String(s).match(/\\d[\\d,]*(?:\\.\\d+)?%?/g) || [])) {\n    const n = raw.replace(/,/g, '');\n    if (allowed.has(n) || (/^\\d+$/.test(n) && Number(n) <= 12) || /^(19|20)\\d\\d$/.test(n)) continue;\n    if (!badNumbers.includes(n)) badNumbers.push(n);\n  }\n  if (/\\$\\s?\\d/.test(String(s))) problems.push('a dollar amount');\n}\nif (badNumbers.length) problems.push(`numbers not in the data: ${badNumbers.join(', ')}`);\nconst missingNamed = (prep.facts.missing || []).length === 0 || /log|refresh|export/i.test([...(r?.watch || []), ...(r?.next_actions || [])].join(' '));\nif (r && !missingNamed) problems.push('missing inputs are not mentioned');\nconst u = res.usage || {}, model = String(prep.claude_request.model || '');\nconst price = Object.entries(PRICES).find(([k]) => model.includes(k));\nconst cost = price ? +(((u.input_tokens || 0) * price[1][0] + (u.output_tokens || 0) * price[1][1]) / 1e6).toFixed(5) : null;\nconst plain = r ? [r.headline, '', ...(r.channels || []).map(c => `${c.name}: ${c.text}`), '',\n  'To watch:', ...(r.watch || []).map(x => '- ' + x), '', 'Next actions:', ...(r.next_actions || []).map(x => '- ' + x)].join('\\n') : '';\nconst attempt = prep.attempt || 1;\nreturn [{ json: { month: prep.month, facts: prep.facts, allowed: prep.allowed, report: r, plain, subject: r?.subject || `NTStays channel report: ${prep.facts.month}`,\n  passed: problems.length === 0, problems, bad_numbers: badNumbers, attempt, draft_text: text,\n  retry: problems.length > 0 && attempt === 1 && res.stop_reason !== 'refusal', first_try: prep.first_try || null,\n  call: { model, input_tokens: u.input_tokens || 0, output_tokens: u.output_tokens || 0, cost_usd: cost,\n    seconds: +((Date.now() - prep.started) / 1000).toFixed(1) } } }];"
+      },
+      "name": "Check the rewrite",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2640,
+        140
+      ],
+      "id": "ef4a15c3-e085-5986-84da-b74f3ea1de4c"
+    },
+    {
+      "parameters": {
+        "jsCode": "// One audit row per model call: tokens, cost, time, and whether the draft passed its checks.\nconst c = $('Check the rewrite').first().json;\nreturn [{ json: { kind: 'ai_call', entered_by: 'monthly-report', entered_at: new Date().toISOString(),\n  data: JSON.stringify({ workflow: 'monthly report', month: c.month, attempt: c.attempt, ...c.call, passed: c.passed, problems: c.problems }) } }];"
+      },
+      "name": "Rewrite audit row",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2860,
+        140
+      ],
+      "id": "2aaefc1f-8423-513b-a5b2-1c5cb3a13396"
+    },
+    {
+      "parameters": {
+        "resource": "row",
+        "operation": "insert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "ntstays_team_log"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": []
+        },
+        "options": {}
+      },
+      "name": "Log the rewrite call",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        3080,
+        140
+      ],
+      "id": "517a9b1a-d244-5b2c-8f5e-1abc4781c3cf"
+    },
+    {
+      "parameters": {
+        "jsCode": "// The emails. The numbers table comes from the computed facts, never from the AI, so it is always exact.\n// The draft is the rewrite when there was one.\nconst c = ($('Check the rewrite').isExecuted ? $('Check the rewrite') : $('Check the report')).first().json;\nconst esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');\nconst f = c.facts, rows = [];\nconst row = (k, v) => { if (v !== null && v !== undefined && v !== '') rows.push(`<tr><td style=\"padding:3px 14px 3px 0;color:#6d6158\">${esc(k)}</td><td>${esc(v)}</td></tr>`); };\nif (f.airbnb) { row('Airbnb overall conversion', f.airbnb.overall_conversion); row('Airbnb similar listings', f.airbnb.similar_listings);\n  row('Airbnb search \u2192 listing', f.airbnb.search_to_listing); row('Airbnb listing \u2192 booking', f.airbnb.listing_to_booking); row('Airbnb bookings made', f.airbnb.bookings_made); }\nif (f.vrbo) { row('Vrbo impressions \u2192 views \u2192 bookings', `${f.vrbo.search_impressions} \u2192 ${f.vrbo.property_views} \u2192 ${f.vrbo.bookings}`); }\nif (f.furnished_finder) { row('Furnished Finder new booking inquiries', f.furnished_finder.new_booking_inquiries);\n  row('Furnished Finder leases signed', f.furnished_finder.leases_signed); row('Furnished Finder inquiry \u2192 lease', f.furnished_finder.inquiry_to_lease); }\nfor (const b of f.bookings_by_channel) row(`${b.channel}: stays, nights`, `${b.stays}, ${b.nights}`);\nfor (const v of f.channel_value) row(`${v.channel}: revenue share, fee`, `${v.revenue_share}, ${v.fee}`);\nconst table = `<table style=\"font-size:14px;margin:12px 0\">${rows.join('')}</table>`;\nconst body = r => !r ? '' : `<p style=\"font-size:17px;font-weight:bold;margin:0 0 10px\">${esc(r.headline)}</p>` +\n  r.channels.map(x => `<p style=\"margin:0 0 10px\"><b>${esc(x.name)}.</b> ${esc(x.text)}</p>`).join('') +\n  (r.watch.length ? `<p style=\"margin:12px 0 4px\"><b>To watch</b></p><ul>${r.watch.map(x => `<li>${esc(x)}</li>`).join('')}</ul>` : '') +\n  (r.next_actions.length ? `<p style=\"margin:12px 0 4px\"><b>Next actions</b></p><ul>${r.next_actions.map(x => `<li>${esc(x)}</li>`).join('')}</ul>` : '');\nconst wrap = inner => `<div style=\"font-family:Arial,sans-serif;font-size:15px;color:#2b211b;max-width:640px\">${inner}</div>`;\n// In the blocked email, the numbers that failed the check are highlighted in the draft.\nconst mark = html => (c.bad_numbers || []).reduce((h, n) => h.replace(\n  new RegExp(`(^|[^\\\\d.])(${n.replace(/[.%]/g, m => '\\\\' + m)}%?)(?![\\\\d.]?\\\\d)`, 'g'), '$1<mark style=\"background:#ffe08a\">$2</mark>'), html);\nconst retried = c.first_try ? `<p style=\"color:#6d6158\">The first draft failed too (${esc(c.first_try.problems.join('; '))}), so Claude rewrote it once; the rewrite still failed.</p>` : '';\nconst to = [{ email: $env.OWNER_EMAIL, name: $env.OWNER_NAME || 'NTStays' }];\nconst sender = { name: 'NTStays reports', email: $env.FROM_EMAIL };\nconst approval = { sender, to, subject: `[NTStays] Review the ${f.month} channel report`, tags: ['ntstays-report-review'],\n  htmlContent: wrap(`<p style=\"color:#6d6158\">Draft written by Claude and checked: every number in it matches the data.\n    Review it, edit if you like, and choose Send.</p>${body(c.report)}<p><b>The numbers</b> (computed, not written by AI)</p>${table}\n    <p><a href=\"${$execution.resumeFormUrl}\" style=\"display:inline-block;background:#3b2a20;color:#fffdf8;padding:10px 18px;border-radius:999px;text-decoration:none;font-weight:bold\">Review &amp; send</a></p>\n    <p style=\"font-size:12px;color:#6d6158\">${esc(c.call.model)} \u00b7 ${c.call.input_tokens} + ${c.call.output_tokens} tokens \u00b7 ${c.call.seconds} s. Nothing is sent until you choose Send; the link expires in 5 days.</p>`) };\nconst blocked = { sender, to, subject: `[NTStays] The ${f.month} channel report was blocked`, tags: ['ntstays-report-blocked'],\n  htmlContent: wrap(`<p><b>The AI draft failed its checks, so nothing was sent.</b></p><ul>${c.problems.map(p => `<li>${esc(p)}</li>`).join('')}</ul>\n    ${c.report ? `<p><b>The draft</b> (numbers that failed the check are highlighted)</p><div style=\"border-left:3px solid #e4dbcc;padding-left:12px\">${mark(body(c.report))}</div>` : ''}${retried}\n    <p>The numbers for ${esc(f.month)} (computed, not written by AI):</p>${table}\n    <p style=\"font-size:13px;color:#6d6158\">Run it again from n8n, or send these numbers yourself.</p>`) };\nreturn [{ json: { ...c, table, approval_email: approval, blocked_email: blocked } }];"
       },
       "name": "Build the report emails",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1980,
+        3300,
         300
       ],
       "id": "eb71470f-8a41-57b5-9499-84cf95d31e92"
@@ -240,7 +375,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        2200,
+        3740,
         300
       ],
       "id": "88476220-af6f-561d-86f9-8dd12b6f083c"
@@ -269,7 +404,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        2420,
+        3960,
         200
       ],
       "id": "38adc6aa-9c02-5c4e-b520-75a7a75d1d56",
@@ -285,7 +420,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2640,
+        4180,
         200
       ],
       "id": "c49bc36c-9fab-501d-a7fb-6f51787632c8"
@@ -340,7 +475,7 @@
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        2860,
+        4400,
         200
       ],
       "id": "4066e893-b527-5e3d-8b1b-38315c1264d6",
@@ -354,7 +489,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        3080,
+        4620,
         200
       ],
       "id": "ea2ae159-03cd-5bbf-a4cd-03364f79ef38"
@@ -388,7 +523,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        3300,
+        4840,
         200
       ],
       "id": "8d33d55e-ca76-50d7-a594-ea413e6f43df"
@@ -417,7 +552,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        3520,
+        5060,
         100
       ],
       "id": "3a8539f2-37d3-57ff-85b7-e1813fab3eeb",
@@ -454,7 +589,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        3520,
+        5060,
         300
       ],
       "id": "7ea6fc2c-1e34-5bcf-a924-ba3cab37e17b"
@@ -483,7 +618,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        3740,
+        5280,
         300
       ],
       "id": "92e1a456-c19e-5133-a5b3-5201a2017dfe",
@@ -499,7 +634,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        3960,
+        5500,
         200
       ],
       "id": "d93c713d-df7c-509c-bb7a-62fa36bb2db2"
@@ -525,7 +660,7 @@
       "type": "n8n-nodes-base.dataTable",
       "typeVersion": 1,
       "position": [
-        4180,
+        5720,
         200
       ],
       "id": "03e2aa3e-097c-5434-aba8-b86f28c98f8d"
@@ -554,7 +689,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        2420,
+        3960,
         420
       ],
       "id": "c7c19ee2-4e1b-5a7a-9722-2c102d9d1384",
@@ -564,13 +699,13 @@
     },
     {
       "parameters": {
-        "jsCode": "const c = $('Check the report').first().json;\nreturn [{ json: { kind: 'report', entered_by: 'monthly-report', entered_at: new Date().toISOString(),\n  data: JSON.stringify({ month: c.month, status: 'blocked', problems: c.problems }) } }];"
+        "jsCode": "const c = ($('Check the rewrite').isExecuted ? $('Check the rewrite') : $('Check the report')).first().json;\nreturn [{ json: { kind: 'report', entered_by: 'monthly-report', entered_at: new Date().toISOString(),\n  data: JSON.stringify({ month: c.month, status: 'blocked', attempts: c.attempt, problems: c.problems }) } }];"
       },
       "name": "Blocked audit row",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2640,
+        4180,
         420
       ],
       "id": "58d9229d-e6e8-5168-bc24-cc0fbae1f4dc"
@@ -596,7 +731,7 @@
       "type": "n8n-nodes-base.dataTable",
       "typeVersion": 1,
       "position": [
-        2860,
+        4400,
         420
       ],
       "id": "46a64995-9513-52ba-b8e5-3cbf1aeab986"
@@ -703,6 +838,79 @@
       ]
     },
     "Log the AI call": {
+      "main": [
+        [
+          {
+            "node": "Rewrite once?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rewrite once?": {
+      "main": [
+        [
+          {
+            "node": "Build the retry request",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build the report emails",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build the retry request": {
+      "main": [
+        [
+          {
+            "node": "Claude: rewrite the report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude: rewrite the report": {
+      "main": [
+        [
+          {
+            "node": "Check the rewrite",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check the rewrite": {
+      "main": [
+        [
+          {
+            "node": "Rewrite audit row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rewrite audit row": {
+      "main": [
+        [
+          {
+            "node": "Log the rewrite call",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log the rewrite call": {
       "main": [
         [
           {

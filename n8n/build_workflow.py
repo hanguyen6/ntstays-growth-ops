@@ -1126,7 +1126,12 @@ const HINTS = [
   [/Email|Brevo/i, 'Check BREVO_API_KEY, the verified sender, Authorized IPs and your Brevo daily limit.'],
   [/Stripe/i, 'Check STRIPE_SECRET_KEY in .env (test vs live key) and that the restricted key has the permissions listed in SETUP.md.'],
 ];
-const hint = (HINTS.find(([re]) => re.test(step)) || [null, 'Open the execution to see which step failed and why.'])[1];
+// Some errors say exactly what's wrong, whatever the step.
+const MESSAGE_HINTS = [
+  [/PROPERTY_DOESNT_EXIST|Property "[^"]+" does not exist/i, 'HubSpot is missing a contact property named in the error. Create it (HubSpot → Settings → Properties → Contact properties, Single-line text, that exact internal name; the list is in SETUP.md, "Campaign tracking"), or set HUBSPOT_SOURCE_FIELDS=off in .env. Then retry this execution in n8n.'],
+];
+const hint = ((MESSAGE_HINTS.find(([re]) => re.test(msg)) || HINTS.find(([re]) => re.test(step)))
+  || [null, 'Open the execution to see which step failed and why.'])[1];
 const html = `<div style="font-family:Arial,sans-serif;font-size:15px;color:#2b211b;max-width:620px">
   <h2 style="margin:0 0 8px;color:#a3412f">NTStays automation failed</h2>
   <p>A run of <b>${esc(wf.name)}</b> stopped at <b>${esc(step)}</b>.</p>
@@ -2324,8 +2329,10 @@ const price = Object.entries(PRICES).find(([k]) => model.includes(k));
 const cost = price ? +(((u.input_tokens || 0) * price[1][0] + (u.output_tokens || 0) * price[1][1]) / 1e6).toFixed(5) : null;
 const plain = r ? [r.headline, '', ...(r.channels || []).map(c => `${c.name}: ${c.text}`), '',
   'To watch:', ...(r.watch || []).map(x => '- ' + x), '', 'Next actions:', ...(r.next_actions || []).map(x => '- ' + x)].join('\n') : '';
+const attempt = prep.attempt || 1;
 return [{ json: { month: prep.month, facts: prep.facts, allowed: prep.allowed, report: r, plain, subject: r?.subject || `NTStays channel report: ${prep.facts.month}`,
-  passed: problems.length === 0, problems, bad_numbers: badNumbers,
+  passed: problems.length === 0, problems, bad_numbers: badNumbers, attempt, draft_text: text,
+  retry: problems.length > 0 && attempt === 1 && res.stop_reason !== 'refusal', first_try: prep.first_try || null,
   call: { model, input_tokens: u.input_tokens || 0, output_tokens: u.output_tokens || 0, cost_usd: cost,
     seconds: +((Date.now() - prep.started) / 1000).toFixed(1) } } }];
 """
@@ -2334,12 +2341,26 @@ REPORT_LOG_JS = r"""
 // One audit row per model call: tokens, cost, time, and whether the draft passed its checks.
 const c = $('Check the report').first().json;
 return [{ json: { kind: 'ai_call', entered_by: 'monthly-report', entered_at: new Date().toISOString(),
-  data: JSON.stringify({ workflow: 'monthly report', month: c.month, ...c.call, passed: c.passed, problems: c.problems }) } }];
+  data: JSON.stringify({ workflow: 'monthly report', month: c.month, attempt: c.attempt, ...c.call, passed: c.passed, problems: c.problems }) } }];
+"""
+
+REPORT_RETRY_JS = r"""
+// One rewrite: Claude sees its draft and exactly which checks it failed. The rewrite is checked the same way.
+const c = $('Check the report').first().json, prep = $('Build the Claude request').first().json;
+const fix = [`Your draft failed these checks: ${c.problems.join('; ')}.`];
+if (c.bad_numbers.length) fix.push(`These numbers are not in FACTS: ${c.bad_numbers.join(', ')}. They were probably calculated. `
+  + 'Remove them; if a comparison matters, describe it in words or use only numbers exactly as they appear in FACTS.');
+fix.push('Rewrite the whole report, following every rule.');
+const req = prep.claude_request;
+return [{ json: { ...prep, attempt: 2, started: Date.now(), first_try: { problems: c.problems, bad_numbers: c.bad_numbers },
+  claude_request: { ...req, messages: [...req.messages, { role: 'assistant', content: c.draft_text || '(no draft)' },
+    { role: 'user', content: fix.join('\n') }] } } }];
 """
 
 REPORT_EMAIL_JS = r"""
 // The emails. The numbers table comes from the computed facts, never from the AI, so it is always exact.
-const c = $('Check the report').first().json;
+// The draft is the rewrite when there was one.
+const c = ($('Check the rewrite').isExecuted ? $('Check the rewrite') : $('Check the report')).first().json;
 const esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const f = c.facts, rows = [];
 const row = (k, v) => { if (v !== null && v !== undefined && v !== '') rows.push(`<tr><td style="padding:3px 14px 3px 0;color:#6d6158">${esc(k)}</td><td>${esc(v)}</td></tr>`); };
@@ -2356,6 +2377,10 @@ const body = r => !r ? '' : `<p style="font-size:17px;font-weight:bold;margin:0 
   (r.watch.length ? `<p style="margin:12px 0 4px"><b>To watch</b></p><ul>${r.watch.map(x => `<li>${esc(x)}</li>`).join('')}</ul>` : '') +
   (r.next_actions.length ? `<p style="margin:12px 0 4px"><b>Next actions</b></p><ul>${r.next_actions.map(x => `<li>${esc(x)}</li>`).join('')}</ul>` : '');
 const wrap = inner => `<div style="font-family:Arial,sans-serif;font-size:15px;color:#2b211b;max-width:640px">${inner}</div>`;
+// In the blocked email, the numbers that failed the check are highlighted in the draft.
+const mark = html => (c.bad_numbers || []).reduce((h, n) => h.replace(
+  new RegExp(`(^|[^\\d.])(${n.replace(/[.%]/g, m => '\\' + m)}%?)(?![\\d.]?\\d)`, 'g'), '$1<mark style="background:#ffe08a">$2</mark>'), html);
+const retried = c.first_try ? `<p style="color:#6d6158">The first draft failed too (${esc(c.first_try.problems.join('; '))}), so Claude rewrote it once; the rewrite still failed.</p>` : '';
 const to = [{ email: $env.OWNER_EMAIL, name: $env.OWNER_NAME || 'NTStays' }];
 const sender = { name: 'NTStays reports', email: $env.FROM_EMAIL };
 const approval = { sender, to, subject: `[NTStays] Review the ${f.month} channel report`, tags: ['ntstays-report-review'],
@@ -2365,6 +2390,7 @@ const approval = { sender, to, subject: `[NTStays] Review the ${f.month} channel
     <p style="font-size:12px;color:#6d6158">${esc(c.call.model)} · ${c.call.input_tokens} + ${c.call.output_tokens} tokens · ${c.call.seconds} s. Nothing is sent until you choose Send; the link expires in 5 days.</p>`) };
 const blocked = { sender, to, subject: `[NTStays] The ${f.month} channel report was blocked`, tags: ['ntstays-report-blocked'],
   htmlContent: wrap(`<p><b>The AI draft failed its checks, so nothing was sent.</b></p><ul>${c.problems.map(p => `<li>${esc(p)}</li>`).join('')}</ul>
+    ${c.report ? `<p><b>The draft</b> (numbers that failed the check are highlighted)</p><div style="border-left:3px solid #e4dbcc;padding-left:12px">${mark(body(c.report))}</div>` : ''}${retried}
     <p>The numbers for ${esc(f.month)} (computed, not written by AI):</p>${table}
     <p style="font-size:13px;color:#6d6158">Run it again from n8n, or send these numbers yourself.</p>`) };
 return [{ json: { ...c, table, approval_email: approval, blocked_email: blocked } }];
@@ -2445,7 +2471,16 @@ report_nodes = [
     code("Check the report", REPORT_CHECK_JS, [1320, 300]),
     code("AI call audit row", REPORT_LOG_JS, [1540, 300]),
     report_log_node("Log the AI call", None, [1760, 300]),
-    code("Build the report emails", REPORT_EMAIL_JS, [1980, 300]),
+    if_bool("Rewrite once?", "={{ $('Check the report').first().json.retry }}", [1980, 300]),
+    code("Build the retry request", REPORT_RETRY_JS, [2200, 140]),
+    http("Claude: rewrite the report", "POST", "={{ $env.ANTHROPIC_BASE_URL }}/v1/messages",
+         "={{ JSON.stringify($json.claude_request) }}", [2420, 140],
+         headers=[{"name": "x-api-key", "value": "={{ $env.ANTHROPIC_API_KEY }}"},
+                  {"name": "anthropic-version", "value": "2023-06-01"}]),
+    code("Check the rewrite", REPORT_CHECK_JS.replace("$('Build the Claude request')", "$('Build the retry request')"), [2640, 140]),
+    code("Rewrite audit row", REPORT_LOG_JS.replace("$('Check the report')", "$('Check the rewrite')"), [2860, 140]),
+    report_log_node("Log the rewrite call", None, [3080, 140]),
+    code("Build the report emails", REPORT_EMAIL_JS, [3300, 300]),
     if_bool("Passed the checks?", "={{ $json.passed }}", [2200, 300]),
     brevo("Email the owner for review", "approval_email", [2420, 200]),
     {"parameters": {"jsCode": "return [{ json: $('Build the report emails').first().json }];"},
@@ -2461,15 +2496,24 @@ report_nodes = [
      "name": "Outcome audit row", "type": "n8n-nodes-base.code", "typeVersion": 2, "position": [3960, 200], "id": nid("report-outcome")},
     report_log_node("Log the outcome", None, [4180, 200]),
     brevo("Email the owner: blocked", "blocked_email", [2420, 420]),
-    {"parameters": {"jsCode": "const c = $('Check the report').first().json;\nreturn [{ json: { kind: 'report', entered_by: 'monthly-report', entered_at: new Date().toISOString(),\n  data: JSON.stringify({ month: c.month, status: 'blocked', problems: c.problems }) } }];"},
+    {"parameters": {"jsCode": "const c = ($('Check the rewrite').isExecuted ? $('Check the rewrite') : $('Check the report')).first().json;\nreturn [{ json: { kind: 'report', entered_by: 'monthly-report', entered_at: new Date().toISOString(),\n  data: JSON.stringify({ month: c.month, status: 'blocked', attempts: c.attempt, problems: c.problems }) } }];"},
      "name": "Blocked audit row", "type": "n8n-nodes-base.code", "typeVersion": 2, "position": [2640, 420], "id": nid("report-blocked-row")},
     report_log_node("Log the block", None, [2860, 420]),
 ]
+_rewrite_branch = {"Rewrite once?", "Build the retry request", "Claude: rewrite the report", "Check the rewrite",
+                   "Rewrite audit row", "Log the rewrite call", "Build the report emails"}
+for _n in report_nodes:
+    if _n["name"] not in _rewrite_branch and _n["position"][0] >= 1980:
+        _n["position"] = [_n["position"][0] + 1540, _n["position"][1]]
 report_edges = [("On the 1st of the month", 0, "Start report"), ("Run report now", 0, "Start report"),
                 ("Start report", 0, "Get logged numbers"), ("Get logged numbers", 0, "Compute the month"),
                 ("Compute the month", 0, "Build the Claude request"), ("Build the Claude request", 0, "Claude: write the report"),
                 ("Claude: write the report", 0, "Check the report"), ("Check the report", 0, "AI call audit row"),
-                ("AI call audit row", 0, "Log the AI call"), ("Log the AI call", 0, "Build the report emails"),
+                ("AI call audit row", 0, "Log the AI call"), ("Log the AI call", 0, "Rewrite once?"),
+                ("Rewrite once?", 0, "Build the retry request"), ("Rewrite once?", 1, "Build the report emails"),
+                ("Build the retry request", 0, "Claude: rewrite the report"), ("Claude: rewrite the report", 0, "Check the rewrite"),
+                ("Check the rewrite", 0, "Rewrite audit row"), ("Rewrite audit row", 0, "Log the rewrite call"),
+                ("Log the rewrite call", 0, "Build the report emails"),
                 ("Build the report emails", 0, "Passed the checks?"),
                 ("Passed the checks?", 0, "Email the owner for review"), ("Passed the checks?", 1, "Email the owner: blocked"),
                 ("Email the owner for review", 0, "Load the draft"), ("Load the draft", 0, "Owner report form"),
