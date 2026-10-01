@@ -1,331 +1,691 @@
-<!doctype html>
+<!DOCTYPE html>
+
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NTStays Growth Ops</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,750&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="NTStays Growth Ops — production AI marketing and revenue-operations case study." name="description"/>
+<title>NTStays Growth Ops — AI Marketing Operations Case Study</title>
 <style>
-  body { margin: 0; }
-  /* Layout: a single reading column (~70ch) with full-width bands for the system map and the tables.
-     Operator's notebook: cool paper, ink, one teal accent for "live", amber for "what broke". */
-  :root {
-    --bg: #f5f7f5; --surface: #ffffff; --ink: #15202a; --ink-2: #44525e; --muted: #6b7a85; --line: #dde3e0;
-    --accent: #0e6f68; --accent-soft: #e2f1ee; --amber: #9a4f07; --amber-soft: #fbefdf; --code-bg: #eef2f0;
-    --f-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
-    --f-body: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
-    --f-mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      --bg: #11171c; --surface: #172028; --ink: #e8eef0; --ink-2: #b9c6cc; --muted: #8b9aa3; --line: #2a3640;
-      --accent: #4fc3b6; --accent-soft: #15302e; --amber: #f0a656; --amber-soft: #33261a; --code-bg: #1d2830; color-scheme: dark;
+    :root {
+      --navy: #102039;
+      --navy-2: #153f69;
+      --blue: #3156d9;
+      --blue-soft: #edf3ff;
+      --teal: #0d7869;
+      --teal-soft: #eaf8f4;
+      --amber: #9a6510;
+      --amber-soft: #fff6e8;
+      --ink: #18273f;
+      --muted: #61728c;
+      --surface: #ffffff;
+      --surface-2: #f6f8fc;
+      --line: #dce4ef;
+      --shadow: 0 18px 48px rgba(25, 44, 74, .08);
+      --radius: 20px;
+      --max: 1160px;
     }
-  }
-  :root[data-theme="dark"] {
-    --bg: #11171c; --surface: #172028; --ink: #e8eef0; --ink-2: #b9c6cc; --muted: #8b9aa3; --line: #2a3640;
-    --accent: #4fc3b6; --accent-soft: #15302e; --amber: #f0a656; --amber-soft: #33261a; --code-bg: #1d2830; color-scheme: dark;
-  }
-  * { box-sizing: border-box; }
-  body { background: var(--bg); color: var(--ink); font: 17px/1.6 var(--f-body); padding-inline: 20px; padding-block: 0 56px; }
-  .col { max-width: 760px; margin: 0 auto; }
-  .wide { max-width: 1000px; margin: 0 auto; }
-  h1, h2, h3 { font-family: var(--f-display); text-wrap: balance; margin: 0; line-height: 1.12; }
-  h1 { font-size: clamp(2.1rem, 5vw, 3.1rem); font-weight: 750; letter-spacing: -.01em; }
-  h2 { font-size: 1.6rem; font-weight: 700; margin-bottom: 10px; }
-  h3 { font-size: 1.1rem; font-weight: 700; }
-  p { margin: 0 0 14px; }
-  a { color: var(--accent); }
-  a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-  code, .mono { font-family: var(--f-mono); font-size: .86em; }
-  code { background: var(--code-bg); padding: 1px 5px; border-radius: 4px; }
-  .label { font: 600 .74rem/1 var(--f-mono); letter-spacing: .09em; text-transform: uppercase; color: var(--muted); }
 
-  header { padding-block: 56px 36px; border-bottom: 1px solid var(--line); }
-  header .label { color: var(--accent); }
-  header h1 { margin: 12px 0 14px; }
-  .dek { font-size: 1.2rem; color: var(--ink-2); max-width: 62ch; }
-  .facts { display: flex; flex-wrap: wrap; gap: 8px 22px; margin-top: 22px; }
-  .fact { display: flex; flex-direction: column; }
-  .fact b { font: 700 1.35rem var(--f-display); font-variant-numeric: tabular-nums; }
-  .fact span { font-size: .85rem; color: var(--muted); }
-  .links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
-  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 9px 14px; border-radius: 8px; border: 1px solid var(--line);
-    background: var(--surface); color: var(--ink); text-decoration: none; font-weight: 600; font-size: .95rem; }
-  .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background: #fff;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
 
-  section { padding-block: 40px 8px; }
-  .answer { margin-top: 34px; background: var(--accent-soft); border-radius: 12px; padding: 22px 24px; }
-  .answer .q { color: var(--ink-2); font-size: .98rem; margin-bottom: 6px; }
-  .answer .a { font: 750 1.7rem/1.15 var(--f-display); margin-bottom: 10px; }
-  .answer p { margin: 0; color: var(--ink-2); }
+    a { color: inherit; }
+    .container { width: min(calc(100% - 40px), var(--max)); margin: 0 auto; }
 
-  .maps { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; align-items: start; }
-  .maps > div { min-width: 0; }
-  .map { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px; overflow-x: auto; }
-  .map pre.mermaid { margin: 0; background: transparent; text-align: center; }
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      border-bottom: 1px solid rgba(220, 228, 239, .9);
+      background: rgba(255, 255, 255, .94);
+      backdrop-filter: blur(14px);
+    }
+    .topbar-inner {
+      min-height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+    .brand { font-weight: 850; letter-spacing: -.02em; text-decoration: none; }
+    .nav { display: flex; flex-wrap: wrap; gap: 18px; font-size: 13px; font-weight: 700; color: #56667b; }
+    .nav a { text-decoration: none; }
+    .nav a:hover { color: var(--blue); }
 
-  .proof { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; margin-top: 6px; }
-  .shots { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; margin-top: 18px; }
-  .shots figure { margin: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
-  .shots img { display: block; width: 100%; height: auto; }
-  .shots figcaption { padding: 10px 12px; font-size: .88rem; color: var(--ink-2); }
-  .scroll { overflow-x: auto; }
-  table { width: 100%; border-collapse: collapse; font-size: .95rem; }
-  th, td { text-align: left; vertical-align: top; padding: 10px 12px; border-bottom: 1px solid var(--line); }
-  th { font: 600 .76rem var(--f-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
-  td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
-  .pill { display: inline-block; font: 600 .72rem var(--f-mono); padding: 2px 7px; border-radius: 999px; white-space: nowrap; }
-  .pill.live { background: var(--accent-soft); color: var(--accent); }
-  .pill.built { background: var(--code-bg); color: var(--ink-2); }
+    .hero {
+      padding: 48px 0 32px;
+      background:
+        radial-gradient(circle at 82% 20%, rgba(49,86,217,.10), transparent 27%),
+        linear-gradient(180deg, #f8faff 0%, #f3f6fb 100%);
+      border-bottom: 1px solid var(--line);
+    }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      padding: 7px 11px;
+      border-radius: 999px;
+      border: 1px solid #cfe0ff;
+      background: #f0f5ff;
+      color: #2552a3;
+      font-size: 12px;
+      font-weight: 850;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+    h1 {
+      margin: 18px 0 16px;
+      max-width: 900px;
+      font-size: clamp(30px, 3.6vw, 40px);
+      line-height: 1.05;
+      letter-spacing: -.035em;
+      font-weight: 820;
+      color: var(--navy);
+    }
+    .hero-copy {
+      max-width: 900px;
+      margin: 0;
+      font-size: 16px;
+      line-height: 1.55;
+      color: var(--muted);
+    }
+    .stack-row {
+      margin-top: 30px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(255,255,255,.78);
+      box-shadow: 0 8px 24px rgba(25,44,74,.04);
+      color: #45566e;
+      font-size: 14px;
+      font-weight: 750;
+    }
+    .hero-links { margin-top: 16px; display: flex; gap: 10px; flex-wrap: wrap; }
+    .hero-links a { padding: 9px 14px; border-radius: 10px; border: 1px solid var(--line); background: #fff; font-size: 14px;
+      font-weight: 750; text-decoration: none; color: var(--navy); }
+    .hero-links a:first-child { background: var(--navy); border-color: var(--navy); color: #fff; }
+    .stack-label {
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .09em;
+      color: var(--navy);
+      text-transform: uppercase;
+    }
 
-  .principles { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
-  .principle { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; min-width: 0; }
-  .principle h3 { margin-bottom: 6px; }
-  .principle p { margin: 0; color: var(--ink-2); font-size: .96rem; }
+    section { padding: 44px 0; border-bottom: 1px solid #edf1f6; }
+    .section-soft { background: var(--surface-2); }
+    .section-dark { background: var(--navy-2); color: #fff; border-bottom: 0; }
+    .section-head { max-width: 820px; margin-bottom: 24px; }
+    .kicker {
+      margin-bottom: 9px;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: .09em;
+      text-transform: uppercase;
+      color: var(--blue);
+    }
+    .section-dark .kicker { color: #b9d0ff; }
+    h2 {
+      margin: 0 0 10px;
+      color: var(--navy);
+      font-size: clamp(21px, 2.2vw, 26px);
+      line-height: 1.18;
+      letter-spacing: -.025em;
+      font-weight: 800;
+    }
+    .section-dark h2 { color: #fff; }
+    h3 {
+      margin: 0 0 9px;
+      color: var(--navy);
+      font-size: 17px;
+      line-height: 1.3;
+      letter-spacing: -.01em;
+      font-weight: 780;
+    }
+    .section-dark h3 { color: #fff; }
+    p { margin: 0 0 16px; }
+    .lead { font-size: 16px; color: var(--muted); }
+    .section-dark .lead { color: #dce8f7; }
+    .business-question { font-weight: 850; color: var(--navy); }
 
-  .broke td:first-child { font-weight: 600; }
-  .broke tr td:nth-child(2) { color: var(--ink-2); }
-  .broke .fix { color: var(--ink); }
-  .broke-head { color: var(--amber); }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 18px; }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 18px; }
+    .card {
+      padding: 24px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+    .card p { color: var(--muted); margin-bottom: 0; }
+    .tag {
+      display: inline-flex;
+      margin-bottom: 14px;
+      padding: 5px 9px;
+      border-radius: 999px;
+      color: var(--teal);
+      background: var(--teal-soft);
+      font-size: 11px;
+      font-weight: 850;
+      letter-spacing: .02em;
+    }
 
-  ol.learned { padding-left: 1.2em; margin: 0; }
-  ol.learned li { margin-bottom: 12px; }
-  ol.learned b { display: block; }
-  ol.learned span { color: var(--ink-2); }
+    .solution-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 16px; }
+    .solution-card {
+      min-height: 190px;
+      padding: 24px;
+      border-radius: 16px;
+      background: #fff;
+      color: var(--ink);
+      border: 1px solid rgba(255,255,255,.35);
+    }
+    .solution-card .mini {
+      margin-bottom: 40px;
+      color: #2758f1;
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+    .solution-card p { margin: 0; color: #42536b; }
 
-  .next { background: var(--amber-soft); border-radius: 12px; padding: 20px 22px; }
-  .next ul { margin: 8px 0 0; padding-left: 1.1em; }
-  .next li { margin-bottom: 6px; }
-  footer { margin-top: 44px; padding-top: 18px; border-top: 1px solid var(--line); color: var(--muted); font-size: .88rem; }
-  @media (max-width: 560px) { body { font-size: 16px; } .answer .a { font-size: 1.4rem; } }
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: #fff;
+      box-shadow: var(--shadow);
+    }
+    table { width: 100%; border-collapse: collapse; min-width: 900px; }
+    th, td { padding: 15px 16px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--line); }
+    th {
+      background: #f6f8fb;
+      color: #56657a;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+    td { font-size: 14px; }
+    tbody tr:last-child td { border-bottom: 0; }
+    td strong { color: var(--navy); }
+    .status-live { color: var(--teal); font-weight: 850; white-space: nowrap; }
+    .status-built { color: var(--amber); font-weight: 850; white-space: nowrap; }
+
+    .architecture-flow {
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: #fff;
+      box-shadow: var(--shadow);
+      overflow-x: auto;
+      margin-bottom: 22px;
+    }
+    .flow {
+      display: flex;
+      align-items: stretch;
+      gap: 10px;
+      min-width: 1060px;
+    }
+    .node {
+      flex: 1 0 130px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      min-height: 150px;
+      padding: 18px 14px;
+      border: 1px solid #d9e3f0;
+      border-radius: 14px;
+      background: #fbfcfe;
+      font-weight: 820;
+      line-height: 1.45;
+      font-size: 14px;
+    }
+    .node.ai { background: #edf3ff; border-color: #c8d9ff; }
+    .node.rules { background: #eaf8f4; border-color: #c3e9df; }
+    .node.human { background: #fff6e8; border-color: #f0d29d; }
+    .arrow { display: flex; align-items: center; color: #8c9bae; font-size: 23px; }
+
+    .governance {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+    .gov-card {
+      padding: 26px;
+      border: 1px solid #d8e7ff;
+      border-radius: 18px;
+      background: #edf4ff;
+    }
+    .gov-card h3 { margin-bottom: 14px; }
+    .gov-card ul, .opportunities ul { margin: 0; padding-left: 22px; }
+    .gov-card li, .opportunities li { margin: 8px 0; }
+
+    .lessons { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .lesson {
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: 17px;
+      background: #fff;
+      box-shadow: var(--shadow);
+    }
+    .lesson p { color: var(--muted); margin-bottom: 0; }
+
+    .opportunities {
+      padding: 28px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: #fff;
+      box-shadow: var(--shadow);
+    }
+    .opportunities-columns { columns: 2 320px; column-gap: 50px; }
+    .opportunities li { break-inside: avoid; }
+
+    .appendix-head { margin-bottom: 26px; }
+    .appendix-note {
+      margin-bottom: 24px;
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      background: #f7f9fc;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .evidence-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+    figure {
+      margin: 0;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: #fff;
+      box-shadow: var(--shadow);
+    }
+    figure a { display: block; background: #f3f6fa; }
+    figure img { display: block; width: 100%; height: auto; }
+    figcaption { padding: 16px 18px 18px; color: var(--muted); font-size: 14px; }
+    figcaption strong { display: block; margin-bottom: 5px; color: var(--navy); }
+
+    .footer { padding: 42px 0 64px; color: var(--muted); font-size: 13px; }
+    .footer strong { color: var(--navy); }
+
+    @media (max-width: 920px) {
+      .grid-3, .solution-grid { grid-template-columns: 1fr 1fr; }
+      .evidence-grid, .governance, .lessons { grid-template-columns: 1fr; }
+      .nav { display: none; }
+    }
+    @media (max-width: 640px) {
+      .container { width: min(calc(100% - 28px), var(--max)); }
+      .hero { padding: 58px 0 38px; }
+      section { padding: 50px 0; }
+      .grid-3, .solution-grid { grid-template-columns: 1fr; }
+      .solution-card { min-height: 0; }
+      .solution-card .mini { margin-bottom: 24px; }
+      .opportunities-columns { columns: 1; }
+    }
+    @media print {
+      .topbar { display: none; }
+      .hero { padding-top: 40px; }
+      body { background: #fff; }
+      .card, .lesson, .table-wrap, .architecture-flow, figure, .opportunities { box-shadow: none; }
+      section { break-inside: avoid; }
+    }
+  
+    @media (max-width: 720px) {
+      h1 { font-size: 30px; line-height: 1.08; }
+      h2 { font-size: 22px; }
+      h3 { font-size: 16px; }
+      .hero { padding: 46px 0 32px; }
+      section { padding: 44px 0; }
+    }
 </style>
-
 </head>
 <body>
-<header>
-  <div class="col">
-    <div class="label">Case study · AI-powered marketing operations</div>
-    <h1>NTStays Growth Ops</h1>
-    <p class="dek">A production marketing and revenue-operations system for a three-home furnished-rental business,
-      built with Claude Code, n8n and the Claude API. It captures and attributes leads, triages them with AI under human
-      approval, and gives the marketing manager one place to see which channel actually converts.</p>
-    <div class="facts">
-      <div class="fact"><b>8</b><span>n8n workflows, 179 nodes</span></div>
-      <div class="fact"><b>283</b><span>automated checks, run before every deploy</span></div>
-      <div class="fact"><b>100%</b><span>of email replies approved by a person</span></div>
-      <div class="fact"><b>5</b><span>channels measured in one dashboard</span></div>
-    </div>
-    <div class="links">
-      <a class="btn primary" href="https://ntstays.com" target="_blank" rel="noopener">Live site: ntstays.com</a>
-      <a class="btn" href="#running">See it running</a>
-      <a class="btn" id="repo-link" href="https://github.com/hanguyen6/ntstays-growth-ops" target="_blank" rel="noopener">Code on GitHub</a>
-    </div>
-
-    <div class="answer" id="boring">
-      <div class="q">What's the most boring marketing workflow you could automate end-to-end this week?</div>
-      <div class="a">The monthly channel report.</div>
-      <p>Pull each platform's numbers, reconcile them, chart them, write the summary, send it. At NTStays it now runs end
-        to end: on the 1st of each month an n8n workflow computes the numbers in code, Claude writes the summary, a check
-        blocks any draft with a number that isn't in the data, and the owner approves before it goes out. Built this week,
-        tested end to end in n8n, deployed; first scheduled run October 1.</p>
-    </div>
-  </div>
+<div class="topbar">
+<div class="container topbar-inner">
+<a class="brand" href="#top">NTStays Growth Ops</a>
+<nav aria-label="Case study navigation" class="nav">
+<a href="#problem">Problem</a>
+<a href="#audience">Users</a>
+<a href="#solution">Capabilities</a>
+<a href="#workflows">Workflows</a>
+<a href="#architecture">Architecture</a>
+<a href="#governance">Governance</a>
+<a href="#lessons">Learnings</a>
+<a href="#screenshots">Evidence</a>
+</nav>
+</div>
+</div>
+<header class="hero" id="top">
+<div class="container">
+<span class="eyebrow">Case Study · Production AI Marketing Operations</span>
+<h1>NTStays Growth Ops</h1>
+<p class="hero-copy">Designed and deployed a production-grade AI-powered marketing and revenue-operations platform that automates lead management, campaign attribution, reporting, and customer communications while maintaining human approval controls.</p>
+<div class="stack-row">
+<span class="stack-label">Technical stack</span>
+<span>Claude API · n8n · HubSpot · Stripe · Cloudflare Access · GitHub Actions · Python</span>
+</div>
+<div class="hero-links"><a href="https://ntstays.com" rel="noopener" target="_blank">Live site</a><a href="https://github.com/hanguyen6/ntstays-growth-ops" rel="noopener" target="_blank">Source code on GitHub</a></div>
+</div>
 </header>
-
 <main>
-  <section>
-    <div class="col">
-      <h2>The problem</h2>
-      <p>Bookings arrived through Airbnb, Vrbo, Booking.com, Furnished Finder and, now, a direct website. Inquiries were
-        answered by hand, sources were unknown, and each platform reported performance differently: some as monthly
-        rates, some as rolling 30- or 90-day counts, some as totals since the listing started. Nobody could say which
-        channel was worth the most, or what each one cost.</p>
-    </div>
-  </section>
+<section id="problem">
+<div class="container">
+<div class="section-head">
 
-  <section id="running">
-    <div class="col">
-      <h2>See it running</h2>
-      <p>Three ways to try it yourself:</p>
-      <div class="proof">
-        <div class="principle"><h3>Talk to the live assistant</h3><p>Open <a href="https://ntstays.com" target="_blank" rel="noopener">ntstays.com</a>
-          and click <b>Ask us</b>. Try <i>"How much is a month in Cranston?"</i> (it won't quote a price: the guardrail
-          in code swaps any price for "we'll send a personal quote") or <i>"Which home is closest to South Shore Hospital?"</i>
-          (it answers from the approved facts).</p></div>
-        <div class="principle"><h3>Send a real request</h3><p>The request forms on
-          <a href="https://ntstays.com/travel-nurses" target="_blank" rel="noopener">the travel-nurse page</a> are live: a
-          submission is scored by Claude, lands in the CRM, and the owner gets the draft reply to approve. You'll get that
-          reply only if the owner presses Send.</p></div>
-        <div class="principle"><h3>See the real dashboard</h3><p>The marketing dashboard with real numbers is behind a
-          sign-in. <b>Ask me for a view-only login:</b> you'd sign in with your own email and a one-time code, see the live
-          dashboard (counts, rates and percentages; no guest details), and have no access to anything that changes data.
-          Access is removed after your review.</p></div>
-      </div>
-      <h3 style="margin-top:28px">Screenshots from production</h3>
-      <div class="shots" id="shots">
-        <figure><a href="shots/dashboard-airbnb.png" target="_blank" rel="noopener"><img src="shots/dashboard-airbnb.png" alt="The live marketing dashboard (exports from September 28, 2026): the Airbnb funnel and monthly conversion against similar listings." loading="lazy"></a><figcaption>The live marketing dashboard (exports from September 28, 2026): the Airbnb funnel and monthly conversion against similar listings.</figcaption></figure>
-        <figure><a href="shots/dashboard-channel-value.png" target="_blank" rel="noopener"><img src="shots/dashboard-channel-value.png" alt="Channel value: revenue share and fee % per channel, percentages only. Airbnb's jump to about 15% is its switch to the host-only fee." loading="lazy"></a><figcaption>Channel value: revenue share and fee % per channel, percentages only. Airbnb's jump to about 15% is its switch to the host-only fee.</figcaption></figure>
-        <figure><a href="shots/n8n-executions.png" target="_blank" rel="noopener"><img src="shots/n8n-executions.png" alt="n8n in production: 279 runs, 3 failed (1.1%). Inquiries, follow-ups, payments and the monthly report." loading="lazy"></a><figcaption>n8n in production: 279 runs, 3 failed (1.1%). Inquiries, follow-ups, payments and the monthly report.</figcaption></figure>
-        <figure><a href="shots/approval-email.png" target="_blank" rel="noopener"><img src="shots/approval-email.png" alt="A real inquiry: Claude scores it (HOT 78), says why and drafts the reply. Nothing reaches the guest until the owner reviews and sends. Guest details hidden." loading="lazy"></a><figcaption>A real inquiry: Claude scores it (HOT 78), says why and drafts the reply. Nothing reaches the guest until the owner reviews and sends. Guest details hidden.</figcaption></figure>
-        <figure><a href="shots/crm-timeline.png" target="_blank" rel="noopener"><img src="shots/crm-timeline.png" alt="The CRM timeline, written by n8n: the inquiry, the owner-edited reply and the guest's feedback. Guest details hidden." loading="lazy"></a><figcaption>The CRM timeline, written by n8n: the inquiry, the owner-edited reply and the guest's feedback. Guest details hidden.</figcaption></figure>
-        <figure><a href="shots/deploys.png" target="_blank" rel="noopener"><img src="shots/deploys.png" alt="Every change ships through GitHub Actions: tests first, then an SSH deploy to the n8n server. 17 runs, all green." loading="lazy"></a><figcaption>Every change ships through GitHub Actions: tests first, then an SSH deploy to the n8n server. 17 runs, all green.</figcaption></figure>
-      </div>
-    </div>
-  </section>
+<h2>Business Problem</h2>
+<p class="lead">NTStays receives inquiries and bookings from multiple channels, each with different data semantics. Customer inquiries were handled manually, source attribution was inconsistent, and platform reporting mixed monthly, rolling-window and lifetime metrics. The operating question was simple but hard to answer reliably: <span class="business-question">which channel is actually producing valuable business, at what cost?</span></p>
+</div>
+</div>
+</section>
+<section class="section-soft" id="audience">
+<div class="container">
+<div class="section-head">
 
-  <section>
-    <div class="wide">
-      <h2 class="col" style="margin-inline:auto">How it works</h2>
-      <div class="maps">
-      <div><p class="label" style="margin:14px 0 8px">Lead handling</p>
-      <div class="map">
-<pre class="mermaid">
-flowchart TB
-  V[Visitor] --> F["Forms and chat<br/>campaign source recorded"]
-  F --> W["n8n: website inquiries<br/>spam check · validate"]
-  W --> C["Claude API<br/>score · draft · JSON"]
-  C --> G["Guardrails in code<br/>no prices · no 'you're booked'"]
-  G --> H[HubSpot contact + note]
-  G --> A[["Owner approval form"]]
-  A -->|Send| E["Reply email<br/>+ Stripe payment link"]
-  A -->|Don't send| L[Logged, nothing sent]
-</pre>
-      </div></div>
-      <div><p class="label" style="margin:14px 0 8px">Measurement and the monthly report</p>
-      <div class="map">
-<pre class="mermaid">
-flowchart TB
-  X[Platform exports] --> S[Stats builder]
-  M["Log numbers page<br/>Furnished Finder · Vrbo · Airbnb"] --> D[("n8n data table<br/>append-only")]
-  S --> Q["Marketing dashboard<br/>sign-in only"]
-  D --> Q
-  S --> R["n8n: monthly report<br/>facts in code · Claude writes"]
-  D --> R
-  R --> K{{"Every number<br/>in the data?"}}
-  K -->|yes| A2[["Owner approval<br/>edits re-checked"]]
-  K -->|no| B[Blocked: owner gets the reasons]
-  A2 --> T[Report emailed to the team]
-</pre>
-      </div></div>
-      </div>
-    </div>
-  </section>
+<h2>Users &amp; Stakeholders</h2>
+<p class="lead">Three audiences rely on the system in different ways.</p>
+</div>
+<div class="grid-3">
+<article class="card">
+<span class="tag">Operations</span>
+<h3>Owner</h3>
+<p>Receives inquiry drafts, reviews every outbound response, and gets failure alerts when a workflow breaks.</p>
+</article>
+<article class="card">
+<span class="tag">Marketing</span>
+<h3>Marketing manager</h3>
+<p>Uses the dashboard, logs platform metrics, and reviews channel economics across Airbnb, Vrbo, Furnished Finder and direct acquisition.</p>
+</article>
+<article class="card">
+<span class="tag">Customer experience</span>
+<h3>Guests &amp; leads</h3>
+<p>Use the assistant and request forms, while the system keeps pricing commitments and final customer communication under human control.</p>
+</article>
+</div>
+</div>
+</section>
+<section class="section-dark" id="solution">
+<div class="container">
+<div class="section-head">
 
-  <section>
-    <div class="wide">
-      <div class="col" style="margin-inline:auto"><h2>What's running</h2>
-        <p>Every workflow is generated from one Python file, versioned in git, tested, and deployed to the n8n server by
-          GitHub Actions on push. <span class="pill live">Live</span> is in daily use; <span class="pill built">Built and tested</span>
-          passes its tests against mock services and turns on as credentials are added.</p></div>
-      <div class="scroll">
-        <table>
-          <tr><th>Workflow</th><th>Nodes</th><th>What it does</th><th>Status</th></tr>
-          <tr><td>Website inquiries</td><td class="num">75</td><td>Validates the form, verifies the spam check, scores and drafts a reply with Claude, creates the HubSpot contact and note, emails the owner an approval form; on Send, replies with an optional Stripe payment link and a results pack.</td><td><span class="pill live">Live</span></td></tr>
-          <tr><td>Website assistant (chat)</td><td class="num">16</td><td>Answers from approved facts and live availability; structured output; price and booking-confirmation guardrails in code; hands a lead to the inquiry workflow only after explicit consent and a valid email.</td><td><span class="pill live">Live</span></td></tr>
-          <tr><td>Team data (Log numbers)</td><td class="num">17</td><td>Stores what platforms won't export (Furnished Finder and Vrbo listing stats, Airbnb conversion rates, off-platform leases) in an append-only data table with who entered what.</td><td><span class="pill live">Live</span></td></tr>
-          <tr><td>Monthly channel report</td><td class="num">25</td><td>On the 1st: computes last month's funnels, stays, revenue share and fee % in code; Claude writes the summary as structured JSON; blocks any draft whose numbers aren't in the data; owner approves (edits re-checked); every model call logged with tokens, cost and time.</td><td><span class="pill live">Live</span><br><span class="mono" style="font-size:.75rem;color:var(--muted)">first run Oct 1</span></td></tr>
-          <tr><td>Error alerts</td><td class="num">3</td><td>Any failed workflow run emails the owner with the step that failed.</td><td><span class="pill live">Live</span></td></tr>
-          <tr><td>Payments</td><td class="num">15</td><td>Stripe webhook: confirms direct bookings, marks the contact as a customer, publishes a direct-bookings calendar.</td><td><span class="pill built">Built and tested</span></td></tr>
-          <tr><td>Follow-ups</td><td class="num">20</td><td>Daily: unpaid payment links, thank-yous, extension offers, each drafted for owner approval.</td><td><span class="pill built">Built and tested</span></td></tr>
-          <tr><td>Availability</td><td class="num">8</td><td>Merges iCal feeds from Airbnb, Vrbo and Booking.com so the site and the chat know which dates are open.</td><td><span class="pill built">Built and tested</span></td></tr>
-        </table>
-      </div>
-    </div>
-  </section>
+<h2>Production Capabilities</h2>
+<p class="lead">Connected workflows support lead capture, qualification, communications, payments, reporting, and operational follow-up.</p>
+</div>
+<div class="solution-grid">
+<article class="solution-card">
+<div class="mini">Lead operations</div>
+<p>Captures source, property interest, and customer details in a structured record for follow-up.</p>
+</article>
+<article class="solution-card">
+<div class="mini">AI assistance</div>
+<p>Scores leads, returns structured output, and prepares response drafts for human review.</p>
+</article>
+<article class="solution-card">
+<div class="mini">Customer experience</div>
+<p>Answers common questions from approved property and service information and escalates exceptions.</p>
+</article>
+<article class="solution-card">
+<div class="mini">Marketing analytics</div>
+<p>Automates marketing-performance collection, normalization, reporting, and stakeholder communication.</p>
+</article>
+<article class="solution-card">
+<div class="mini">Revenue operations</div>
+<p>Supports reliable follow-up for booking, payment, and customer-status actions.</p>
+</article>
+<article class="solution-card">
+<div class="mini">Observability</div>
+<p>Tracks workflow health, execution status, exceptions, and incident alerts.</p>
+</article>
+</div>
+</div>
+</section>
+<section id="workflows">
+<div class="container">
+<div class="section-head">
 
-  <section>
-    <div class="col">
-      <h2>How the AI is kept honest</h2>
-    </div>
-    <div class="wide principles" style="margin-top:12px">
-      <div class="principle"><h3>Structured output, checked in code</h3><p>Claude returns JSON against a schema. A check step rejects bad JSON, replaces any price with "we'll send a personal quote", and turns "you're booked" into "our team will confirm by email".</p></div>
-      <div class="principle"><h3>Every number is checked</h3><p>In the monthly report, code computes the figures and Claude only writes. Any number in the draft that isn't in the computed data blocks it, and so does a dollar amount or a missing input left unmentioned.</p></div>
-      <div class="principle"><h3>A human sends every reply</h3><p>The AI drafts; the owner edits and presses Send in an n8n form. "Don't send" is logged. The chat can only hand a request to that same queue.</p></div>
-      <div class="principle"><h3>Fail closed</h3><p>The dashboard sits behind Cloudflare Access and a Worker that verifies the login token's signature, audience and expiry. Until it is configured, it refuses everyone, on every hostname.</p></div>
-      <div class="principle"><h3>Audit trail and roles</h3><p>Logged numbers are never edited or deleted; a correction is a new "void" row. Separate lists decide who may log numbers and who may only view the dashboard.</p></div>
-      <div class="principle"><h3>No guest details on dashboards</h3><p>The marketing view shows counts, rates and percentages. Emails, phone numbers, names and rents stay in the CRM and the data table.</p></div>
-      <div class="principle"><h3>Tests gate deploys</h3><p>GitHub Actions rebuilds the workflows, checks they match the committed JSON, runs the test suites, then deploys over a key that can only run the deploy script.</p></div>
-    </div>
-  </section>
+<h2>Production Workflows</h2>
+<p class="lead">All workflows are generated from code, versioned in Git, tested, and deployed through GitHub Actions. Production components are used by the business; additional flows have been built and tested and activate as credentials and operations are enabled.</p>
+</div>
+<div class="table-wrap">
+<table aria-label="NTStays workflow implementation">
+<thead>
+<tr><th>Workflow</th><th>Nodes</th><th>What it does</th><th>Status</th></tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Website inquiries</strong></td><td>75</td>
+<td>Validates requests, runs spam checks, scores and drafts with Claude, creates HubSpot records, routes an approval form, then sends an optional Stripe payment link only after approval.</td>
+<td class="status-live">Live</td>
+</tr>
+<tr>
+<td><strong>Website assistant</strong></td><td>16</td>
+<td>Answers from approved facts and availability; uses structured output; enforces price and booking-confirmation guardrails; hands off only after explicit consent and a valid email.</td>
+<td class="status-live">Live</td>
+</tr>
+<tr>
+<td><strong>Marketing data collection and audit system</strong></td><td>17</td>
+<td>Captures platform metrics that cannot be exported cleanly in an append-only data table with attribution.</td>
+<td class="status-live">Live</td>
+</tr>
+<tr>
+<td><strong>Monthly channel report</strong></td><td>25</td>
+<td>Computes funnels, stays, revenue share and fee percentages in code; Claude generates draft content as structured JSON; unsupported numbers are blocked; owner edits are re-checked.</td>
+<td class="status-live">Live</td>
+</tr>
+<tr>
+<td><strong>Operational monitoring and incident alerts</strong></td><td>3</td>
+<td>Emails the owner with the failing step when a production workflow errors.</td>
+<td class="status-live">Live</td>
+</tr>
+<tr>
+<td><strong>Payments</strong></td><td>15</td>
+<td>Stripe webhook confirms direct bookings, updates customer state and publishes the direct-booking calendar.</td>
+<td class="status-built">Built &amp; tested</td>
+</tr>
+<tr>
+<td><strong>Follow-ups</strong></td><td>20</td>
+<td>Handles unpaid links, thank-yous, and extension outreach through a human-in-the-loop AI workflow.</td>
+<td class="status-built">Built &amp; tested</td>
+</tr>
+<tr>
+<td><strong>Availability</strong></td><td>8</td>
+<td>Merges Airbnb, Vrbo and Booking.com iCal feeds so the site and assistant know when properties are open.</td>
+<td class="status-built">Built &amp; tested</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section class="section-soft" id="architecture">
+<div class="container">
+<div class="section-head">
 
-  <section>
-    <div class="col">
-      <h2>Who depends on it</h2>
-      <p>The owner approves every inquiry reply from the email the workflow sends. The marketing manager uses the
-        dashboard and logs the monthly platform numbers on a sign-in page. Guests use the chat and the request forms.
-        One thing it surfaced early: the fee chart showed Airbnb's cost per booking jumping from 3% to 15.5% in December
-        2025, when Airbnb moved the account to its host-only fee, which made Vrbo (8.2%) and Furnished Finder (under 2% of
-        lease value) the cheaper channels.</p>
-    </div>
-  </section>
+<h2>System Architecture</h2>
+<p class="lead">The design separates probabilistic AI reasoning from deterministic business controls and durable system state.</p>
+</div>
+<div aria-label="AI workflow architecture" class="architecture-flow">
+<div class="flow">
+<div class="node">Visitor /<br/>campaign source</div><div class="arrow">→</div>
+<div class="node">Website form<br/>/ chat</div><div class="arrow">→</div>
+<div class="node">n8n validation<br/>&amp; spam checks</div><div class="arrow">→</div>
+<div class="node ai">Claude API<br/>Score leads · draft responses · return structured JSON</div><div class="arrow">→</div>
+<div class="node rules">Code guardrails<br/>schema · prices · booking claims</div><div class="arrow">→</div>
+<div class="node human">Human-in-the-loop<br/>AI workflow</div><div class="arrow">→</div>
+<div class="node">CRM / email /<br/>payment actions</div>
+</div>
+</div>
+<div class="table-wrap">
+<table aria-label="Architecture decisions">
+<thead><tr><th>Architecture decision</th><th>Why</th></tr></thead>
+<tbody>
+<tr><td><strong>n8n for orchestration</strong></td><td>Visual orchestration, webhooks, scheduled jobs, branching, API integrations and operational transparency.</td></tr>
+<tr><td><strong>Claude API for probabilistic tasks</strong></td><td>Lead scoring, structured drafting and narrative synthesis are appropriate places for language-model reasoning.</td></tr>
+<tr><td><strong>Python / JavaScript for deterministic logic</strong></td><td>Metrics, business rules and validation should not depend on model interpretation.</td></tr>
+<tr><td><strong>Structured JSON outputs</strong></td><td>Model output is machine-validated before it can enter downstream systems.</td></tr>
+<tr><td><strong>HubSpot as durable customer state</strong></td><td>Customer history belongs in the CRM rather than opaque model memory.</td></tr>
+<tr><td><strong>Human-in-the-loop AI workflow</strong></td><td>Customer-facing communication has pricing, commitment and brand risk.</td></tr>
+<tr><td><strong>Append-only measurement data</strong></td><td>Corrections remain auditable instead of overwriting historical evidence.</td></tr>
+<tr><td><strong>Tests gate deployment</strong></td><td>Generated workflows and validation rules must pass before production changes ship.</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="governance">
+<div class="container">
+<div class="section-head">
 
-  <section>
-    <div class="wide">
-      <div class="col" style="margin-inline:auto"><h2 class="broke-head">What broke</h2>
-        <p>Selected failures, each with its cause and what changed so it can't happen the same way again.</p></div>
-      <div class="scroll">
-        <table class="broke">
-          <tr><th>What broke</th><th>Cause</th><th>Fix</th></tr>
-          <tr><td>The marketing dashboard showed made-up numbers for two releases</td><td>The stats test suite wrote its sample output into the production data file</td><td class="fix">The builder writes production data only from the real exports folder; a regression test proves the tests never touch it</td></tr>
-          <tr><td>The chat refused real visitors ("spam check")</td><td>The Turnstile widget sat off-screen, so when Cloudflare asked for a click nobody could see it</td><td class="fix">Visible widget, a 30-second wait, and errors that show Cloudflare's code instead of failing silently</td></tr>
-          <tr><td>The chat went live before its backend</td><td>The site deployed on push; n8n needed a manual import</td><td class="fix">Tested, key-restricted automatic deploys for n8n</td></tr>
-          <tr><td>Topping up one Airbnb rate erased the others</td><td>"Latest entry replaces the month" was too blunt</td><td class="fix">Entries merge field by field; blanks never erase</td></tr>
-          <tr><td>Backfilled leases distorted conversion</td><td>Leases were dated by the day they were logged</td><td class="fix">A signed-on date, defaulting to move-in</td></tr>
-          <tr><td>Furnished Finder's funnel was meaningless at first</td><td>Its inquiry counts are totals since joining, while views are rolling 90 days</td><td class="fix">Monthly counts from the difference between entries, per listing; the dashboard refuses to divide across periods</td></tr>
-          <tr><td>Prompt caching was silently off</td><td>Claude Haiku 4.5 caches only prompts of 4,096+ tokens; ours was about 1,500</td><td class="fix">Documented; cost impact negligible at this volume</td></tr>
-        </table>
-      </div>
-    </div>
-  </section>
+<h2>Governance &amp; Reliability</h2>
+</div>
+<div class="governance">
+<article class="gov-card">
+<h3>Controls</h3>
+<ul>
+<li>Human-in-the-loop approval before customer communications</li>
+<li>Structured outputs for predictable downstream processing</li>
+<li>Input validation and required-field checks before routing</li>
+<li>Role-based access controls for sensitive actions</li>
+<li>Workflow logging and approval audit trails</li>
+</ul>
+</article>
+<article class="gov-card">
+<h3>Operational resilience</h3>
+<ul>
+<li>Workflow monitoring, run history, and incident alerts</li>
+<li>Error handling and recovery paths for failed automations</li>
+<li>Data-quality checks for attribution and reporting inputs</li>
+<li>Version-controlled workflow changes and deployments</li>
+<li>Escalation paths for ambiguous requests</li>
+</ul>
+</article>
+</div>
+</div>
+</section>
+<section class="section-soft" id="failures">
+<div class="container">
+<div class="section-head">
 
-  <section>
-    <div class="col">
-      <h2>What I learned</h2>
-      <ol class="learned">
-        <li><b>Put the rules in code and a human in front of the customer.</b><span>A prompt can ask for no prices; a check step guarantees it.</span></li>
-        <li><b>Data semantics matter more than charts.</b><span>Running totals versus rolling windows, simple versus weighted averages, signed date versus logged date: most wrong numbers came from here, not from the AI.</span></li>
-        <li><b>Separate test output from production, and prove it with a test.</b><span>The worst bug of the project was a test writing to production.</span></li>
-        <li><b>Label where every number comes from.</b><span>"(1 of 12 months)", "since joining" and "averages of monthly rates" kept people from over-reading thin data.</span></li>
-        <li><b>Fit metrics to the business stage.</b><span>I removed direct-booking targets because the website was days old; channel pipelines were what mattered now.</span></li>
-        <li><b>Automate what platforms allow; make the rest fast.</b><span>No host APIs exist for these numbers, so a paste-many-rows box replaced twenty forms.</span></li>
-      </ol>
-    </div>
-  </section>
+<h2>Failures &amp; Fixes</h2>
+<p class="lead">A production system becomes credible when the failure modes are visible. These were some of the most useful engineering lessons.</p>
+</div>
+<div class="table-wrap">
+<table aria-label="Production failures and changes">
+<thead><tr><th>Failure</th><th>Root cause</th><th>Change made</th></tr></thead>
+<tbody>
+<tr><td>Test data appeared on the production dashboard</td><td>The stats test suite wrote sample output into the production data file.</td><td>Production builds now use only real exports; a regression test verifies tests never touch the production path.</td></tr>
+<tr><td>Chat refused real visitors</td><td>The Cloudflare Turnstile challenge was off-screen, so users could not complete it.</td><td>The widget was made visible, with a 30-second wait and explicit Cloudflare error codes.</td></tr>
+<tr><td>The website deployed before its backend</td><td>Site deployment was automatic but n8n import was still manual.</td><td>Added tested, key-restricted automated n8n deployment.</td></tr>
+<tr><td>Updating one Airbnb rate erased another</td><td>The initial “latest row replaces the month” logic was too broad.</td><td>Metrics now merge field-by-field; blank values never erase known data.</td></tr>
+<tr><td>Backfilled leases distorted conversion</td><td>Leases were dated by entry date rather than signed date.</td><td>Added signed-on date, defaulting appropriately to move-in.</td></tr>
+<tr><td>Furnished Finder funnel math was misleading</td><td>Inquiry totals were cumulative while views were rolling 90 days.</td><td>Monthly inquiries are derived from entry differences, per listing; incompatible periods are not divided.</td></tr>
+<tr><td>Prompt caching was assumed but not active</td><td>The prompt was below the model's caching threshold.</td><td>Documented the behavior and accepted the negligible cost at this volume.</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="lessons">
+<div class="container">
+<div class="section-head">
 
-  <section>
-    <div class="col">
-      <div class="next">
-        <h2>What I'd build next</h2>
-        <ul>
-          <li><b>Evaluation beyond the number check:</b> a set of past months with known findings, scored on every prompt
-            change, so a new prompt or model has to beat the old one before it ships.</li>
-          <li><b>Alerting on the AI log:</b> model calls are already logged with tokens, cost, time and check results; next is
-            an alert when the block rate or cost moves out of its usual range.</li>
-          <li><b>A campaign loop:</b> the AI inquiry score saved per contact, so each campaign gets a quality-weighted lead count, and next week's posts drafted from what worked, checked against brand rules, approved by a person.</li>
-          <li><b>An MCP server</b> over the marketing data, so a marketer can ask Claude "why did Furnished Finder dip?" and get an answer from real numbers.</li>
-        </ul>
-      </div>
-    </div>
-  </section>
+<h2>Key Learnings</h2>
+<p class="lead">The project reinforced several principles I would carry into larger enterprise AI systems.</p>
+</div>
+<div class="lessons">
+<article class="lesson"><h3>1. Put rules in code</h3><p>A prompt can request safe behavior. A deterministic check can enforce it.</p></article>
+<article class="lesson"><h3>2. Data semantics matter more than charts</h3><p>Rolling windows, running totals, averages and business dates caused more risk than the visualization layer.</p></article>
+<article class="lesson"><h3>3. Tests must be isolated from production</h3><p>The most damaging bug came from the test environment writing to a production data path.</p></article>
+<article class="lesson"><h3>4. Label what every number means</h3><p>Thin or mixed-period data should be visibly qualified so business users do not over-read it.</p></article>
+<article class="lesson"><h3>5. Match metrics to business maturity</h3><p>The right KPI is the one the business can act on now, not the most impressive-looking dashboard metric.</p></article>
+<article class="lesson"><h3>6. Automate reality, not an idealized API landscape</h3><p>Where platforms lacked usable host APIs, the workflow made manual input fast, structured and auditable instead of pretending full automation existed.</p></article>
+</div>
+</div>
+</section>
+<section class="section-soft" id="next">
+<div class="container">
+<div class="section-head">
 
-  <footer class="col">
-    Stack: n8n 2.x on a small VPS, Claude API (Haiku 4.5, structured outputs), HubSpot, Brevo, Stripe, Cloudflare
-    (Workers, Access, Turnstile), GitHub Actions, Python and JavaScript. Built with Claude Code, September 2026.
-    Business figures here are the owner's own; no guest details are included. The repository includes a
-    <a href="demo/">preview of the dashboard code with sample data</a>; the real dashboard is shown on request.
-  </footer>
+<h2>Next Opportunities</h2>
+</div>
+<div class="opportunities">
+<ul class="opportunities-columns">
+<li>Richer lead scoring that adds channel, budget, and engagement signals to the inquiry itself</li>
+<li>Retrieval over a larger approved knowledge base (house guides, policies) for the chat assistant</li>
+<li>One review queue for every pending approval (today each one is its own email form)</li>
+<li>Chat-interaction attribution alongside the existing UTM, campaign, and referrer tracking</li>
+<li>A/B testing for calls to action, intake fields, and response timing</li>
+<li>Lifecycle automation for booking reminders, reviews, and repeat stays</li>
+<li>Automated quality evaluation for factuality, brand tone, and escalation accuracy</li>
+</ul>
+</div>
+</div>
+</section>
+<section id="screenshots">
+<div class="container">
+<div class="appendix-head">
+
+<h2 style="margin-top:18px">Production Screenshots</h2>
+</div>
+<div class="appendix-note">Production evidence from the live NTStays Growth Ops environment. Customer and guest details are redacted where applicable.</div>
+<div class="evidence-grid">
+<figure>
+<a href="shots/dashboard-airbnb.png" rel="noopener" target="_blank">
+<img alt="NTStays marketing dashboard showing Airbnb funnel and conversion metrics" loading="lazy" src="shots/dashboard-airbnb.png"/>
+</a>
+<figcaption><strong>A1. Marketing dashboard — Airbnb funnel</strong>Live marketing dashboard showing the Airbnb funnel and monthly conversion against similar listings.</figcaption>
+</figure>
+<figure>
+<a href="shots/dashboard-channel-value.png" rel="noopener" target="_blank">
+<img alt="NTStays marketing dashboard showing revenue share and channel fee percentages" loading="lazy" src="shots/dashboard-channel-value.png"/>
+</a>
+<figcaption><strong>A2. Marketing dashboard — channel value</strong>Revenue share and fee percentage by channel, with monthly channel-value trends.</figcaption>
+</figure>
+<figure>
+<a href="shots/n8n-executions.png" rel="noopener" target="_blank">
+<img alt="n8n production workflow execution history" loading="lazy" src="shots/n8n-executions.png"/>
+</a>
+<figcaption><strong>A3. n8n production executions</strong>Production workflow execution history showing run volume, failures, failure rate, and workflow status.</figcaption>
+</figure>
+<figure>
+<a href="shots/approval-email.png" rel="noopener" target="_blank">
+<img alt="Customer inquiry approval email with lead score and draft response" loading="lazy" src="shots/approval-email.png"/>
+</a>
+<figcaption><strong>A4. Human-in-the-loop AI workflow</strong>Lead score, rationale, and draft response are prepared for human review; customer communication is not sent until approval.</figcaption>
+</figure>
+<figure>
+<a href="shots/crm-timeline.png" rel="noopener" target="_blank">
+<img alt="HubSpot CRM timeline with inquiry and response audit trail" loading="lazy" src="shots/crm-timeline.png"/>
+</a>
+<figcaption><strong>A5. HubSpot audit trail</strong>The CRM timeline records inquiry activity, owner-edited replies, and guest feedback for traceability.</figcaption>
+</figure>
+<figure>
+<a href="shots/deploys.png" rel="noopener" target="_blank">
+<img alt="GitHub Actions deployment history" loading="lazy" src="shots/deploys.png"/>
+</a>
+<figcaption><strong>A6. CI/CD deployment evidence</strong>GitHub Actions provides version-controlled test and deployment history for workflow changes.</figcaption>
+</figure>
+</div>
+</div>
+</section>
 </main>
-
-<!-- GitHub Pages doesn't draw diagrams by itself (claude.ai does): load the diagram library. -->
-<script type="module">
-  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11.4.1/dist/mermaid.esm.min.mjs';
-  const dark = document.documentElement.dataset.theme === 'dark' ||
-    (!document.documentElement.dataset.theme && matchMedia('(prefers-color-scheme: dark)').matches);
-  mermaid.initialize({ startOnLoad: false, theme: dark ? 'dark' : 'neutral', securityLevel: 'strict', flowchart: { htmlLabels: true } });
-  await mermaid.run({ querySelector: 'pre.mermaid' });
-</script>
+<footer class="footer">
+<div class="container">
+<strong>NTStays Growth Ops</strong><br/>
+      Production AI marketing operations case study. Built September 2026.
+      Code: <a href="https://github.com/hanguyen6/ntstays-growth-ops">github.com/hanguyen6/ntstays-growth-ops</a>
+    </div>
+</footer>
 </body>
 </html>
