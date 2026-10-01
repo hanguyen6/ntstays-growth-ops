@@ -238,34 +238,39 @@
       border-radius: 20px;
       background: #fff;
       box-shadow: var(--shadow);
-      overflow-x: auto;
       margin-bottom: 22px;
     }
     .flow {
       display: flex;
       align-items: stretch;
-      gap: 10px;
-      min-width: 1060px;
+      gap: 6px;
     }
     .node {
-      flex: 1 0 130px;
+      flex: 1 1 0;
+      min-width: 0;
       display: flex;
       align-items: center;
       justify-content: center;
       text-align: center;
-      min-height: 150px;
-      padding: 18px 14px;
+      min-height: 130px;
+      padding: 14px 8px;
       border: 1px solid #d9e3f0;
       border-radius: 14px;
       background: #fbfcfe;
       font-weight: 820;
-      line-height: 1.45;
-      font-size: 14px;
+      line-height: 1.4;
+      font-size: 13px;
     }
     .node.ai { background: #edf3ff; border-color: #c8d9ff; }
     .node.rules { background: #eaf8f4; border-color: #c3e9df; }
     .node.human { background: #fff6e8; border-color: #f0d29d; }
-    .arrow { display: flex; align-items: center; color: #8c9bae; font-size: 23px; }
+    .arrow { flex: 0 0 auto; display: flex; align-items: center; justify-content: center; color: #8c9bae; font-size: 20px; }
+    /* Narrow screens: the same flow, top to bottom. */
+    @media (max-width: 860px) {
+      .flow { flex-direction: column; gap: 4px; }
+      .node { min-height: 0; padding: 12px 14px; font-size: 14px; }
+      .arrow { transform: rotate(90deg); }
+    }
 
     .governance {
       display: grid;
