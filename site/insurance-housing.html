@@ -14,6 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Karla:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&amp;text=%26&amp;display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/landing.css">
 <script type="application/ld+json">
 {"@context": "https://schema.org", "@type": "LodgingBusiness", "name": "NTStays", "url": "https://ntstays.com/",
@@ -22,16 +23,21 @@
  "sameAs": ["https://www.vrbo.com/2932516"]}
 </script>
 <script src="assets/source.js"></script>
+<link rel="stylesheet" href="assets/nav.css">
 </head>
 <body>
 <header class="top">
   <div class="wrap nav">
-    <a class="logo" href="/">NT<span>Stays</span></a>
-    <ul>
-      <li><a href="/#stays">Our homes</a></li>
-      <li><a href="travel-nurses.html">Travel nurses</a></li>
-      <li><a href="insurance-housing.html" aria-current="page">Insurance housing</a></li>
-      <li><a class="btn btn-primary btn-small" href="#request">Request a home</a></li>
+    <a class="logo" href="/" aria-label="NTStays home">NT<span>Stays</span></a>
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-menu"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>Menu</button>
+    <ul id="site-menu">
+      <li><a href="/#stays">Homes</a></li>
+      <li><a href="insurance-housing.html" aria-current="page">Insurance Housing</a></li>
+      <li><a href="corporate-housing.html">Corporate Housing</a></li>
+      <li><a href="monthly-stays.html">Monthly Stays</a></li>
+      <li><a href="/#services">For owners</a></li>
+      <li><a href="/#trust">About</a></li>
+      <li><a class="nav-cta" href="#request">Book direct</a></li>
     </ul>
   </div>
 </header>
@@ -244,7 +250,7 @@
         run from a few weeks to many months, and we'll work with you and your adjuster if the timeline changes.</p></details>
       <details><summary>Is the home furnished?</summary><p>Yes, fully furnished, with bedrooms ready to sleep in and a full
         kitchen. Ask us if you need anything specific, such as a crib or extra bedding.</p></details>
-      <details><summary>Can we see the home first?</summary><p>Every photo on our site is of our own homes, and there are video
+      <details><summary>Can we see the home first?</summary><p>Every photo of our homes on this site is real, and there are video
         tours of the Cranston and Abington homes on our <a href="/#stays">homes page</a>. We can also do a video call.</p></details>
     </div>
   </section>
@@ -260,5 +266,6 @@
 <script src="assets/availability.js"></script>
 <script src="assets/turnstile.js"></script>
 <script src="assets/chat.js"></script>
+<script src="assets/nav.js"></script>
 </body>
 </html>

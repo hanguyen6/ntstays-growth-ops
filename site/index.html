@@ -3,17 +3,19 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NTStays | Short-term stays and property services</title>
-<meta name="description" content="Furnished homes in Framingham and Abington, MA and Cranston, RI: monthly stays for travel nurses, professionals and insurance placements, summer stays near Providence, and property management for owners.">
+<title>NTStays | Furnished homes for short &amp; extended stays in MA &amp; RI</title>
+<meta name="description" content="Book furnished homes directly with NTStays for insurance housing, corporate stays, relocations, healthcare assignments and monthly stays in Massachusetts and Rhode Island: Framingham, Abington and Cranston. No platform fees.">
 <link rel="canonical" href="https://ntstays.com/">
 <meta property="og:type" content="website">
-<meta property="og:title" content="NTStays: furnished homes for monthly and summer stays">
-<meta property="og:description" content="Owner-operated homes near Boston and Providence. Book directly with the owners.">
+<meta property="og:title" content="NTStays: furnished homes for short &amp; extended stays">
+<meta property="og:description" content="Insurance, corporate and monthly stays in Massachusetts and Rhode Island. Book direct, no platform fees.">
 <meta property="og:url" content="https://ntstays.com/">
 <meta property="og:image" content="https://ntstays.com/img/home-2/01-living-room.jpg">
+<link rel="preload" as="image" href="img/hero/living-room-1448.avif" type="image/avif" imagesrcset="img/hero/living-room-720.avif 720w, img/hero/living-room-1080.avif 1080w, img/hero/living-room-1448.avif 1448w" imagesizes="(max-width: 1024px) 100vw, 58vw">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Karla:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&amp;text=%26&amp;display=swap" rel="stylesheet">
 <style>
   :root {
     --coffee: #3b2a20;
@@ -36,25 +38,16 @@
   body { margin: 0; background: var(--oat); color: var(--ink); font: 17px/1.6 Karla, system-ui, sans-serif; }
   img { max-width: 100%; display: block; }
   a { color: var(--coffee-2); }
-  h1, h2, h3 { font-family: Fraunces, Georgia, serif; font-weight: 650; line-height: 1.15; color: var(--coffee); margin: 0 0 .4em; }
+  h1, h2, h3 { font-family: "DM Serif Display", Fraunces, Georgia, serif; font-weight: 650; line-height: 1.15; color: var(--coffee); margin: 0 0 .4em; }
   h1 { font-size: clamp(2.1rem, 5vw, 3.4rem); }
   h2 { font-size: clamp(1.7rem, 3.4vw, 2.3rem); }
   h3 { font-size: 1.25rem; }
-  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
+  .wrap { max-width: 1800px; margin: 0 auto; padding: 0 clamp(20px, 4vw, 72px); }
   .eyebrow { text-transform: uppercase; letter-spacing: .12em; font-size: .78rem; font-weight: 700; color: var(--brass); margin: 0 0 .6em; }
   .lede { color: var(--muted); max-width: 640px; font-size: 1.08rem; }
   section { padding: 72px 0; }
 
-  /* header */
-  header.top { position: sticky; top: 0; z-index: 20; background: rgba(246, 241, 231, .92); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
-  .nav { display: flex; align-items: center; justify-content: space-between; height: 64px; }
-  .logo { font-family: Fraunces, Georgia, serif; font-size: 1.45rem; font-weight: 650; color: var(--coffee); text-decoration: none; letter-spacing: -.01em; }
-  .logo span { color: var(--brass); }
-  .nav ul { display: flex; gap: 22px; list-style: none; margin: 0; padding: 0; }
-  .nav ul a { text-decoration: none; color: var(--coffee-2); font-weight: 500; }
-  .nav ul a:hover { color: var(--brass); }
-  .nav ul a.btn-primary, .nav ul a.btn-primary:hover { color: var(--paper); }
-  @media (max-width: 640px) { .nav ul li:not(:last-child) { display: none; } }
+  /* header: assets/nav.css (shared by every page) */
 
   .btn { display: inline-block; border: 0; border-radius: 999px; padding: 12px 22px; font: 700 .98rem Karla, sans-serif; cursor: pointer; text-decoration: none; transition: transform .15s, background .15s; }
   .btn:hover { transform: translateY(-1px); }
@@ -63,9 +56,39 @@
   .btn-ghost { background: transparent; color: var(--coffee); box-shadow: inset 0 0 0 1.5px var(--coffee); }
   .btn-small { padding: 8px 14px; font-size: .88rem; }
 
-  /* hero */
-  .hero { padding: 84px 0 64px; background: radial-gradient(1200px 400px at 85% 0%, var(--brass-soft), transparent 60%), var(--oat); }
-  .hero .ctas { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 24px; }
+  /* hero: copy on cream at the left, the living-room photo on the right half, fading into the cream */
+  .hero { position: relative; overflow: hidden; padding: 72px 0 64px; background: var(--oat); }
+  .hero-media { position: absolute; top: 0; right: 0; bottom: 0; width: 58%; margin: 0; }
+  /* The photo itself fades out to the left, so it melts into the cream with no visible edge. */
+  .hero-media img { width: 100%; height: 100%; object-fit: cover; object-position: 60% 50%;
+    -webkit-mask-image: linear-gradient(90deg, transparent 0%, rgba(0,0,0,.18) 14%, rgba(0,0,0,.55) 30%, rgba(0,0,0,.88) 46%, #000 60%);
+    mask-image: linear-gradient(90deg, transparent 0%, rgba(0,0,0,.18) 14%, rgba(0,0,0,.55) 30%, rgba(0,0,0,.88) 46%, #000 60%); }
+  .hero-copy { position: relative; z-index: 1; }
+  .hero .eyebrow { font-size: .86rem; letter-spacing: .18em; margin-bottom: 18px; }
+  .hero h1 { font-size: clamp(2.5rem, 5.4vw, 4.6rem); line-height: 1.02; letter-spacing: -.02em; margin: 0 0 .2em; max-width: 800px; }
+  .hero .tagline { font: 650 clamp(1.6rem, 3.1vw, 2.65rem)/1.12 "DM Serif Display", Fraunces, Georgia, serif; color: #8a5a33; letter-spacing: -.01em;
+    margin: 0 0 22px; max-width: 820px; }
+  .hero .lede { font-size: clamp(1.08rem, 1.5vw, 1.28rem); max-width: min(660px, 50vw); text-wrap: pretty; }
+  .hero .ctas { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 28px; }
+  .hero .ctas .btn { padding: 15px 34px; font-size: 1.1rem; font-weight: 500; }
+  .hero .ctas .btn-primary svg { width: 18px; height: 18px; margin-left: 14px; vertical-align: -3px; stroke: currentColor; }
+  .hero .points { max-width: min(640px, 50vw); gap: 12px; margin-top: 30px; }
+  .hero .points li { color: var(--ink); font-size: 1.08rem; padding-left: 40px; }
+  .hero .points li::before { width: 26px; height: 26px; top: 1px; background-size: 14px; }
+  @media (max-width: 1024px) {
+    .hero { padding: 40px 0 0; display: flex; flex-direction: column; }
+    .hero .lede, .hero .points { max-width: 660px; }
+    .hero-copy { order: 1; width: 100%; }
+    .hero-media { order: 2; position: relative; width: 100%; aspect-ratio: 4 / 3; margin-top: 32px; }
+    .hero-media img { -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 24%); mask-image: linear-gradient(180deg, transparent 0%, #000 24%); }
+  }
+  @media (max-width: 600px) {
+    .hero h1 br { display: none; }
+    .hero h1 { font-size: 2.35rem; }
+  }
+  /* Featured homes: large heading and a wider intro, as in the approved design */
+  #stays h2 { font-size: clamp(2.2rem, 4.4vw, 3.6rem); letter-spacing: -.02em; margin-bottom: .25em; }
+  #stays .lede { max-width: 820px; font-size: clamp(1.05rem, 1.4vw, 1.2rem); }
   /* same check-mark list as the travel-nurse and insurance pages (assets/landing.css) */
   .points { list-style: none; padding: 0; margin: 28px 0 0; display: grid; gap: 8px; }
   .points li { padding-left: 28px; position: relative; color: var(--coffee-2); }
@@ -103,7 +126,7 @@
   /* guest reviews + numbers (from data/stats.json, built by stats/build_stats.py) */
   .numbers { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); margin-top: 26px; }
   .number { background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px 20px; }
-  .number b { display: block; font-family: Fraunces, Georgia, serif; font-size: 2rem; color: var(--coffee); line-height: 1.1; }
+  .number b { display: block; font-family: "DM Serif Display", Fraunces, Georgia, serif; font-size: 2rem; color: var(--coffee); line-height: 1.1; }
   .number span { color: var(--muted); font-size: .92rem; }
   .origins { color: var(--muted); font-size: .95rem; margin-top: 16px; }
   .quote { padding: 22px; gap: 12px; }
@@ -120,7 +143,7 @@
   @media (max-width: 820px) { .trust-grid { grid-template-columns: 1fr; } }
   .hosts { display: grid; gap: 14px; }
   .host { display: flex; gap: 14px; align-items: flex-start; background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; }
-  .host .avatar { flex: none; width: 64px; height: 64px; border-radius: 50%; background: var(--brass-soft); color: var(--coffee); display: grid; place-items: center; font: 650 1.4rem Fraunces, Georgia, serif; overflow: hidden; }
+  .host .avatar { flex: none; width: 64px; height: 64px; border-radius: 50%; background: var(--brass-soft); color: var(--coffee); display: grid; place-items: center; font: 650 1.4rem "DM Serif Display", Fraunces, Georgia, serif; overflow: hidden; }
   .host .avatar img { width: 100%; height: 100%; object-fit: cover; }
   .host h3 { margin: 0; font-size: 1.1rem; }
   .host .role { color: var(--muted); font-size: .88rem; }
@@ -179,7 +202,7 @@
 
   .audiences { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); margin-top: 26px; }
   .audience { display: block; text-decoration: none; background: var(--brass-soft); border-radius: var(--radius); padding: 18px 22px; color: var(--coffee); }
-  .audience b { display: block; font: 650 1.15rem Fraunces, Georgia, serif; margin-bottom: 4px; }
+  .audience b { display: block; font: 650 1.15rem "DM Serif Display", Fraunces, Georgia, serif; margin-bottom: 4px; }
   .audience span { color: var(--coffee-2); font-size: .95rem; }
   .audience:hover { background: #e2d2ae; }
 
@@ -234,48 +257,59 @@
   footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
 </style>
 <script src="assets/source.js"></script>
+<link rel="stylesheet" href="assets/nav.css">
 </head>
 <body>
 
 <header class="top">
   <div class="wrap nav">
-    <a class="logo" href="#top">NT<span>Stays</span></a>
-    <ul>
-      <li><a href="#stays">Stays</a></li>
-      <li class="hidden" id="nav-reviews"><a href="#reviews">Reviews</a></li>
-      <li><a href="#services">For owners</a></li>
-      <li><a href="#how">How it works</a></li>
-      <li><a class="btn btn-primary btn-small" href="#contact">Contact us</a></li>
+    <a class="logo" href="/" aria-label="NTStays home">NT<span>Stays</span></a>
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-menu"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>Menu</button>
+    <ul id="site-menu">
+      <li><a href="/#stays">Homes</a></li>
+      <li><a href="insurance-housing.html">Insurance Housing</a></li>
+      <li><a href="corporate-housing.html">Corporate Housing</a></li>
+      <li><a href="monthly-stays.html">Monthly Stays</a></li>
+      <li><a href="/#services">For owners</a></li>
+      <li><a href="/#trust">About</a></li>
+      <li><a class="nav-cta" href="#contact">Book direct</a></li>
     </ul>
   </div>
 </header>
 
 <main id="top">
-  <section class="hero">
-    <div class="wrap">
-      <p class="eyebrow">NTStays LLC</p>
-      <h1>Homes worth coming back to.<br>Properties looked after like our own.</h1>
-      <p class="lede">We host guests in our own furnished homes, for a few nights or a few months, and we help other owners
-        get their properties guest-ready and keep them running: management, staging,
-        renovation, and cleaning.</p>
+  <section class="hero" aria-labelledby="hero-title">
+    <picture class="hero-media">
+      <source type="image/avif" srcset="img/hero/living-room-720.avif 720w, img/hero/living-room-1080.avif 1080w, img/hero/living-room-1448.avif 1448w" sizes="(max-width: 1024px) 100vw, 58vw">
+      <source type="image/webp" srcset="img/hero/living-room-720.webp 720w, img/hero/living-room-1080.webp 1080w, img/hero/living-room-1448.webp 1448w" sizes="(max-width: 1024px) 100vw, 58vw">
+      <img src="img/hero/living-room-1080.jpg" srcset="img/hero/living-room-720.jpg 720w, img/hero/living-room-1080.jpg 1080w, img/hero/living-room-1448.jpg 1448w"
+        sizes="(max-width: 1024px) 100vw, 58vw" width="1448" height="1086" fetchpriority="high"
+        alt="A bright, furnished living room with a linen sofa, a wooden coffee table and afternoon light through tall windows">
+    </picture>
+    <div class="wrap hero-copy">
+      <p class="eyebrow">Furnished housing &amp; direct booking</p>
+      <h1 id="hero-title">Furnished homes for<br>short &amp; extended stays.</h1>
+      <p class="tagline">More than a stay. A place to call home.</p>
+      <p class="lede">Book directly with NTStays for insurance housing, corporate stays, relocations, healthcare assignments,
+        and temporary housing in MA and RI.</p>
       <div class="ctas">
-        <a class="btn btn-primary" href="#stays">See our stays</a>
-        <a class="btn btn-ghost" href="#services">Services for owners</a>
+        <a class="btn btn-primary" href="#stays">Find a home<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a class="btn btn-ghost" href="insurance-housing.html">Insurance housing</a>
       </div>
       <ul class="points">
-        <li><b>Premium locations</b> near Boston and Providence</li>
-        <li><b>Flexible stays</b>, from a few nights to many months</li>
-        <li><b>Attentive, owner-run service</b> for every home and guest</li>
+        <li>Serving Rhode Island &amp; Massachusetts &mdash; including Providence, Cranston, Warwick, Framingham, Abington and surrounding areas</li>
+        <li>Insurance, corporate &amp; monthly stays</li>
+        <li>Book direct &mdash; no platform fees</li>
       </ul>
     </div>
   </section>
 
   <section id="stays">
     <div class="wrap">
-      <p class="eyebrow">Our stays</p>
-      <h2>Where you can stay</h2>
-      <p class="lede">Furnished monthly stays for traveling nurses, professionals and families between homes, plus summer
-        getaways in Cranston. Book directly with us: no platform fees, and you talk to the hosts from the first message.</p>
+      <p class="eyebrow">Our homes</p>
+      <h2>Featured homes</h2>
+      <p class="lede">Beautiful, fully furnished homes for short and extended stays. Book directly with NTStays for monthly
+        stays in MA and RI &mdash; no platform fees, just a better stay.</p>
       <div class="grid grid-3" id="property-grid" style="margin-top:28px"></div>
       <div class="audiences">
         <a class="audience" href="travel-nurses.html"><b>Travel nurses &amp; healthcare staff</b>
@@ -499,6 +533,7 @@
   <div class="wrap">
     <span>&copy; <span id="year"></span> NTStays LLC</span>
     <span><a href="travel-nurses.html">Travel nurses</a> &middot; <a href="insurance-housing.html">Insurance housing</a> &middot;
+      <a href="corporate-housing.html">Corporate housing</a> &middot; <a href="monthly-stays.html">Monthly stays</a> &middot;
       <a href="mailto:hello@ntstays.com">hello@ntstays.com</a> &middot; <a href="privacy.html">Privacy</a> &middot; <a href="/team" rel="nofollow">Team</a></span>
   </div>
 </footer>
@@ -698,7 +733,7 @@ function renderProof(st) {
     ...(TRUST.VRBO_REVIEWS || []).map(v => [`Rated ${esc(v.score)} on Vrbo`,
       `<a href="${esc(v.url)}" target="_blank" rel="noopener">See the ${v.count} verified reviews for our ${esc(v.home)}</a>`]),
     TRUST.GOOGLE_REVIEWS && ['Reviewed on Google', `<a href="${esc(TRUST.GOOGLE_REVIEWS)}" target="_blank" rel="noopener">Read our Google reviews</a>`],
-    PROPERTIES.some(p => p.videos?.length) && ['Real photos and video tours', 'Every photo is of our own homes. Video tours on the cards above.'],
+    PROPERTIES.some(p => p.videos?.length) && ['Real photos and video tours', 'Every listing photo is of our own homes. Video tours on the cards above.'],
     TRUST.BUSINESS && [`Operated by ${esc(TRUST.BUSINESS)}`,
       `Email <a href="mailto:${esc(CONFIG.CONTACT_EMAIL)}">${esc(CONFIG.CONTACT_EMAIL)}</a>${TRUST.PHONE ? ` or call <a href="tel:${esc(TRUST.PHONE.replace(/[^+\d]/g, ''))}">${esc(TRUST.PHONE)}</a>` : ''}: you reach us, not a call center`],
   ].filter(Boolean);
@@ -943,5 +978,6 @@ $('#subscribe-form').addEventListener('submit', async e => {
 <script src="assets/availability.js"></script>
 <script src="assets/turnstile.js"></script>
 <script src="assets/chat.js"></script>
+<script src="assets/nav.js"></script>
 </body>
 </html>

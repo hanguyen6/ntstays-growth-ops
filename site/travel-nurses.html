@@ -14,6 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Karla:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&amp;text=%26&amp;display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/landing.css">
 <script type="application/ld+json">
 {"@context": "https://schema.org", "@type": "LodgingBusiness", "name": "NTStays", "url": "https://ntstays.com/",
@@ -22,16 +23,21 @@
  "sameAs": ["https://www.vrbo.com/2932516"]}
 </script>
 <script src="assets/source.js"></script>
+<link rel="stylesheet" href="assets/nav.css">
 </head>
 <body>
 <header class="top">
   <div class="wrap nav">
-    <a class="logo" href="/">NT<span>Stays</span></a>
-    <ul>
-      <li><a href="/#stays">Our homes</a></li>
-      <li><a href="travel-nurses.html" aria-current="page">Travel nurses</a></li>
-      <li><a href="insurance-housing.html">Insurance housing</a></li>
-      <li><a class="btn btn-primary btn-small" href="#request">Request to book</a></li>
+    <a class="logo" href="/" aria-label="NTStays home">NT<span>Stays</span></a>
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-menu"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>Menu</button>
+    <ul id="site-menu">
+      <li><a href="/#stays">Homes</a></li>
+      <li><a href="insurance-housing.html">Insurance Housing</a></li>
+      <li><a href="corporate-housing.html">Corporate Housing</a></li>
+      <li><a href="monthly-stays.html">Monthly Stays</a></li>
+      <li><a href="/#services">For owners</a></li>
+      <li><a href="/#trust">About</a></li>
+      <li><a class="nav-cta" href="#request">Book direct</a></li>
     </ul>
   </div>
 </header>
@@ -241,7 +247,7 @@
       <details><summary>How do I pay?</summary><p>Once we've confirmed your dates, we email you a secure card payment link.
         Your stay is confirmed as soon as the payment goes through, and you get a confirmation email right away. We never
         ask for wire transfers, gift cards or crypto.</p></details>
-      <details><summary>Can I see the home first?</summary><p>Yes: every photo on our site is of our own homes, and we have video
+      <details><summary>Can I see the home first?</summary><p>Yes: every photo of our homes on this site is real, and we have video
         tours of the Cranston and Abington homes on our <a href="/#stays">homes page</a>. We're happy to set up a video call too.</p></details>
     </div>
   </section>
@@ -257,5 +263,6 @@
 <script src="assets/availability.js"></script>
 <script src="assets/turnstile.js"></script>
 <script src="assets/chat.js"></script>
+<script src="assets/nav.js"></script>
 </body>
 </html>

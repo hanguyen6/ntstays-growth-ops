@@ -1,4 +1,4 @@
-// Request form for the monthly-stay landing pages. Posts to the same n8n webhook as the homepage form, as a
+// Request form for the landing pages. Posts to the same n8n webhook as the homepage form, as a
 // "stay" inquiry with a guest type (segment), so it lands in the usual review email.
 const WEBHOOK_URL = 'https://n8n.ntstays.com/webhook/ntstays-inquiry';
 const CONTACT_EMAIL = 'hello@ntstays.com';
@@ -25,7 +25,10 @@ if (form) form.addEventListener('submit', async e => {
   // Extra details (hospital, claim, role) go at the top of the message, so they reach the review email as-is.
   const extras = [...form.querySelectorAll('[data-extra]')].map(el => el.value.trim() ? `${el.dataset.extra}: ${el.value.trim()}` : '').filter(Boolean);
   const message = [extras.join('\n'), (d.message || '').trim()].filter(Boolean).join('\n\n') || 'Please let me know about availability.';
-  const payload = { form_type: 'inquiry', inquiry_type: 'stay', segment: form.dataset.segment, first_name: d.first_name, last_name: d.last_name,
+  // The guest type: fixed per page (data-segment), or chosen by the visitor where the page asks (data-segment-select).
+  const segSel = form.querySelector('[data-segment-select]');
+  const segment = segSel ? segSel.value : form.dataset.segment;
+  const payload = { form_type: 'inquiry', inquiry_type: 'stay', segment, first_name: d.first_name, last_name: d.last_name,
     email: d.email, phone: d.phone, property_id: d.property_id, check_in: d.check_in, check_out: d.check_out, guests: d.guests,
     message, website: d.website, marketing_opt_in: false, heard_about: d.heard_about,
     source: window.ntSource ? window.ntSource.get() : null,

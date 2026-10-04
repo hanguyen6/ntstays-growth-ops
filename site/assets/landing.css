@@ -1,4 +1,4 @@
-/* Shared styles for the monthly-stay landing pages (travel-nurses.html, insurance-housing.html).
+/* Shared styles for the landing pages (travel-nurses, insurance-housing, corporate-housing, monthly-stays).
    Same look as index.html. */
 :root {
   --coffee: #3b2a20; --coffee-2: #5a4232; --brass: #b08a3e; --brass-soft: #e9dcc0; --sage: #7d8f76; --sage-soft: #e3e9df;
@@ -10,25 +10,17 @@ html { scroll-behavior: smooth; }
 body { margin: 0; background: var(--oat); color: var(--ink); font: 17px/1.6 Karla, system-ui, sans-serif; }
 img { max-width: 100%; display: block; }
 a { color: var(--coffee-2); }
-h1, h2, h3 { font-family: Fraunces, Georgia, serif; font-weight: 650; line-height: 1.15; color: var(--coffee); margin: 0 0 .4em; }
+h1, h2, h3 { font-family: "DM Serif Display", Fraunces, Georgia, serif; font-weight: 650; line-height: 1.15; color: var(--coffee); margin: 0 0 .4em; }
 h1 { font-size: clamp(2rem, 5vw, 3.2rem); }
 h2 { font-size: clamp(1.6rem, 3.4vw, 2.2rem); }
 h3 { font-size: 1.2rem; }
-.wrap { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
+.wrap { max-width: 1800px; margin: 0 auto; padding: 0 clamp(20px, 4vw, 72px); }
 .eyebrow { text-transform: uppercase; letter-spacing: .12em; font-size: .78rem; font-weight: 700; color: var(--brass); margin: 0 0 .6em; }
 .lede { color: var(--muted); max-width: 680px; font-size: 1.08rem; }
 section { padding: 64px 0; }
 .alt { background: var(--paper); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
 
-header.top { position: sticky; top: 0; z-index: 20; background: rgba(246, 241, 231, .92); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
-.nav { display: flex; align-items: center; justify-content: space-between; height: 64px; }
-.logo { font-family: Fraunces, Georgia, serif; font-size: 1.45rem; font-weight: 650; color: var(--coffee); text-decoration: none; }
-.logo span { color: var(--brass); }
-.nav ul { display: flex; gap: 22px; list-style: none; margin: 0; padding: 0; align-items: center; }
-.nav ul a { text-decoration: none; color: var(--coffee-2); font-weight: 500; }
-.nav ul a[aria-current="page"] { color: var(--brass); }
-.nav ul a.btn-primary { color: var(--paper); }
-@media (max-width: 720px) { .nav ul li:not(:last-child) { display: none; } }
+/* The site header lives in assets/nav.css (shared by every page). */
 
 .btn { display: inline-block; border: 0; border-radius: 999px; padding: 12px 22px; font: 700 .98rem Karla, sans-serif; cursor: pointer; text-decoration: none; transition: transform .15s, background .15s; }
 .btn:hover { transform: translateY(-1px); }
@@ -66,7 +58,7 @@ header.top { position: sticky; top: 0; z-index: 20; background: rgba(246, 241, 2
 .why .icon svg { width: 22px; height: 22px; stroke: var(--coffee); }
 
 .quote { background: var(--sage-soft); border-radius: var(--radius); padding: 22px 26px; }
-.quote p { margin: 0; font: 500 1.15rem/1.45 Fraunces, Georgia, serif; color: var(--coffee-2); }
+.quote p { margin: 0; font: 500 1.15rem/1.45 "DM Serif Display", Fraunces, Georgia, serif; color: var(--coffee-2); }
 .quote cite { display: block; margin-top: 8px; font: 400 .9rem Karla, sans-serif; color: var(--muted); font-style: normal; }
 
 .steps { counter-reset: s; display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin-top: 24px; }
