@@ -80,7 +80,9 @@ const intents = { data: [pi, { id: 'pi_3', status: 'succeeded', metadata: { ntst
 const ics = feed('home-2', intents);
 check('feed has the home\'s paid booking as dates', ics.includes('DTSTART;VALUE=DATE:20261101') && ics.includes('DTEND;VALUE=DATE:20261201')
   && ics.startsWith('BEGIN:VCALENDAR') && ics.includes('END:VCALENDAR'));
-check('feed leaves out other homes, bad dates and all guest details', !ics.includes('20261005') && !ics.includes('soon')
+// Look for the other home's booking as an event date, not the bare digits: the feed's DTSTAMP is today's date,
+// which once matched (the test failed on 2026-10-05 only).
+check('feed leaves out other homes, bad dates and all guest details', !ics.includes('DATE:20261005') && !ics.includes('soon')
   && !ics.includes('kim') && !ics.includes('3450') && (ics.match(/BEGIN:VEVENT/g) || []).length === 1);
 check('Stripe unreachable: an empty but valid calendar', feed('home-2', { error: {} }).includes('BEGIN:VCALENDAR'));
 const prep = q => new Function('$input', '$env', code(pay, 'Prepare feed'))({ first: () => ({ json: { query: q } }) }, env)[0].json;
