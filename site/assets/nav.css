@@ -1,30 +1,53 @@
-/* Site header shared by every page: logo, seven links, and the "Book direct" pill.
-   Below 1100px the links fold into a Menu button (assets/nav.js). Load after the page's own styles. */
+/* Site header shared by every page: logo, links with two dropdowns (Housing, For Owners), and the "Book Direct" pill.
+   Below 1100px the links fold into a Menu button and the dropdowns show as indented groups (assets/nav.js).
+   Load after the page's own styles; the page width (.wrap) comes from them, so the header lines up with the content. */
 header.top { position: sticky; top: 0; z-index: 30; background: rgba(250, 246, 238, .94); backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--line); }
-/* .wrap (page width) comes from the page's own styles, so the header lines up with the content. */
-.nav { display: flex; align-items: center; justify-content: space-between; gap: 20px; height: 76px; }
+.nav { display: flex; align-items: center; justify-content: space-between; gap: 20px; height: 76px; position: relative; }
 .logo { font-family: Fraunces, Georgia, serif; font-size: 1.6rem; font-weight: 650; color: var(--coffee); text-decoration: none;
   letter-spacing: -.01em; flex: none; }
 .logo span { color: var(--brass); }
-.nav ul { display: flex; align-items: center; gap: 28px; list-style: none; margin: 0; padding: 0; }
-.nav ul a { text-decoration: none; color: var(--coffee-2); font-weight: 500; font-size: .98rem; white-space: nowrap; }
-.nav ul a:hover, .nav ul a[aria-current="page"] { color: var(--brass); }
-.nav ul a.nav-cta { display: inline-block; background: var(--coffee); color: var(--paper); border-radius: 999px;
+
+#site-menu { display: flex; align-items: center; gap: 26px; list-style: none; margin: 0; padding: 0; }
+#site-menu > li { position: relative; }
+#site-menu a, .sub-toggle { text-decoration: none; color: var(--coffee-2); font: 500 .98rem Karla, system-ui, sans-serif; white-space: nowrap; }
+#site-menu a:hover, .sub-toggle:hover, #site-menu a[aria-current="page"], .sub-toggle.current { color: var(--brass); }
+.sub-toggle { display: inline-flex; align-items: center; gap: 6px; background: none; border: 0; padding: 6px 0; cursor: pointer; }
+.sub-toggle svg { width: 14px; height: 14px; stroke: currentColor; transition: transform .15s; }
+.sub-toggle[aria-expanded="true"] svg { transform: rotate(180deg); }
+
+/* Dropdown panel */
+.sub { position: absolute; top: calc(100% + 12px); left: -18px; min-width: 260px; list-style: none; margin: 0; padding: 8px;
+  background: var(--paper); border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 18px 40px rgba(59, 42, 32, .14);
+  display: none; }
+.sub::before { content: ""; position: absolute; left: 0; right: 0; top: -14px; height: 14px; }  /* hover bridge */
+.sub.open { display: block; }
+@media (hover: hover) and (min-width: 1101px) { .has-sub:hover > .sub { display: block; } }
+.sub a { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 10px; font-size: .95rem; }
+.sub a:hover { background: var(--oat); color: var(--coffee); }
+.sub svg { width: 20px; height: 20px; flex: none; stroke: var(--coffee); }
+
+#site-menu a.nav-cta { display: inline-block; background: var(--coffee); color: var(--paper); border-radius: 999px;
   padding: 12px 28px; font-weight: 700; font-size: 1rem; margin-left: 4px; }
-.nav ul a.nav-cta:hover { background: var(--coffee-2); color: var(--paper); }
+#site-menu a.nav-cta:hover { background: var(--coffee-2); color: var(--paper); }
+
 .nav-toggle { display: none; align-items: center; gap: 8px; border: 1.5px solid var(--coffee); background: transparent;
   color: var(--coffee); border-radius: 999px; padding: 8px 16px; font: 700 .95rem Karla, system-ui, sans-serif; cursor: pointer; }
 .nav-toggle svg { width: 18px; height: 18px; stroke: currentColor; }
 
 @media (max-width: 1100px) {
   .nav-toggle { display: inline-flex; }
-  .nav ul { display: none; position: absolute; top: 76px; left: 0; right: 0; flex-direction: column; align-items: stretch;
+  .nav { position: static; }
+  #site-menu { display: none; position: absolute; top: 76px; left: 0; right: 0; flex-direction: column; align-items: stretch;
     gap: 0; padding: 8px 20px 18px; background: var(--paper); border-bottom: 1px solid var(--line);
-    box-shadow: 0 14px 28px rgba(59, 42, 32, .1); }
-  .nav ul.open { display: flex; }
-  .nav ul li a { display: block; padding: 12px 4px; font-size: 1.05rem; border-bottom: 1px solid var(--line); }
-  .nav ul li:last-child a { border-bottom: 0; }
-  .nav ul a.nav-cta { display: block; margin: 12px 0 0; text-align: center; padding: 14px 28px; }
+    box-shadow: 0 14px 28px rgba(59, 42, 32, .1); max-height: calc(100vh - 76px); overflow-y: auto; }
+  #site-menu.open { display: flex; }
+  #site-menu > li > a, .sub-toggle { display: flex; width: 100%; padding: 12px 4px; font-size: 1.05rem; border-bottom: 1px solid var(--line); }
+  .sub-toggle svg { display: none; }
+  /* On phones the dropdowns are always shown, as indented groups under their heading. */
+  .sub { display: block; position: static; min-width: 0; padding: 4px 0 8px 12px; border: 0; box-shadow: none; background: none; }
+  .sub::before { display: none; }
+  .sub a { padding: 10px 8px; font-size: 1rem; }
+  #site-menu a.nav-cta { display: block; margin: 12px 0 0; text-align: center; padding: 14px 28px; }
 }
 @media (max-width: 420px) { .logo { font-size: 1.4rem; } }
